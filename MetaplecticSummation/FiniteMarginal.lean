@@ -130,18 +130,16 @@ theorem tame_reverse_marginal_on_test (p : HeightOneSpectrum (𝓞 F)) (hp : p.a
       (Real.sqrt (modulus F v (n : LocalField F v)) : ℂ)⁻¹ * d.hat v (d.axisDensity v Φ s) μ.val :=
   d.finite_reverse_marginal_on_test p Φ hΦ s μ (fun a => (d.tame_symbol_radical p hp a).mp)
 
-/-- The square of the defining integral transform on the vertical axis,
-for finite-place test sections under Hilbert nondegeneracy. -/
-theorem finite_integralTransform_square_axis (p : HeightOneSpectrum (𝓞 F))
-    (hpow : ∀ a : (LocalField F (.inr p))ˣ, (∀ u, d.symbol (.inr p) u a = 1) → ∃ b, b^n = a)
-    (Φ : d.schwartz (.inr p)) (hΦ : Φ.val ∈ d.testSet (.inr p)) (y : (LocalField F (.inr p))ˣ) :
+/-- A Schwartz–Bruhat extension of the axis density at a finite place, constructed
+from the power-ray extension of the section. -/
+theorem exists_finite_axis_density (p : HeightOneSpectrum (𝓞 F)) (Φ : d.schwartz (.inr p))
+    (s : (LocalField F (.inr p))ˣ) :
     let v : Place F := .inr p
-    let e : (LocalField F v)ˣ := (-1)^(n+1)
-    (d.integralTransform v (d.integralTransform v Φ.val)).2 0 y =
-      d.symbol v e y * d.axis v Φ (y/e) := by
+    ∃ σ : LocalField F v → ℂ, Bruhat v σ ∧ ∀ t : (LocalField F v)ˣ, σ t.val =
+      (modulus F v (n : LocalField F v) : ℂ) / (modulus F v s.val : ℂ) *
+        (modulus F v t.val : ℂ)^(n-1) * d.axis v Φ (-(t^n)/s) := by
   let v : Place F := .inr p
   let K := LocalField F v
-  let s := y⁻¹
   let q : K × Kˣ := (0,-1/s)
   let c : ℂ := (modulus F v (n : K) : ℂ) / (modulus F v s.val : ℂ)
   obtain ⟨E,hE,he⟩ := (d.finite_schwartz_rayExtensions p Φ).2
@@ -152,6 +150,20 @@ theorem finite_integralTransform_square_axis (p : HeightOneSpectrum (𝓞 F))
     have h : E q t.val = (modulus F v t.val : ℂ)^(n-1) * d.axis v Φ (-(t^n)/s) := by
       simpa only [q,mul_zero,mul_div_assoc',mul_neg_one,axis,modulus] using he q t
     rw [mul_assoc,← h]
+  exact ⟨σ,hσ,hu⟩
+
+/-- The square of the defining integral transform on the vertical axis,
+for finite-place test sections under Hilbert nondegeneracy. -/
+theorem finite_integralTransform_square_axis (p : HeightOneSpectrum (𝓞 F))
+    (hpow : ∀ a : (LocalField F (.inr p))ˣ, (∀ u, d.symbol (.inr p) u a = 1) → ∃ b, b^n = a)
+    (Φ : d.schwartz (.inr p)) (hΦ : Φ.val ∈ d.testSet (.inr p)) (y : (LocalField F (.inr p))ˣ) :
+    let v : Place F := .inr p
+    let e : (LocalField F v)ˣ := (-1)^(n+1)
+    (d.integralTransform v (d.integralTransform v Φ.val)).2 0 y =
+      d.symbol v e y * d.axis v Φ (y/e) := by
+  let v : Place F := .inr p
+  let s := y⁻¹
+  obtain ⟨σ,hσ,hu⟩ := d.exists_finite_axis_density p Φ s
   exact d.integralTransform_axis_of_marginal v Φ (d.transformTest _ Φ hΦ) y σ (hu (-1))
     (fun μ => d.finite_reverse_marginal_with_density p Φ hΦ s μ σ hu hpow)
     (d.hat_hat_finite p hσ 1)

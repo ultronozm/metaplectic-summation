@@ -62,6 +62,33 @@ theorem lowerShear_add (u w : K) (f : Charts K) :
   · by_cases hy : y = 0 <;> simp [lowerShear, hy, add_mul, add_assoc]
   · simp [lowerShear, add_mul, add_assoc]
 
+/-- The upper and lower chart formulas are linear even before imposing gluing. -/
+def upperShearLinear (u : K) : Charts K →ₗ[ℂ] Charts K where
+  toFun := upperShear h u
+  map_add' f g := by
+    apply Prod.ext
+    · rfl
+    funext x y
+    by_cases hx : x = 0 <;> simp [upperShear,hx,add_div]
+  map_smul' c f := by
+    apply Prod.ext
+    · rfl
+    funext x y
+    by_cases hx : x = 0 <;> simp [upperShear,hx,mul_div_assoc]
+
+def lowerShearLinear (u : K) : Charts K →ₗ[ℂ] Charts K where
+  toFun := lowerShear h u
+  map_add' f g := by
+    apply Prod.ext
+    · funext x y
+      by_cases hy : y = 0 <;> simp [lowerShear,hy,mul_add]
+    · rfl
+  map_smul' c f := by
+    apply Prod.ext
+    · funext x y
+      by_cases hy : y = 0 <;> simp [lowerShear,hy,mul_left_comm]
+    · rfl
+
 variable [MeasurableSpace K] (n : ℕ) (modulus : K → ℝ) (dx : Measure K)
 
 /-- The X-chart equality of (5.4), for every line parameter including zero. -/

@@ -85,12 +85,11 @@ theorem torusCharts_mul (a b : (LocalField F v)ˣ) (f : Charts (LocalField F v))
 
 /-- The square formula implies bijectivity. Applying it twice gives multiplication
 by the nonzero central scalar {ε,ε}. -/
-theorem fourier_bijective_of_square
-    (hinv : ∀ Φ : d.schwartz v, (d.fourier v (d.fourier v Φ)).val =
-      d.torusCharts v ((-1)^(n+1)) Φ.val) : Function.Bijective (d.fourier v) := by
+theorem bijective_of_torus_square (L : d.schwartz v →ₗ[ℂ] d.schwartz v)
+    (hinv : ∀ Φ : d.schwartz v, (L (L Φ)).val =
+      d.torusCharts v ((-1)^(n+1)) Φ.val) : Function.Bijective L := by
   let e : (LocalField F v)ˣ := (-1)^(n+1)
   let z := d.symbol v e e
-  let L := d.fourier v
   have he : e*e = 1 := by simp only [e,← mul_pow,neg_one_mul,neg_neg,one_pow]
   have hz : z ≠ 0 := (d.unitPairing v e e).ne_zero
   have h4 (Φ : d.schwartz v) : L (L (L (L Φ))) = z • Φ := by
@@ -105,6 +104,11 @@ theorem fourier_bijective_of_square
   · intro f
     use L (L (L (z⁻¹ • f)))
     rw [h4,smul_smul,mul_inv_cancel₀ hz,one_smul]
+
+theorem fourier_bijective_of_square
+    (hinv : ∀ Φ : d.schwartz v, (d.fourier v (d.fourier v Φ)).val =
+      d.torusCharts v ((-1)^(n+1)) Φ.val) : Function.Bijective (d.fourier v) :=
+  d.bijective_of_torus_square v (d.fourier v) hinv
 
 /-- On the axis only the reverse marginal identity for the given section and
 ordinary inversion of its density at frequency one are needed. -/

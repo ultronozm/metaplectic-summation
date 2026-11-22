@@ -40,11 +40,11 @@ private theorem locallyConstant_slices {P X V : Type*} [TopologicalSpace P] [Top
 
 variable {K : Type} [NontriviallyNormedField K] {n : ℕ}
 
-private def liftUnit (x : K) : Kˣ := if hx : x ≠ 0 then Units.mk0 x hx else 1
+def liftUnit (x : K) : Kˣ := if hx : x ≠ 0 then Units.mk0 x hx else 1
 
 private theorem liftUnit_val {x : K} (hx : x ≠ 0) : (liftUnit x).val = x := by simp [liftUnit, hx]
 
-private theorem liftUnit_continuousAt {x : K} (hx : x ≠ 0) : ContinuousAt liftUnit x := by
+theorem liftUnit_continuousAt {x : K} (hx : x ≠ 0) : ContinuousAt liftUnit x := by
   apply Units.isEmbedding_val₀.tendsto_nhds_iff.mpr
   rw [liftUnit_val hx]
   exact tendsto_id.congr' ((eventually_ne_nhds hx).mono fun _ hz => (liftUnit_val hz).symm)
@@ -135,7 +135,7 @@ private theorem locallyConstant_line_integral {P : Type*} [TopologicalSpace P]
   filter_upwards [dx.ae_ne 0] with x hx
   simp [G, extendedIntegrand, liftUnit, hx]
 
-private def swapCharts (f : Charts K) : Charts K := (fun x y => f.2 y x, fun x y => f.1 y x)
+def swapCharts (f : Charts K) : Charts K := (fun x y => f.2 y x, fun x y => f.1 y x)
 
 omit [CompleteSpace K] in
 private theorem finiteTest_swap {f : Charts K} (hf : finiteTest f) : finiteTest (swapCharts f) := by
@@ -149,7 +149,7 @@ private theorem finiteTest_swap {f : Charts K} (hf : finiteTest f) : finiteTest 
     exact ⟨hz.2, hz.1⟩
 
 omit [CompleteSpace K] in
-private theorem glues_swap (H : LineSymbol K n) {f : Charts K} (hf : Glues (fun a b => H.pairing a b) f) :
+theorem glues_swap (H : LineSymbol K n) {f : Charts K} (hf : Glues (fun a b => H.pairing a b) f) :
     Glues (fun a b => H.pairing a b) (swapCharts f) := by
   intro x y
   change f.2 y x = _ * f.1 y x
@@ -201,12 +201,10 @@ theorem finiteTest_upperShear (H : LineSymbol K n) (hn : (n : K) ≠ 0)
         simpa [upperShear,xChart,yChart,h] using hx
       · simp [upperShear,xChart,yChart,h,h',hx]
 
-theorem finiteTest_lowerShear (H : LineSymbol K n) (hn : (n : K) ≠ 0)
-    (hl : IsLocallyConstant (fun w : Kˣ × Kˣ => (H.pairing w.1 w.2 : ℂ)))
-    {f : Charts K} (gl : Glues (fun a b => H.pairing a b) f) (hf : finiteTest f) (u : K) :
-    finiteTest (lowerShear (fun a b => H.pairing a b) u f) := by
-  have ht := finiteTest_swap (finiteTest_upperShear H hn hl (glues_swap H gl) (finiteTest_swap hf) u)
-  convert ht using 1
+omit [CompleteSpace K] in
+theorem lowerShear_eq_swap_upperShear (H : LineSymbol K n) (u : K) (f : Charts K) :
+    lowerShear (fun a b => H.pairing a b) u f =
+      swapCharts (upperShear (fun a b => H.pairing a b) u (swapCharts f)) := by
   apply Prod.ext
   · funext x y
     by_cases hy : y = 0
@@ -214,6 +212,13 @@ theorem finiteTest_lowerShear (H : LineSymbol K n) (hn : (n : K) ≠ 0)
     · simp only [lowerShear,swapCharts,upperShear,dif_pos hy,div_eq_mul_inv]
       rw [H.skew (Units.mk0 y hy) x,Units.val_inv_eq_inv_val,inv_inv,mul_comm]
   · rfl
+
+theorem finiteTest_lowerShear (H : LineSymbol K n) (hn : (n : K) ≠ 0)
+    (hl : IsLocallyConstant (fun w : Kˣ × Kˣ => (H.pairing w.1 w.2 : ℂ)))
+    {f : Charts K} (gl : Glues (fun a b => H.pairing a b) f) (hf : finiteTest f) (u : K) :
+    finiteTest (lowerShear (fun a b => H.pairing a b) u f) := by
+  rw [lowerShear_eq_swap_upperShear]
+  exact finiteTest_swap (finiteTest_upperShear H hn hl (glues_swap H gl) (finiteTest_swap hf) u)
 
 theorem locallyConstant_norm_units {K : Type*} [NontriviallyNormedField K] [IsUltrametricDist K] :
     IsLocallyConstant (fun u : Kˣ => ‖u.val‖) := by
