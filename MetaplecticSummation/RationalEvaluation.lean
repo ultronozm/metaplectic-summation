@@ -222,7 +222,7 @@ theorem evaluation_pure_y (f : ∀ v, d.schwartz v) (hf) (p : RationalPoint F) (
     rw [finprod_mul_distrib (eventually_cofinite.mp hs) (eventually_cofinite.mp hY),show (∏ᶠ v, χ v) = 1 from hp,one_mul]
   · simp [localValue,hx]
 
-private theorem eventually_integral_component (u : Adeles F) :
+theorem eventually_integral_component (u : Adeles F) :
     ∀ᶠ w : HeightOneSpectrum (𝓞 F) in cofinite, ‖component u (.inr w)‖ ≤ 1 :=
   u.2.property.mono fun w hw => (Valued.toNormedField.norm_le_one_iff (x := u.2 w)).mpr
     ((HeightOneSpectrum.mem_adicCompletionIntegers (𝓞 F) F w).mp hw)

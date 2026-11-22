@@ -120,22 +120,30 @@ theorem arch_jacquet_fourier_of_integrable_chart (Φ : d.schwartz v)
       simp only [mul_assoc,integral_const_mul])
   simpa only [A,H,W,one_pow,one_mul,s,hat,dualWeight,mul_comm (d.kernelIntegral v _ c _) _] using h
 
+/-- The explicit Jacquet lift has the prescribed transformed weight for
+every choice of normalized auxiliary function. -/
+theorem jacquetLift_dual (v₀ : Place F) {W : Weight v₀} (hw : TestWeight v₀ W)
+    {β : LocalField F v₀ → ℂ} (hβ : d.IsJacquetLiftAuxiliary v₀ β) :
+    let Φ : d.schwartz v₀ := ⟨d.jacquetLift v₀ W β,Submodule.subset_span (Or.inl (hβ.2 W hw))⟩
+    d.jacquet v₀ (d.fourier v₀ Φ) = d.dualWeight v₀ W := by
+  intro Φ
+  have hJ : d.jacquet v₀ Φ = W := d.jacquet_jacquetLift v₀ W β hβ.1 (hβ.2 W hw)
+  have hi : Integrable (Function.uncurry Φ.val.1) ((d.lineMeasure v₀).prod (selfDual F d.character v₀)) :=
+    d.integrable_jacquetLift_chart v₀ hw β (hβ.2 W hw)
+  refine Eq.trans ?_ (congrArg (d.dualWeight v₀) hJ)
+  have htest : TestWeight v₀ (d.jacquet v₀ Φ) := hJ ▸ hw
+  cases v₀ with
+  | inl w => exact d.arch_jacquet_fourier_of_integrable_chart w Φ htest hi
+  | inr p => exact d.finite_jacquet_fourier_test p Φ htest
+
 /-- Every compactly supported test weight has a test lift on which the
 Jacquet transform is given by the explicit kernel, at all places. -/
 theorem exists_jacquet_lift_dual (v₀ : Place F) {W : Weight v₀} (hw : TestWeight v₀ W) :
     ∃ Φ : d.schwartz v₀, Φ.val ∈ d.testSet v₀ ∧ d.jacquet v₀ Φ = W ∧
       d.jacquet v₀ (d.fourier v₀ Φ) = d.dualWeight v₀ W := by
   obtain ⟨β,hβ,ht⟩ := d.exists_jacquetLift_auxiliary v₀
-  let Φ : d.schwartz v₀ := ⟨_,Submodule.subset_span (Or.inl (ht W hw))⟩
-  have hJ : d.jacquet v₀ Φ = W := d.jacquet_jacquetLift v₀ W β hβ (ht W hw)
-  refine ⟨Φ,ht W hw,hJ,?_⟩
-  have hi : Integrable (Function.uncurry Φ.val.1) ((d.lineMeasure v₀).prod (selfDual F d.character v₀)) :=
-    d.integrable_jacquetLift_chart v₀ hw β (ht W hw)
-  rw [← hJ]
-  have htest : TestWeight v₀ (d.jacquet v₀ Φ) := hJ ▸ hw
-  cases v₀ with
-  | inl w => exact d.arch_jacquet_fourier_of_integrable_chart w Φ htest hi
-  | inr p => exact d.finite_jacquet_fourier_test p Φ htest
+  exact ⟨_,ht W hw,d.jacquet_jacquetLift v₀ W β hβ (ht W hw),
+    d.jacquetLift_dual v₀ hw (β := β) ⟨hβ,ht⟩⟩
 
 /-- Remaining part of the archimedean shear estimate in the vertical region. -/
 theorem arch_integrableOn_shear_vertical (u : K) {g : d.Operators v} (hg : d.IsUpper v u g)

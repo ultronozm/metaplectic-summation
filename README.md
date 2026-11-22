@@ -67,7 +67,9 @@ products and rational evaluations all depend on these inputs.
 | [FiniteInversion](MetaplecticSummation/FiniteInversion.lean) | Composition of diagonal lifts, the metaplectic square formula from marginal and ordinary Fourier inversion, and bijectivity from the square |
 | [LocalParseval](MetaplecticSummation/LocalParseval.lean), [ArchimedeanInversion](MetaplecticSummation/ArchimedeanInversion.lean) | Polarization of the self-dual normalization and pointwise ordinary Fourier inversion for the chosen character at every infinite place |
 | [Inversion](MetaplecticSummation/Inversion.lean) | Theorem 7.1 assembled from the local marginal identities, ordinary inversion, and metaplectic Plancherel. Metaplectic Plancherel and the root-kernel integral formula are admitted |
-| [Jacquet](MetaplecticSummation/Jacquet.lean) | Jacquet integrals, the explicit dual weight (Proposition 10.8), and adelic summation with its power-class main term (Theorem 10.16) |
+| [LineMoments](MetaplecticSummation/LineMoments.lean) | Normalized test weights on local power classes, surjectivity of the weighted moment map, and products of tests isolating individual coefficient tuples |
+| [Jacquet/PowerAverage](MetaplecticSummation/Jacquet/PowerAverage.lean) | Power averages of Jacquet lifts, including vanishing for a zero moment vector, and the statement of the local leading-term formula |
+| [Jacquet/LineWeights](MetaplecticSummation/Jacquet/LineWeights.lean), [Jacquet](MetaplecticSummation/Jacquet.lean) | The explicit dual weight (Proposition 10.8), lifting and unfolding of both adelic sums, and the deduction of the line formula with its unique power-class coefficients (Theorem 10.16) |
 | [Jacquet/Kernel](MetaplecticSummation/Jacquet/Kernel.lean), [ArchimedeanFourierSchwartz](MetaplecticSummation/ArchimedeanFourierSchwartz.lean) | Schwartz–Bruhat regularity of the kernel in Proposition 10.8 and absolute convergence of its Fourier integral at every frequency |
 | [Jacquet/Weak](MetaplecticSummation/Jacquet/Weak.lean), [Jacquet/ArchWeak](MetaplecticSummation/Jacquet/ArchWeak.lean), [Jacquet/ShearRegion](MetaplecticSummation/Jacquet/ShearRegion.lean) | Weak and pointwise Jacquet identities, their finite-place proofs, and reduction at infinite places to the vertical part of the shear estimate |
 | [Jacquet/FiniteShear](MetaplecticSummation/Jacquet/FiniteShear.lean), [Jacquet/WeightIntegrability](MetaplecticSummation/Jacquet/WeightIntegrability.lean) | The finite-place shear estimate, decay and absolute integrability of Jacquet weights, and the Radon identity on a shear representative |
@@ -311,6 +313,19 @@ proof obligations, run `rg -n '\bsorry\b' MetaplecticSummation`.
 
 `lineSummation` chooses one family of coefficients for all test weights at a
 fixed set of places. Its outer sums run over nonzero field elements.
+At each number-field place a single power class supports a test with
+weighted integral one. Finite sums of these tests realize any vector of
+moments. Unfolding the Jacquet lifts and their transforms gives two
+absolutely convergent sums, each multilinear in the tests. If all moments
+vanish at one place, the lift and its transform have zero leading terms
+there. The Poisson vanishing criterion applied to upper unipotent translates
+then identifies their Fourier coefficients. The difference of the two sums
+therefore descends to a multilinear form on the moment vectors. Evaluation
+on products of the normalized tests determines its coefficients uniquely.
+The remaining project admissions used by this deduction are the normalized
+Hilbert symbol, the local Fourier endomorphism, Proposition B.6 on the theta
+difference, Fourier coefficient unfolding, and the local formula for the
+leading term of a transformed test.
 For any covering degree, the original summand has finite support on those
 elements. The local tests at S give bounded radii, the basic factors outside S
 vanish on nonintegral elements, and the rational box count applies.
@@ -402,7 +417,7 @@ formula then gives inversion and bijectivity on that image.
 The untwisted S-integer summation formula follows in Lean from the adelic
 line formula, the identity for the transformed basic Jacquet weight, and
 `product_basic`. Lean now derives the basic-weight identity from Corollary 6.5
-by changing the line variable. The adelic line formula remains admitted.
+by changing the line variable.
 Both S-integer series converge absolutely by the summability in the adelic
 line formula. The nonintegral terms vanish, and the same power-class coefficients
 from the adelic formula occur in the S-integer formula.
@@ -411,7 +426,7 @@ With empty twist set, `mainTerm` forms both the coefficients and the
 multiplicative measures using the scaled character. With nonempty twist set,
 Lean proves that each power-class moment vanishes by translating by an n-th
 power of a local unit on which the twisting character is nontrivial. This
-gives the absolutely convergent adelic identity from the admitted line formula.
+gives the absolutely convergent adelic identity from the adelic line formula.
 The local twisted-vector evaluation now follows from unit Gauss integrals.
 A unit detecting the character gives vanishing below the conductor shell,
 and an additive period gives vanishing above it. Parseval fixes the absolute
