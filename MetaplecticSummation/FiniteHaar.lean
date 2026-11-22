@@ -1,6 +1,6 @@
 import MetaplecticSummation.Arithmetic
 import MetaplecticSummation.LineMeasures
-import MetaplecticSummation.FiniteCompletionTopology
+import MetaplecticSummation.FinitePlaceNorm
 
 /-! Haar scaling on a finite completion. The count of cosets follows
 GroundTheory.GlobalFields.TateThesis.FiniteAdeleScaling.
@@ -57,27 +57,6 @@ theorem measure_eq_card_mul_measure_ker {A Q : Type*} [AddGroup A] [TopologicalS
   simp only [measure_vadd, Finset.sum_const, Finset.card_univ, nsmul_eq_mul, Nat.card_eq_fintype_card]
 
 variable {K : Type*} [Field K] [NumberField K] (v : HeightOneSpectrum (𝓞 K))
-
-private theorem norm_uniformizer {π : v.adicCompletionIntegers K} (hπ : Irreducible π) :
-    ‖(π : v.adicCompletion K)‖₊ = (v.asIdeal.absNorm : ℝ≥0)⁻¹ := by
-  have hu := Valuation.isUniformizer_of_maximalIdeal_eq_span
-    (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰)
-    ((IsDiscreteValuationRing.irreducible_iff_uniformizer π).1 hπ)
-  have hv : Valued.v (π : v.adicCompletion K) = WithZero.exp (-1 : ℤ) := by
-    rw [hu.val, Valuation.IsRankOneDiscrete.generator_eq_exp_neg_one_of_surjective
-      (valuedAdicCompletion_surjective K v)]
-    rfl
-  apply NNReal.eq
-  rw [coe_nnnorm, NumberField.FinitePlace.norm_def, hv]
-  rw [WithZeroMulInt.toNNReal_neg_apply _ (WithZero.exp_ne_zero (a := (-1 : ℤ)))]
-  change (↑((v.asIdeal.absNorm : ℝ≥0) ^ (-1 : ℤ)) : ℝ) = _
-  simp
-
-theorem exists_norm_uniformizer :
-    ∃ π : (v.adicCompletion K)ˣ, ‖π.val‖ = (v.asIdeal.absNorm : ℝ)⁻¹ := by
-  obtain ⟨π, hπ⟩ := IsDiscreteValuationRing.exists_irreducible (v.adicCompletionIntegers K)
-  have hn : (π : v.adicCompletion K) ≠ 0 := fun h => hπ.ne_zero (Subtype.ext h)
-  exact ⟨Units.mk0 _ hn, congrArg NNReal.toReal (norm_uniformizer v hπ)⟩
 
 private theorem uniformizer_smul_integers {π : v.adicCompletionIntegers K} (hπ : Irreducible π)
     (h₀ : (π : v.adicCompletion K) ≠ 0) :
@@ -163,15 +142,6 @@ theorem haarChar_eq_nnnorm (z : (v.adicCompletion K)ˣ) :
   · exact hint z hz
   · have h := hint z⁻¹ (by rwa [Units.val_inv_eq_inv_val])
     rwa [map_inv, Units.val_inv_eq_inv_val, nnnorm_inv, inv_inj] at h
-
-/-- The additive group has no isolated points. An inverse uniformizer has norm q. -/
-abbrev nontriviallyNormedCompletion : NontriviallyNormedField (v.adicCompletion K) where
-  non_trivial := by
-    obtain ⟨π, hp⟩ := IsDiscreteValuationRing.exists_irreducible (v.adicCompletionIntegers K)
-    refine ⟨(π : v.adicCompletion K)⁻¹, ?_⟩
-    have h := congrArg NNReal.toReal (norm_uniformizer v hp)
-    rw [norm_inv, show ‖(π : v.adicCompletion K)‖ = (v.asIdeal.absNorm : ℝ)⁻¹ from h, inv_inv]
-    exact_mod_cast NumberField.HeightOneSpectrum.one_lt_absNorm v
 
 end MetaplecticPoisson.FinitePlace
 

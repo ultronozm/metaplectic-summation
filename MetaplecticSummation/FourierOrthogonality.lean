@@ -1,4 +1,4 @@
-import MetaplecticSummation.Arithmetic
+import MetaplecticSummation.Places
 import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.Tactic.LinearCombination
 

@@ -62,6 +62,7 @@ products and rational evaluations all depend on these inputs.
 | [ArchimedeanShears](MetaplecticSummation/ArchimedeanShears.lean) | Preservation of the real and complex test spaces by both shear operators |
 | [Cover](MetaplecticSummation/Cover.lean) | Construction of the unique upper and lower shear automorphisms of the full local Schwartz space, equivariance, and the statement of the Kubota projection |
 | [FourierOrthogonality](MetaplecticSummation/FourierOrthogonality.lean) | Fourier transform of additive subgroup indicators and the volume of the annihilator of a compact open subgroup |
+| [FinitePlancherel](MetaplecticSummation/FinitePlancherel.lean), [DualBallVolumes](MetaplecticSummation/DualBallVolumes.lean) | Haar normalization by dual balls, Fourier inversion with frequency cutoffs and Plancherel on every continuous compactly supported test at finite places |
 | [FiniteFourierInversion](MetaplecticSummation/FiniteFourierInversion.lean) | Ordinary Fourier inversion on finite completions with the chosen self-dual measure, and the affine pairing from Appendix A |
 | [FiniteInversion](MetaplecticSummation/FiniteInversion.lean) | Composition of diagonal lifts, the metaplectic square formula from marginal and ordinary Fourier inversion, and bijectivity from the square |
 | [LocalParseval](MetaplecticSummation/LocalParseval.lean), [ArchimedeanInversion](MetaplecticSummation/ArchimedeanInversion.lean) | Polarization of the self-dual normalization and pointwise ordinary Fourier inversion for the chosen character at every infinite place |
@@ -131,12 +132,15 @@ with an invertible real linear change of frequency. The ordinary integral
 agrees almost everywhere with the L² Fourier transform for functions in
 L¹ ∩ L². Rescaling Euclidean volume by the inverse square root of its
 pushforward Haar factor gives Plancherel for the chosen character. Transport
-to the completion proves `exists_arch_selfDual`. The finite-place existence
-theorem `exists_finite_selfDual` remains admitted. At finite places,
-[`exists_haar_finite_test_inversion`](MetaplecticSummation/FiniteFourierInversion.lean)
-constructs a Haar measure and proves pointwise Fourier inversion on locally
-constant compactly supported functions. Extending Plancherel to all continuous
-compactly supported tests remains open.
+to the completion proves `exists_arch_selfDual`. At finite places, scale Haar measure so that each
+ball and its character annihilator have reciprocal volumes. Integrating
+the ordinary Fourier transform of a continuous compactly supported function
+over increasing balls then converges to its value at zero. Apply this
+to the convolution of a test with its reflected conjugate. Its transform is
+the squared modulus of the original transform, so monotone convergence
+gives Plancherel. This proves `exists_finite_selfDual` for the given character.
+The existence and uniqueness of the self-dual measures at all number-field
+places now use only standard Lean axioms.
 
 At infinite places `arch_hat_hat_of_integrable` proves pointwise ordinary
 Fourier inversion for a continuous integrable function with integrable transform.
@@ -225,8 +229,8 @@ and lower shears preserve finite-place test sections, so the equality extends
 to both charts. Diagonal covariance gives the square on transforms of test sections as
 well. Absolute convergence gives linearity on their span, and the square
 formula gives bijectivity. This proves Theorem 7.1(i) on the entire tame
-Schwartz space using two admitted project results, the normalized Hilbert
-symbol family and the self-dual measure. The argument applies at a wild
+Schwartz space using one admitted project result, the normalized Hilbert
+symbol family. The argument applies at a wild
 place under the same radical condition.
 
 For a transformed test section the density is an explicit scalar multiple
@@ -326,8 +330,7 @@ field element, including integral moduli divisible by repeated n-th powers.
 
 The residue-ring isomorphism uses only standard Lean axioms. The proof of the
 ordinary Gauss-sum factorization depends on the admitted characterization of
-the Hilbert symbols. The basic Jacquet formulas additionally use the admitted existence of
-the finite-place self-dual measure.
+the Hilbert symbols. The basic Jacquet evaluation uses this same arithmetic input.
 
 At a tame finite place, the explicit charts for the basic vector satisfy gluing
 and invariance under integral shears. With unramified character the integral
@@ -375,8 +378,7 @@ supported away from zero give the same pointwise identity for sections
 with integrable X-chart. In particular, the explicit lift of every test
 weight W satisfies both $J\Phi = W$ and $J(\mathcal F\Phi) = W^\vee$ at every
 place, with the explicit kernel formula for $W^\vee$. The finite-place formulas and the all-place lift
-use the admitted existence of the normalized Hilbert symbols and of
-the finite-place self-dual measure, together with stability of the local Schwartz space under
+use the admitted existence of the normalized Hilbert symbols, together with stability of the local Schwartz space under
 the defining Fourier integral.
 
 For an arbitrary section at a real or complex place, the weak and pointwise
