@@ -1,4 +1,4 @@
-import MetaplecticSummation.Jacquet
+import MetaplecticSummation.Jacquet.Local
 import MetaplecticSummation.LocalGrowth
 
 /-! Absolute convergence and linearity of the Jacquet integral on the local Schwartz space. -/

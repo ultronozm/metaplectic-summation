@@ -66,6 +66,7 @@ products and rational evaluations all depend on these inputs.
 | [Inversion](MetaplecticSummation/Inversion.lean) | Theorem 7.1 assembled from the local marginal identities, ordinary inversion, and metaplectic Plancherel. Metaplectic Plancherel and the root-kernel integral formula are admitted |
 | [Jacquet](MetaplecticSummation/Jacquet.lean) | Jacquet integrals, the explicit dual weight (Proposition 10.8), and adelic summation with its power-class main term (Theorem 10.16) |
 | [Jacquet/Kernel](MetaplecticSummation/Jacquet/Kernel.lean), [ArchimedeanFourierSchwartz](MetaplecticSummation/ArchimedeanFourierSchwartz.lean) | Schwartz–Bruhat regularity of the kernel in Proposition 10.8 and absolute convergence of its Fourier integral at every frequency |
+| [Jacquet/Weak](MetaplecticSummation/Jacquet/Weak.lean), [Jacquet/ArchWeak](MetaplecticSummation/Jacquet/ArchWeak.lean), [Jacquet/ShearRegion](MetaplecticSummation/Jacquet/ShearRegion.lean) | Weak and pointwise Jacquet identities, their finite-place proofs, and reduction at infinite places to the vertical part of the shear estimate |
 | [Jacquet/FiniteShear](MetaplecticSummation/Jacquet/FiniteShear.lean), [Jacquet/WeightIntegrability](MetaplecticSummation/Jacquet/WeightIntegrability.lean) | The finite-place shear estimate, decay and absolute integrability of Jacquet weights, and the Radon identity on a shear representative |
 | [Jacquet/Convergence](MetaplecticSummation/Jacquet/Convergence.lean), [Jacquet/Lines](MetaplecticSummation/Jacquet/Lines.lean) | Absolute convergence, continuity, unipotent equivariance, and the fixed-parameter Radon identity for integrable X-charts |
 | [SArithmetic](MetaplecticSummation/SArithmetic.lean) | Finiteness of residue rings, power residue symbols, independence of Gauss sums from residue representatives, and the divisor sum over S-integers |
@@ -342,11 +343,27 @@ extensions give uniform vanishing on a cone about the vertical axis.
 Integration over multiplicative annuli then proves absolute integrability
 of the regularized X-chart and of every Jacquet weight.
 
-The pointwise identification of J(ℱΦ) with the explicit dual weight in
-Proposition 10.8 remains admitted in `jacquet_fourier_test`. Applied to
-a difference with zero Jacquet integral, it gives descent to the full
-Jacquet image. The local square formula then gives inversion and bijectivity
-on that image.
+The weak Jacquet identity follows for any section whose X-chart is
+absolutely integrable for d×x dy. At every finite place, including places
+dividing n, the shear representative gives the identity for every section.
+Testing on a compact open ball around one gives Proposition 10.8 for a
+compactly supported test weight. At an infinite place, smooth tests
+supported away from zero give the same pointwise identity for sections
+with integrable X-chart. In particular, the explicit lift of every test
+weight W satisfies both $J\Phi = W$ and $J(\mathcal F\Phi) = W^\vee$ at every
+place, with the explicit kernel formula for $W^\vee$. The finite-place formulas and the all-place lift
+use the admitted existence of the normalized Hilbert symbols and of
+the self-dual measure, together with stability of the local Schwartz space under
+the defining Fourier integral.
+
+For an arbitrary section at a real or complex place, the weak and pointwise
+formulas still use `arch_integrableOn_shear_vertical`. This is the open
+estimate for the third shear difference on |x|ᵥ < 1 and ‖y‖ > ‖x‖.
+The chart growth bound proves absolute integrability on the complementary
+region. Together these give an integrable representative with the same
+two Jacquet weights. Applied to a difference with zero Jacquet integral,
+Proposition 10.8 gives descent to the full Jacquet image. The local square
+formula then gives inversion and bijectivity on that image.
 
 The untwisted S-integer summation formula follows in Lean from the adelic
 line formula, the identity for the transformed basic Jacquet weight, and

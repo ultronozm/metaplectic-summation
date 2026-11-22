@@ -1,5 +1,6 @@
 import MetaplecticSummation.AdeleLattice
 import MetaplecticSummation.MarginalDifference
+import MetaplecticSummation.Jacquet
 
 noncomputable section
 namespace MetaplecticPoisson.Datum
