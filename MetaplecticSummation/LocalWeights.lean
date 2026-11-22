@@ -1,0 +1,167 @@
+import MetaplecticSummation.Gauss
+import Mathlib.Analysis.SpecialFunctions.Pow.Complex
+
+noncomputable section
+namespace MetaplecticPoisson.Datum
+open NumberField MeasureTheory
+open scoped ComplexConjugate
+open Classical
+variable {F : Type} [Field F] [NumberField F] {n : ℕ} [NeZero n] (d : Datum F n)
+
+def jacquetSpace (v : Place F) := Set.range (d.jacquet v)
+
+theorem jacquet_transform_descends (v : Place F) (Φ Ψ : d.schwartz v)
+    (h : d.jacquet v Φ = d.jacquet v Ψ) :
+    d.jacquet v (d.fourier v Φ) = d.jacquet v (d.fourier v Ψ) := by sorry
+
+theorem jacquet_inversion (v : Place F) (Φ : d.schwartz v) (c : (LocalField F v)ˣ) :
+    let e : (LocalField F v)ˣ := (-1) ^ (n+1)
+    d.jacquet v (d.fourier v (d.fourier v Φ)) c = d.symbol v (-c) e * d.jacquet v Φ (e*c) := by sorry
+
+theorem dual_dilation (v : Place F) (W : Weight v) (hw : TestWeight v W)
+    (X c : (LocalField F v)ˣ) :
+    d.dualWeight v (fun x => W (x/X)) c =
+      d.symbol v X (-c) * d.dualWeight v (fun x => W x / d.symbol v x X) (X*c) := by sorry
+
+theorem dual_scaled (v : Place F) (W : Weight v) (hw : TestWeight v W) (b : Fˣ)
+    (c : (LocalField F v)ˣ) :
+    (d.scaled b).dualWeight v W c =
+      d.dualWeight v (fun x => W x * d.symbol v x (atPlace v b)) (atPlace v b ^ (n-1) * c) := by sorry
+
+def mellin (v : Place F) (W ω : Weight v) (s : ℂ) :=
+  d.lineIntegral v fun x => W x * ω x * (modulus F v x : ℂ) ^ s
+
+/-- Tate's normalization on the open strip. Smooth compact tests supported
+away from zero suffice to determine the scalar at each point of the strip. -/
+def TateEquation (v : Place F) (ω : Weight v) (s γ : ℂ) : Prop :=
+  ∀ g : Weight v, TestWeight v g →
+    let ĝ : Weight v := fun y => d.lineIntegral v fun x =>
+      (modulus F v x : ℂ) * g x * d.character.localValue F v ((x : LocalField F v) * y)
+    d.mellin v ĝ (fun x => (ω x)⁻¹) (1-s) = γ * d.mellin v g ω s
+
+/-- Proposition 10.20, with both gamma factors specified by Tate's equation. -/
+theorem mellin_dual (v : Place F) (W : Weight v) (hw : TestWeight v W) (β : (LocalField F v)ˣ)
+    (support : ∀ x, W x ≠ 0 → ∃ u : (LocalField F v)ˣ, x = β * u ^ n)
+    (ω : (LocalField F v)ˣ →* Circle) (hω : Continuous ω) (s : ℂ)
+    (lo : -(1/(n : ℝ)) < s.re) (hi : s.re < 0) :
+    let η : Weight v := fun x => (ω x : ℂ) * d.symbol v β x
+    ∃ γ₁ γ₂ : ℂ, d.TateEquation v (fun x => ((ω x : ℂ)^n)⁻¹) (-(n : ℂ)*s) γ₁ ∧
+      d.TateEquation v η (1+s) γ₂ ∧
+      d.mellin v (d.dualWeight v W) (fun x => ω x) s =
+        (Real.sqrt (modulus F v (n : LocalField F v)) : ℂ)⁻¹ * η (-1) * γ₁ * γ₂ *
+          d.mellin v W (fun x => (ω x : ℂ)⁻¹) (-s) := by sorry
+
+def unitGauss (p : Prime F) (θ : Weight (.inr p : Place F)) (α : LocalField F (.inr p)) :=
+  d.lineIntegral (.inr p) fun x => if ‖(x : LocalField F (.inr p))‖ = 1 then
+    θ x * d.character.localValue F (.inr p) (α*x) else 0
+
+theorem twistedVector (p : Prime F) (hp : p.asIdeal.absNorm.Coprime n) (hψ : d.UnramifiedAt (.inr p))
+    (χ : UnitChar p) (hχ : Continuous χ) (e : ℕ) (he : 0 < e)
+    (cond : IsLeast {k | trivialAtLevel (χ^n) k} e) (c : (LocalField F (.inr p))ˣ) :
+    let q : ℝ := p.asIdeal.absNorm
+    let V := d.dualWeight (.inr p) (charWeight χ) c
+    (‖(c : LocalField F (.inr p))‖ ≠ q ^ ((n-1)*e) → V = 0) ∧
+    (‖(c : LocalField F (.inr p))‖ = q ^ ((n-1)*e) →
+      ‖V‖ = 1 ∧ ∀ t : (LocalField F (.inr p))ˣ, ‖(t : LocalField F (.inr p))‖ = q ^ e →
+        V = (q : ℂ)^e * d.unitGauss p (charWeight (χ ^ n)) t *
+          d.unitGauss p (fun x => conj (charWeight χ x) * d.symbol (.inr p) c x)
+            (-((t : LocalField F (.inr p)) ^ n) / c)) := by sorry
+
+theorem epsilon_gauss {S : Finset (Place F)} (h : d.ClassicalSetting S)
+    (f b : NonzeroInteger S) (T : Twist (n := n) S f) (hb : IsCoprime b.val f.val) :
+    d.epsilon T (fieldUnit b) = ∏ p : T.primes,
+      let v : Place F := .inr p.val
+      let f' := atPlace v (fieldUnit f)
+      (p.val.asIdeal.absNorm : ℂ) ^ T.exponent p *
+        d.unitGauss p.val (charWeight (T.character p ^ n)) ((f' : LocalField F v)⁻¹) *
+        d.unitGauss p.val (fun x => conj (charWeight (T.character p) x) * d.symbol v f' x)
+          (-(diagonal F v (fieldUnit b)) / f') := by sorry
+
+theorem product_basic {S : Finset (Place F)} (h : d.ClassicalSetting S) (b : NonzeroInteger S)
+    (c : Fˣ) :
+    let db := d.scaled (fieldUnit b)
+    (∏ᶠ v : {v : Place F // v ∉ S}, db.jacquet v.val (db.basic v.val) (atPlace v.val c)) =
+      if hc : (c : F) ∈ SIntegers S then
+        (Real.sqrt (sNorm S (fieldUnit b)) : ℂ)⁻¹ * d.normalizedGauss S b.val ⟨_,hc⟩ else 0 := by
+  sorry
+
+private def residueTerm (p : Prime F) (c : (LocalField F (.inr p))ˣ)
+    (a : LocalField F (.inr p)) : ℂ := by
+  classical
+  exact if ha : a ≠ 0 then d.symbol (.inr p) c (Units.mk0 a ha) *
+    d.character.localValue F (.inr p) (-a / (c : LocalField F (.inr p))) else 0
+
+/-- The local Gauss–Ramanujan sum of §10.3 with the negative additive phase. -/
+def localGauss (p : Prime F) (c : (LocalField F (.inr p))ˣ) : ℂ := by
+  classical
+  let O := p.adicCompletionIntegers F
+  exact if ‖(c : LocalField F (.inr p))‖ = 1 then 1 else
+    if hc : (c : LocalField F (.inr p)) ∈ O then
+      let c₀ : O := ⟨_,hc⟩
+      ∑ᶠ u : (O ⧸ Ideal.span {c₀})ˣ,
+        let a : O := Quotient.out (u : O ⧸ Ideal.span {c₀})
+        d.residueTerm p c a.val
+    else 0
+
+theorem jacquet_basic (p : Prime F) (hp : p.asIdeal.absNorm.Coprime n)
+    (hψ : ∀ x : LocalField F (.inr p), ‖x‖ ≤ 1 → d.character.localValue F (.inr p) x = 1)
+    (π c : (LocalField F (.inr p))ˣ) (hπ : ‖(π : LocalField F (.inr p))‖ = (p.asIdeal.absNorm : ℝ)⁻¹) :
+    let v : Place F := .inr p
+    let vol := (selfDual F d.character v).real {x | ‖x‖ ≤ 1}
+    d.jacquet v (d.basic v) c = (vol : ℂ) * (modulus F v c : ℂ) *
+      ∑' k : ℕ, (p.asIdeal.absNorm : ℂ)^((n-1)*k) * d.localGauss p (c / π^(n*k)) := by sorry
+
+theorem basic_dual (p : Prime F) (hp : p.asIdeal.absNorm.Coprime n)
+    (b : (LocalField F (.inr p))ˣ) (hb : ‖(b : LocalField F (.inr p))‖ ≤ 1)
+    (conductor : ∀ x : LocalField F (.inr p), (∀ y : LocalField F (.inr p), ‖y‖ ≤ 1 →
+      d.character.localValue F (.inr p) (x*y) = 1) ↔ ‖x * b‖ ≤ 1)
+    (c : (LocalField F (.inr p))ˣ) :
+    d.jacquet (.inr p) (d.fourier (.inr p) (d.basic (.inr p))) c =
+      d.jacquet (.inr p) (d.basic (.inr p)) (b^n * c) := by sorry
+
+/-- Proposition 10.27, with valuations written as powers of the residue cardinality. -/
+theorem untwistedVector (p : Prime F) (hp : p.asIdeal.absNorm.Coprime n) (hψ : d.UnramifiedAt (.inr p))
+    (a c : (LocalField F (.inr p))ˣ) (i j : ℤ)
+    (ha : ‖(a : LocalField F (.inr p))‖ = (p.asIdeal.absNorm : ℝ)^(-i))
+    (hc : ‖(c : LocalField F (.inr p))‖ = (p.asIdeal.absNorm : ℝ)^(-j)) :
+    let v : Place F := .inr p
+    let q : ℝ := p.asIdeal.absNorm
+    let W : Weight v := fun x => if ‖(x : LocalField F v)‖ = 1 then d.symbol v a x else 0
+    let shell := fun U : Set (LocalField F v) =>
+      ∫ t in U, d.character.localValue F v t ∂(selfDual F d.character v)
+    (i ≡ j [ZMOD n] → d.dualWeight v W c =
+      (1 - (q : ℂ)⁻¹) * shell {t | ‖t‖ ^ n ≤ ‖(c : LocalField F v)‖} -
+      (q : ℂ)⁻¹ * shell {t | ‖t‖ ^ n = q * ‖(c : LocalField F v)‖}) ∧
+    (¬ i ≡ j [ZMOD n] →
+      (¬ (n : ℤ) ∣ j-1 → d.dualWeight v W c = 0) ∧
+      ∀ k : ℤ, j = n*k+1 → ∀ t : (LocalField F v)ˣ, ‖(t : LocalField F v)‖ = q^(-k) →
+        d.dualWeight v W c = d.unitGauss p (fun x => d.symbol v (c/a) x)
+          (-((t : LocalField F v)^n) / c) * shell {y | ‖y‖ = q^(-k)}) := by sorry
+
+def dilateCharts {K : Type} [Field K] (a : Kˣ) (f : Charts K) : Charts K :=
+  (fun x y => f.1 (a*x) (a*y), fun x y => f.2 (a*x) (a*y))
+
+def powerAverage (v : Place F) (f : Charts (LocalField F v)) : Charts (LocalField F v) :=
+  let avg := fun g : Weight v => d.lineIntegral v fun x =>
+    if ∃ u : (LocalField F v)ˣ, x = u^n then (modulus F v x ^ (1+1/(n : ℝ)) : ℝ) * g x else 0
+  (fun x y => avg fun a => (dilateCharts a f).1 x y,
+   fun x y => avg fun a => (dilateCharts a f).2 x y)
+
+def intertwiner (v : Place F) (f : Charts (LocalField F v)) :=
+  radon n (d.symbol v) (modulus F v) (selfDual F d.character v) f 1
+
+theorem leading_fourier_test (v : Place F) (Φ : d.schwartz v) (h : Φ.val ∈ d.testSet v) :
+    d.leading v (d.fourier v Φ) =
+      ((n : ℂ) / ((modulus F v (n : LocalField F v) ^ (3/2 : ℝ) : ℝ) : ℂ)) •
+        d.intertwiner v (d.powerAverage v Φ.val) := by sorry
+
+theorem finite_boundary_image (p : Prime F) (g : Charts (LocalField F (.inr p))) :
+    let v : Place F := .inr p
+    g ∈ LinearMap.range (d.leading v) ↔ ∃ f : Charts (LocalField F v),
+      Glues (d.symbol v) f ∧ IsLocallyConstant (fun z : (LocalField F v)ˣ × LocalField F v => f.1 z.1 z.2) ∧
+      IsLocallyConstant (fun z : LocalField F v × (LocalField F v)ˣ => f.2 z.1 z.2) ∧
+      (∀ u : (LocalField F v)ˣ, dilateCharts (u^n) f =
+        ((modulus F v (u^n : (LocalField F v)ˣ) ^ (-1-1/(n : ℝ)) : ℝ) : ℂ) • f) ∧
+      g = d.intertwiner v f := by sorry
+
+end MetaplecticPoisson.Datum

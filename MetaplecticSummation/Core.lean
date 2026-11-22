@@ -22,20 +22,25 @@ def Glues (h : Kˣ → Kˣ → ℂ) (f : Charts K) : Prop :=
 section Local
 variable [MeasurableSpace K]
 
-/-- The character, Hilbert symbol, normalized modulus and self-dual measure
-are supplied in complex-valued, complex-valued, real and measure form.
-The missing point on each integration line is assigned value zero. -/
-def transform (n : ℕ) (ψ : K → ℂ) (h : Kˣ → Kˣ → ℂ) (modulus : K → ℝ)
-    (dx : Measure K) (f : Charts K) : Charts K := by
+/-- The two line integrals at determinant t^n (§4.1). -/
+def radon (n : ℕ) (h : Kˣ → Kˣ → ℂ) (modulus : K → ℝ)
+    (dx : Measure K) (f : Charts K) (t : K) : Charts K := by
   classical
-  let c : ℂ := (Real.sqrt (modulus (n : K)))⁻¹
   exact
-    (fun u v => c * ∫ t, ψ t * ((∫ x, if hx : x ≠ 0 then
+    (fun u v => (∫ x, if hx : x ≠ 0 then
         f.1 (Units.mk0 x hx) ((x * v - t ^ n) / (u : K)) * h (Units.mk0 x hx) (-u)
-        else 0 ∂dx) / (modulus u : ℂ)) ∂dx,
-     fun u v => c * ∫ t, ψ t * ((∫ y, if hy : y ≠ 0 then
+        else 0 ∂dx) / (modulus u : ℂ),
+     fun u v => (∫ y, if hy : y ≠ 0 then
         f.2 ((u * y + t ^ n) / (v : K)) (Units.mk0 y hy) *
-          h (Units.mk0 y hy) v * h (-1) v else 0 ∂dx) / (modulus v : ℂ)) ∂dx)
+          h (Units.mk0 y hy) v * h (-1) v else 0 ∂dx) / (modulus v : ℂ))
+
+/-- Definition 4.4. The outer Fourier integral uses the same self-dual measure. -/
+def transform (n : ℕ) (ψ : K → ℂ) (h : Kˣ → Kˣ → ℂ) (modulus : K → ℝ)
+    (dx : Measure K) (f : Charts K) : Charts K :=
+  let c : ℂ := (Real.sqrt (modulus (n : K)))⁻¹
+  let R := radon n h modulus dx f
+  (fun u v => c * ∫ t, ψ t * (R t).1 u v ∂dx,
+   fun u v => c * ∫ t, ψ t * (R t).2 u v ∂dx)
 
 end Local
 

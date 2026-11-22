@@ -1,9 +1,11 @@
 # Metaplectic summation
 
 Lean statements accompanying the number-field case of *A Schwartz space for the
-n-fold cover of SL₂*. The entry point is
+n-fold cover of SL₂*. The Poisson formula is stated in
 [`MetaplecticPoisson.Datum.poisson`](MetaplecticSummation/Poisson.lean),
-Theorem 9.1. Open the project with Lean v4.32.2 and run `lake build`.
+Theorem 9.1. For the global Gauss-sum formulas, start with
+[`twistedGaussSummation`, `quadraticDual`, and `sextic_to_quadratic`](MetaplecticSummation/Gauss.lean).
+Open the project with Lean v4.32.2 and run `lake build`.
 
 The inputs are a number field, a positive cover degree, a primitive root, an
 embedding of its group of roots of unity in the complex units, and a nontrivial
@@ -17,6 +19,11 @@ products and rational evaluations all depend on these inputs.
 | [Core](MetaplecticSummation/Core.lean) | The two chart integrals in Definition 4.4, normalized ray limits and maps of restricted tensor products |
 | [Schwartz](MetaplecticSummation/Schwartz.lean) | Local test functions, the span of test functions and their transforms, and the good-place basic vector |
 | [Poisson](MetaplecticSummation/Poisson.lean) | The adelic spaces and maps, rational evaluation, Theorem 9.1, Corollary 9.2 and the degree-one boundary value |
+| [Inversion](MetaplecticSummation/Inversion.lean) | The root kernel, the local cover acting on Schwartz functions, Fourier inversion, equivariance and Plancherel (Theorem 7.1) |
+| [Jacquet](MetaplecticSummation/Jacquet.lean) | Jacquet integrals, the explicit dual weight (Proposition 10.8), and adelic summation with its power-class main term (Theorem 10.16) |
+| [Gauss](MetaplecticSummation/Gauss.lean) | Power residue symbols, Gauss sums and their divisor sums over S-integers, the twisted formula (Theorem 10.34), and quadratic duals (Corollary 10.40) |
+| [LocalWeights](MetaplecticSummation/LocalWeights.lean) | Mellin factors, transforms of basic and character weights, the Gauss-sum expression for ε, and the intertwining operator on leading terms |
+| [FourierCoefficients](MetaplecticSummation/FourierCoefficients.lean) | Unfolding at frequencies zero and one, the two local marginal identities, Poisson on power classes and the constant-term identity |
 
 ## Conventions and proof status
 
@@ -37,4 +44,19 @@ images** of the leading-term maps.
 
 The main theorem and the arithmetic and analytic inputs still have `sorry`
 proofs. Corollary 9.2 is deduced from Theorem 9.1 in Lean. To list the current
-proof obligations, run `rg -n 'by sorry' MetaplecticSummation`.
+proof obligations, run `rg -n '\bsorry\b' MetaplecticSummation`.
+
+
+## Reading the Gauss-sum formulas
+
+`lineSummation` chooses one family of coefficients for all test weights at a
+fixed set of places. Its outer sums run over nonzero field elements.
+`twistedGaussSummation` assumes the S-integers form a PID and sums over their
+nonzero **elements**. Only the inner divisor sum in `normalizedGauss` runs over
+associates. With empty twist set, `mainTerm` forms both the coefficients and the
+multiplicative measures using the scaled character. With nonempty twist set,
+the dual sum retains both residue symbols.
+
+The scope is the principal formulas over number fields and their completions.
+The local estimates, illustrative examples and intermediate proof lemmas do
+not have individual Lean statements throughout.
