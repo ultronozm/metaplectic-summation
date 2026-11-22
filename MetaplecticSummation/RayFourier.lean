@@ -134,5 +134,8 @@ theorem transform_pow_ray (v : Place F) (f : Charts (LocalField F v)) (u : (Loca
   · intro a b
     exact scale _ _ (fun t => (H.radon_pow_ray _ (modulus_pow_mul v) dx f u t).2 a b)
 
+def dilateCharts {K : Type} [Field K] (a : Kˣ) (f : Charts K) : Charts K :=
+  (fun x y => f.1 (a*x) (a*y), fun x y => f.2 (a*x) (a*y))
+
 end Datum
 end MetaplecticPoisson

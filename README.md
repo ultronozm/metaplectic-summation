@@ -53,7 +53,13 @@ products and rational evaluations all depend on these inputs.
 | [SArithmetic](MetaplecticSummation/SArithmetic.lean) | Finiteness of residue rings, power residue symbols, independence of Gauss sums from residue representatives, and the divisor sum over S-integers |
 | [Gauss/Setup](MetaplecticSummation/Gauss/Setup.lean) | Classical arithmetic hypotheses, twists, scaling the additive character, and its conductor |
 | [Gauss](MetaplecticSummation/Gauss.lean) | Deduction of the untwisted S-integer identity from adelic line summation, the twisted formula (Theorem 10.34), and quadratic duals (Corollary 10.40) |
-| [BasicWeights](MetaplecticSummation/BasicWeights.lean) | The self-dual volume of the local integers from the conductor, the basic Jacquet weight at units and nonintegral arguments, and vanishing of the product outside S for nonintegral moduli |
+| [ConductorMeasure](MetaplecticSummation/ConductorMeasure.lean) | Existence of finite conductor parameters, self-dual volumes, and Fourier integrals over the local integers |
+| [BasicShears](MetaplecticSummation/BasicShears.lean) | Gluing and integral shear invariance of the explicit basic vector, and determination of an invariant section by its vertical axis |
+| [BasicShells](MetaplecticSummation/BasicShells.lean) | The basic-vector marginal on every nonzero vertical line (Lemma A.5) |
+| [BasicFixed](MetaplecticSummation/BasicFixed.lean) | Fourier invariance of the raw unramified basic vector (Proposition 6.3(i)) |
+| [TransformScaling](MetaplecticSummation/TransformScaling.lean) | The local integral transform under a change of the global additive character |
+| [BasicConductor](MetaplecticSummation/BasicConductor.lean) | The explicit transform of the basic vector at a tame finite place with a prescribed local conductor (Corollary 6.5) |
+| [BasicWeights](MetaplecticSummation/BasicWeights.lean) | The basic Jacquet weight at units and nonintegral arguments, vanishing outside S for nonintegral moduli, and the transformed basic Jacquet weight at general conductor |
 | [LocalGauss](MetaplecticSummation/LocalGauss.lean) | Local residue rings, constancy of the Gauss phase on a unit residue class, and the integral over the primitive shell |
 | [JacquetBasic](MetaplecticSummation/JacquetBasic.lean) | The Jacquet integral of the basic vector as a generating series of Gauss–Ramanujan sums for every nonzero local modulus |
 | [GaussRamanujan](MetaplecticSummation/GaussRamanujan.lean) | Covariance of the local Gauss sum and basic Jacquet function under multiplication by a unit |
@@ -203,9 +209,19 @@ ordinary Gauss-sum factorization depends on the admitted characterization of
 the Hilbert symbols. The basic Jacquet formulas additionally use the admitted
 self-dual measure theorem and membership of the basic vector in the Schwartz space.
 
+At a tame finite place, the explicit charts for the basic vector satisfy gluing
+and invariance under integral shears. With unramified character the integral
+over a vertical line is one when the valuation of its nonzero first coordinate
+is a nonnegative multiple of n, and zero otherwise. The Fourier integral on the axis then gives
+the original basic vector. Changing the character gives Corollary 6.5 for a
+local conductor parameter b. These calculations use the explicit charts
+before passing to the Schwartz space. Proposition 6.3(ii), membership of the
+basic vector in that space, remains admitted.
+
 The untwisted S-integer summation formula follows in Lean from the adelic
-line formula, the identity for the transformed basic weight at an unramified
-place, and `product_basic`. The first two inputs still have admitted proofs.
+line formula, the identity for the transformed basic Jacquet weight, and
+`product_basic`. Lean now derives the basic-weight identity from Corollary 6.5
+by changing the line variable. The adelic line formula remains admitted.
 Both S-integer series converge absolutely by the summability in the adelic
 line formula. The nonintegral terms vanish, and the same power-class coefficients
 from the adelic formula occur in the S-integer formula.

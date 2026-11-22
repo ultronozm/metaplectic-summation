@@ -74,8 +74,10 @@ theorem selfDual_nullSingleton (v : Place F) : NullSingletonClass (selfDual F d.
   exact Measure.IsAddHaarMeasure.nullSingletonClass _
 
 /-- At nonzero parameter the line is vertical, so its normalized integral is a marginal. -/
-theorem axisLine_unit (v : Place F) (Φ : d.schwartz v) (y t : (LocalField F v)ˣ) :
-    d.axisLine v Φ y t = d.symbol v (-1) y / (modulus F v y : ℂ) * d.marginal v Φ (t^n/y) := by
+theorem radon_axis_unit (v : Place F) (f : Charts (LocalField F v)) (gl : Glues (d.symbol v) f)
+    (y t : (LocalField F v)ˣ) :
+    (radon n (d.symbol v) (modulus F v) (selfDual F d.character v) f t.val).2 0 y =
+      d.symbol v (-1) y / (modulus F v y : ℂ) * ∫ z, f.1 (t^n/y) z ∂selfDual F d.character v := by
   let dx := selfDual F d.character v
   letI : NullSingletonClass dx := d.selfDual_nullSingleton v
   let H := d.lineSymbol v (by cases v with
@@ -84,17 +86,21 @@ theorem axisLine_unit (v : Place F) (Φ : d.schwartz v) (y t : (LocalField F v)�
   have hs (z : (LocalField F v)ˣ) : d.symbol v (t^n/y) z = d.symbol v z y := by
     change ((H.pairing (t^n/y) z).val) = (H.pairing z y).val
     rw [map_div,MonoidHom.div_apply,H.pow_left,one_div,← H.skew]
-  unfold axisLine radon marginal
+  unfold radon
   simp only [zero_mul,zero_add]
   rw [div_mul_eq_mul_div, ← integral_const_mul]
   congr 1
   apply integral_congr_ae
   filter_upwards [dx.ae_ne 0] with z hz
-  have hg := (d.schwartz_glues v Φ) (t^n/y) (Units.mk0 z hz)
+  have hg := gl (t^n/y) (Units.mk0 z hz)
   rw [hs] at hg
   simp only [Units.val_mk0,Units.val_div_eq_div_val,Units.val_pow_eq_pow_val] at hg
   rw [dif_pos hz,hg]
   ring
+
+theorem axisLine_unit (v : Place F) (Φ : d.schwartz v) (y t : (LocalField F v)ˣ) :
+    d.axisLine v Φ y t = d.symbol v (-1) y / (modulus F v y : ℂ) * d.marginal v Φ (t^n/y) :=
+  d.radon_axis_unit v Φ.val (d.schwartz_glues v Φ) y t
 
 /-- At parameter zero the same integral is the Hilbert-symbol-weighted axis integral. -/
 theorem axisLine_zero (v : Place F) (Φ : d.schwartz v) (y : (LocalField F v)ˣ) :

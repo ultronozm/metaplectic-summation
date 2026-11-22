@@ -27,6 +27,21 @@ private instance : IsAdicComplete (maximalIdeal (p.adicCompletionIntegers F)) (p
     obtain ⟨z, hz, rfl⟩ := Set.mem_iInter.mp ha k
     simpa [SModEq.sub_mem] using hz
 
+omit [NeZero n] in
+/-- The cover degree has norm one at a tame finite place. -/
+theorem norm_degree_of_tame (hp : p.asIdeal.absNorm.Coprime n) : ‖(n : p.adicCompletion F)‖ = 1 := by
+  let O := p.adicCompletionIntegers F
+  let k := ResidueField O
+  have hq : (p.asIdeal.absNorm : k) = 0 := by
+    letI : Fintype k := Fintype.ofFinite k
+    rw [← natCard_residueField_adicCompletionIntegers p,Nat.card_eq_fintype_card]
+    exact Nat.cast_card_eq_zero k
+  have hn := (ne_zero_or_ne_zero_of_nat_coprime (A := k) hp).resolve_left (not_not.mpr hq)
+  have hu : IsUnit (n : O) := (residue_ne_zero_iff_isUnit (n : O)).mp (by simpa using hn)
+  have h := (Datum.localInteger_isUnit_iff p (n : O)).mp hu
+  change ‖(p.adicCompletionIntegers F).subtype (n : O)‖ = 1 at h
+  rwa [map_natCast] at h
+
 /-- Property 2(f). Every principal unit is an n-th power when the residue
 characteristic is prime to n. -/
 theorem principal_unit_pow (hp : p.asIdeal.absNorm.Coprime n) (u : (p.adicCompletion F)ˣ)

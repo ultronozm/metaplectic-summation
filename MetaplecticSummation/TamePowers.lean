@@ -127,6 +127,34 @@ private theorem tame_generator_order (hp : p.asIdeal.absNorm.Coprime n) (π : K�
   change (inc A)^m = 1
   rwa [hA]
 
+/-- At a tame place, the Hilbert character of an element is trivial on
+the unit group only if its valuation is divisible by the cover degree. -/
+theorem norm_power_of_trivial_on_units (hp : p.asIdeal.absNorm.Coprime n) (a : Kˣ)
+    (ha : ∀ u : Kˣ, ‖u.val‖ = 1 → d.symbol (.inr p) a u = 1) :
+    ∃ t : Kˣ, ‖a.val‖ = ‖t.val‖^n := by
+  let H : Kˣ →* Kˣ →* ℂˣ := d.unitPairing (.inr p)
+  obtain ⟨π,hπ⟩ := FinitePlace.exists_norm_uniformizer p
+  obtain ⟨g,hg⟩ := IsCyclic.exists_generator (α := kˣ)
+  obtain ⟨G,hG⟩ := units_lift p g
+  let U := inc G
+  have hu : ‖U.val‖ = 1 := (localInteger_isUnit_iff p G.val).mp G.isUnit
+  have hgen : orderOf (H π U) = n := d.tame_generator_order p hp π hπ G (by simpa only [hG] using hg)
+  obtain ⟨j,l,z,he⟩ := tame_coordinates p hp π hπ G (by simpa only [hG] using hg) a
+  have h : H a U = 1 := Units.ext (ha U hu)
+  have huu : H U U = 1 := d.unitPairing_tame_units p hp U U hu hu
+  have hz : H z U ^ n = 1 := d.unitPairing_pow _ _ _
+  rw [he] at h
+  change H (π^j*U^l*z^n) U = 1 at h
+  simp only [map_mul,map_zpow,map_pow,MonoidHom.mul_apply,MonoidHom.zpow_apply,
+    MonoidHom.pow_apply,huu,hz,one_zpow,mul_one] at h
+  obtain ⟨i,hi⟩ := (show (n : ℤ) ∣ j by rwa [← hgen,orderOf_dvd_iff_zpow_eq_one])
+  refine ⟨π^i*z,?_⟩
+  rw [he,hi]
+  change ‖(π^((n:ℤ)*i)*U^l*z^n).val‖ = ‖(π^i*z).val‖^n
+  rw [Int.mul_comm (n : ℤ),zpow_mul,zpow_natCast]
+  simp only [Units.val_mul,Units.val_zpow_eq_zpow_val,Units.val_pow_eq_pow_val,norm_mul,norm_pow,
+    norm_zpow,hu,one_zpow,mul_one,mul_pow]
+
 /-- Property 2(b) of the Hilbert symbol at every tame finite place. -/
 theorem tame_symbol_radical (hp : p.asIdeal.absNorm.Coprime n) (a : Kˣ) :
     (∀ x : Kˣ, d.symbol (.inr p) x a = 1) ↔ ∃ z : Kˣ, z^n = a := by

@@ -91,9 +91,6 @@ theorem untwistedVector (p : Prime F) (hp : p.asIdeal.absNorm.Coprime n) (hψ : 
         d.dualWeight v W c = d.unitGauss p (fun x => d.symbol v (c/a) x)
           (-((t : LocalField F v)^n) / c) * shell {y | ‖y‖ = q^(-k)}) := by sorry
 
-def dilateCharts {K : Type} [Field K] (a : Kˣ) (f : Charts K) : Charts K :=
-  (fun x y => f.1 (a*x) (a*y), fun x y => f.2 (a*x) (a*y))
-
 def powerAverage (v : Place F) (f : Charts (LocalField F v)) : Charts (LocalField F v) :=
   let avg := fun g : Weight v => d.lineIntegral v fun x =>
     if ∃ u : (LocalField F v)ˣ, x = u^n then (modulus F v x ^ (1+1/(n : ℝ)) : ℝ) * g x else 0

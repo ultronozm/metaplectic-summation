@@ -10,19 +10,6 @@ open scoped Topology
 open Classical
 variable {F : Type} [Field F] [NumberField F] {n : ℕ} [NeZero n] (d : Datum F n)
 
-private theorem integral_norm_power (p : Prime F) (t : (p.adicCompletion F)ˣ) (ht : ‖t.val‖ ≤ 1) :
-    ∃ k : ℕ, ‖t.val‖ = ((p.asIdeal.absNorm : ℝ)^k)⁻¹ := by
-  have hv : Valued.v t.val ≠ 0 := Valued.v.ne_zero_iff.mpr t.ne_zero
-  have hle := Valued.toNormedField.norm_le_one_iff.mp ht
-  rw [← exp_log hv,← exp_zero] at hle
-  let k := (-(Valued.v t.val).log).toNat
-  have h : Valued.v t.val = exp (-(k : ℤ)) := by
-    simp only [k,Int.toNat_of_nonneg (neg_nonneg.mpr (exp_le_exp.mp hle)),neg_neg,exp_log hv]
-  refine ⟨k,?_⟩
-  rw [NumberField.FinitePlace.norm_def,h,WithZeroMulInt.toNNReal_neg_apply _ (exp_ne_zero (a := _))]
-  change (↑((p.asIdeal.absNorm : NNReal) ^ (-(k : ℤ))) : ℝ) = _
-  simp
-
 private theorem axis_basic (p : Prime F) (hp : p.asIdeal.absNorm.Coprime n) (y : (LocalField F (.inr p))ˣ) :
     d.axis (.inr p) (d.basic (.inr p)) y = ∑' k : ℕ,
       if ‖y.val‖ = ((p.asIdeal.absNorm : ℝ)^(n*k))⁻¹ then (p.asIdeal.absNorm : ℂ)^((n-1)*k) else 0 := by
@@ -99,25 +86,9 @@ theorem hat_axisDensity_basic (p : Prime F) (hp : p.asIdeal.absNorm.Coprime n)
     (hn : ‖(n : LocalField F (.inr p))‖ = 1) (hψ : d.UnramifiedAt (.inr p))
     (x : (LocalField F (.inr p))ˣ) (hx : ‖x.val‖ = 1) (u : LocalField F (.inr p)) :
     d.hat (.inr p) (d.axisDensity (.inr p) (d.basic (.inr p)) x) u = if ‖u‖ ≤ 1 then 1 else 0 := by
-  let K := p.adicCompletion F
-  letI : MeasurableSpace K := borel _
-  letI : BorelSpace K := ⟨rfl⟩
-  let μ : Measure K := selfDual F d.character (.inr p)
-  letI : μ.IsAddHaarMeasure := (existsUnique_selfDual F d.character (.inr p)).exists.choose_spec.1
-  let O := (p.adicCompletionIntegers F).toSubring
-  have hmem (z : K) : z ∈ O ↔ ‖z‖ ≤ 1 :=
-    (HeightOneSpectrum.mem_adicCompletionIntegers (𝓞 F) F p).trans Valued.toNormedField.norm_le_one_iff.symm
-  have hperp (z : K) : (∀ y ∈ O, d.character.localValue F (.inr p) (z*y) = 1) ↔ z ∈ O := by
-    simp only [hmem]
-    exact hψ z
-  have h := hat_subring_indicator O (O : Set K) (FinitePlace.isOpen_adicCompletionIntegers p).measurableSet
-    μ _ (d.character.localValue_add (.inr p)) hperp u
-  have hset : (O : Set K) = {z | ‖z‖ ≤ 1} := Set.ext hmem
-  rw [show μ.real (O : Set K) = 1 from hset ▸ d.selfDual_volume_unramified p hψ] at h
   unfold hat
   simp_rw [d.axisDensity_basic p hp hn x hx,mul_comm u]
-  simp only [indicator,SetLike.mem_coe,hmem,Complex.ofReal_one] at h
-  exact h
+  exact d.integral_unitBall_character p hψ u
 
 /-- At almost every finite place the density of a pure tensor is the entire
 basic one-dimensional Schwartz–Bruhat function, including its value at zero. -/

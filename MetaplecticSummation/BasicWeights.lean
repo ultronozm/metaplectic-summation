@@ -1,5 +1,4 @@
-import MetaplecticSummation.Gauss.Setup
-import MetaplecticSummation.FourierOrthogonality
+import MetaplecticSummation.BasicConductor
 
 /-! The unit and nonintegral shells in the local factors of the global Gauss sum. -/
 
@@ -47,74 +46,6 @@ theorem jacquet_basic_unit (p : Prime F) (ht : p.asIdeal.absNorm.Coprime n)
       · rw [d.basic_x_outside p ht c x ((lt_of_not_ge hx).trans_le (le_max_right _ _)),
           zero_mul, indicator_of_notMem (show x ∉ O from hx)]
     _ = _ := by simp [integral_indicator hO, Measure.real, O]
-
-/-- The ordinary Fourier integral of a subring indicator is its volume times
-the indicator of its annihilator. -/
-theorem hat_subring_indicator {K : Type*} [NormedField K] [MeasurableSpace K] [BorelSpace K]
-    (O : Subring K) (D : Set K) (hO : MeasurableSet (O : Set K))
-    (μ : Measure K) [μ.IsAddHaarMeasure] (ψ : K → ℂ) (ha : ∀ x y, ψ (x+y) = ψ x * ψ y)
-    (hperp : ∀ x : K, (∀ y ∈ O, ψ (x*y) = 1) ↔ x ∈ D) (y : K) :
-    (∫ x, (O : Set K).indicator (fun _ => (1 : ℂ)) x * ψ (x*y) ∂μ) =
-      D.indicator (fun _ => (μ.real (O : Set K) : ℂ)) y :=
-  hat_addSubgroup_indicator O.toAddSubgroup D hO μ ψ ha hperp y
-
-omit [NeZero n] in
-/-- The annihilator of the integer ring is b⁻¹ times the ring. The
-self-dual volume is therefore the square root of the normalized modulus of b. -/
-theorem selfDual_volume_of_conductor (p : Prime F) (b : (p.adicCompletion F)ˣ)
-    (hψ : ∀ x : p.adicCompletion F, (∀ y : p.adicCompletion F, ‖y‖ ≤ 1 →
-      d.character.localValue F (.inr p) (x*y) = 1) ↔ ‖x * b.val‖ ≤ 1) :
-    (selfDual F d.character (.inr p)).real {x | ‖x‖ ≤ 1} = Real.sqrt ‖b.val‖ := by
-  letI : MeasurableSpace (p.adicCompletion F) := borel _
-  letI : BorelSpace (p.adicCompletion F) := ⟨rfl⟩
-  letI : NontriviallyNormedField (p.adicCompletion F) := FinitePlace.nontriviallyNormedCompletion p
-  letI : ProperSpace (p.adicCompletion F) := .of_nontriviallyNormedField_of_weaklyLocallyCompactSpace _
-  let O := (p.adicCompletionIntegers F).toSubring
-  let μ : Measure (p.adicCompletion F) := selfDual F d.character (.inr p)
-  have hm := (existsUnique_selfDual F d.character (.inr p)).exists.choose_spec
-  letI : μ.IsAddHaarMeasure := hm.1
-  have hmem (x : p.adicCompletion F) : x ∈ O ↔ ‖x‖ ≤ 1 :=
-    (IsDedekindDomain.HeightOneSpectrum.mem_adicCompletionIntegers (𝓞 F) F p).trans
-      Valued.toNormedField.norm_le_one_iff.symm
-  have hO : IsClopen (O : Set (p.adicCompletion F)) :=
-    ⟨(FinitePlace.isCompact_adicCompletionIntegers p).isClosed, Valued.isOpen_valuationSubring _⟩
-  let D := (b⁻¹ • (O : Set (p.adicCompletion F)))
-  have hd (x : p.adicCompletion F) : x ∈ D ↔ x*b.val ∈ O := by
-    change x ∈ b⁻¹ • (O : Set (p.adicCompletion F)) ↔ _
-    rw [Set.mem_inv_smul_set_iff, Units.smul_def, smul_eq_mul, mul_comm]
-    rfl
-  have hD : MeasurableSet D := hO.isOpen.smul b⁻¹ |>.measurableSet
-  have hp := volume_mul_annihilator O.toAddSubgroup D hD hO (FinitePlace.isCompact_adicCompletionIntegers p)
-    μ (d.character.localValue F (.inr p)) (d.character.localValue_add (.inr p))
-    (fun x => by
-      change (∀ y ∈ O, _) ↔ x ∈ D
-      simpa only [hd, hmem] using hψ x) hm.2
-  change μ.real (O : Set _) * μ.real D = 1 at hp
-  have hvol := congrArg ENNReal.toReal (distribHaarChar_mul μ b⁻¹ (O : Set (p.adicCompletion F)))
-  rw [FinitePlace.haarChar_eq_nnnorm, ENNReal.toReal_mul, ENNReal.coe_toReal] at hvol
-  change ‖b⁻¹.val‖ * μ.real O = μ.real D at hvol
-  rw [← hvol, Units.val_inv_eq_inv_val, norm_inv] at hp
-  have hnorm : ‖b.val‖ ≠ 0 := norm_ne_zero_iff.mpr b.ne_zero
-  field_simp at hp
-  have hs : {x : LocalField F (.inr p) | ‖x‖ ≤ 1} = (O : Set (p.adicCompletion F)) :=
-    Set.ext fun x => (hmem x).symm
-  rw [hs]
-  change μ.real O = Real.sqrt ‖b.val‖
-  symm
-  apply (Real.sqrt_eq_iff_mul_self_eq (norm_nonneg _) measureReal_nonneg).mpr
-  simpa only [pow_two] using hp.symm
-
-omit [NeZero n] in
-theorem selfDual_volume_unramified (p : Prime F) (hψ : d.UnramifiedAt (.inr p)) :
-    (selfDual F d.character (.inr p)).real {x | ‖x‖ ≤ 1} = 1 := by
-  simpa only [Units.val_one, norm_one, Real.sqrt_one] using
-    d.selfDual_volume_of_conductor p 1 (fun x => by rw [Units.val_one, mul_one]; exact hψ x)
-
-omit [NeZero n] in
-theorem scaled_selfDual_volume (p : Prime F) (hψ : d.UnramifiedAt (.inr p)) (b : Fˣ) :
-    (selfDual F (d.scaled b).character (.inr p)).real {x | ‖x‖ ≤ 1} =
-      Real.sqrt ‖diagonal F (.inr p) b‖ :=
-  (d.scaled b).selfDual_volume_of_conductor p (atPlace (.inr p) b) (d.scaled_conductor b (.inr p) hψ)
 
 theorem scaled_basic_unit {S : Finset (Place F)} (h : d.ClassicalSetting S) (b : NonzeroInteger S)
     (p : Prime F) (hp : Sum.inr p ∉ S) (c : (LocalField F (.inr p))ˣ) (hc : ‖c.val‖ = 1) :
@@ -184,6 +115,10 @@ theorem basic_dual (p : Prime F) (hp : p.asIdeal.absNorm.Coprime n)
       d.character.localValue F (.inr p) (x*y) = 1) ↔ ‖x * b‖ ≤ 1)
     (c : (LocalField F (.inr p))ˣ) :
     d.jacquet (.inr p) (d.fourier (.inr p) (d.basic (.inr p))) c =
-      d.jacquet (.inr p) (d.basic (.inr p)) (b^n * c) := by sorry
+      d.jacquet (.inr p) (d.basic (.inr p)) (b^n * c) := by
+  clear hb -- The integral identity holds for every conductor parameter.
+  unfold jacquet
+  rw [d.fourier_apply,basic,dif_pos hp]
+  exact d.basicCharts_jacquet_dual p hp b conductor c
 
 end MetaplecticPoisson.Datum
