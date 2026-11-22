@@ -1,4 +1,4 @@
-import MetaplecticSummation.Marginals
+import MetaplecticSummation.Marginals.Basic
 import MetaplecticSummation.ArchimedeanShears
 import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 

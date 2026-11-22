@@ -1,4 +1,4 @@
-import MetaplecticSummation.Marginals
+import MetaplecticSummation.Marginals.Basic
 import MetaplecticSummation.Jacquet.Local
 
 /-! The multiplicative difference integral in the converse marginal identity of Appendix A. -/

@@ -9,15 +9,6 @@ open NumberField IsDedekindDomain MeasureTheory Set
 open Classical
 variable {F : Type} [Field F] [NumberField F] {n : ℕ} [NeZero n] (d : Datum F n)
 
-/-- The integral transform of a test section belongs to the defining span of
-the Schwartz space before stability of the space under iteration is known. -/
-def transformTest (v : Place F) (Φ : d.schwartz v) (hΦ : Φ.val ∈ d.testSet v) : d.schwartz v :=
-  ⟨d.integralTransform v Φ.val, Submodule.subset_span (Or.inr ⟨Φ.val,hΦ,rfl⟩)⟩
-
-theorem transformTest_eq_fourier (v : Place F) (Φ : d.schwartz v) (hΦ : Φ.val ∈ d.testSet v) :
-    d.transformTest v Φ hΦ = d.fourier v Φ :=
-  Subtype.ext (d.fourier_apply v Φ).symm
-
 /-- The X-chart Radon integral expressed entirely in the Y chart, as in
 Appendix A before the substitution u = 1/y'. -/
 theorem radon_X_via_Y (v : Place F) {f : Charts (LocalField F v)} (hf : Glues (d.symbol v) f)

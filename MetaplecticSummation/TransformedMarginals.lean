@@ -1,4 +1,4 @@
-import MetaplecticSummation.ArchimedeanFourierSchwartz
+import MetaplecticSummation.Marginals.Density
 import MetaplecticSummation.SchwartzStability
 import MetaplecticSummation.FiniteRadonContinuity
 import MetaplecticSummation.Jacquet.Convergence
@@ -13,63 +13,6 @@ variable (v : Place F)
 local notation "K" => LocalField F v
 local notation "N" => modulus F v (n : K)
 local notation "dx" => selfDual F d.character v
-
-/-- The defining Radon integral on the vertical axis is Schwartz–Bruhat for
-a test section at every place (the last assertion of the marginal-axis lemma). -/
-theorem axisLine_test_bruhat (Φ : d.schwartz v) (hΦ : Φ.val ∈ d.testSet v) (y : Kˣ) :
-    Bruhat v (d.axisLine v Φ y) := by
-  cases v with
-  | inr p => exact d.axisLine_finiteTest_bruhat p Φ hΦ y
-  | inl w =>
-    have go {L : Type} [NormedField L] [NormedAlgebra ℝ L] (e : w.Completion ≃+* L) (he : Isometry e) :
-        ∃ G : SchwartzMap L ℂ, ∀ t, d.axisLine (.inl w) Φ y t = G (e t) := by
-      obtain ⟨G,hG,_⟩ := (d.arch_radon_schwartz_slices w hΦ e he).2
-      exact ⟨G (y,0),hG (y,0)⟩
-    dsimp only [Bruhat]
-    split
-    · exact go _ (InfinitePlace.Completion.isometry_extensionEmbeddingOfIsReal _)
-    · exact go _ (InfinitePlace.Completion.isometry_extensionEmbedding w)
-
-omit [NeZero n] in
-theorem Bruhat.const_mul {f : K → ℂ} (hf : Bruhat v f) (c : ℂ) :
-    Bruhat v (fun t => c * f t) := by
-  cases v with
-  | inr p => exact ⟨hf.1.comp (c * ·),hf.2.mul_left (f := fun _ => c)⟩
-  | inl w =>
-    dsimp only [Bruhat] at hf ⊢
-    split at hf <;> rename_i h
-    · rw [dif_pos h]; obtain ⟨G,hG⟩ := hf; exact ⟨c • G,fun t => congrArg (c * ·) (hG t)⟩
-    · rw [dif_neg h]; obtain ⟨G,hG⟩ := hf; exact ⟨c • G,fun t => congrArg (c * ·) (hG t)⟩
-
-/-- Formula for the density of a transformed section, including its value
-at the origin. The normalization uses the self-dual additive measure. -/
-theorem axisDensity_transform_eq_hat (Φ Ψ : d.schwartz v) (hΨ : Ψ.val = d.integralTransform v Φ.val)
-    (x : Kˣ) (hi : Integrable (d.axisLine v Φ (-1/x)) dx) :
-    d.axisDensity v Ψ x = fun t =>
-      ((N : ℂ) / (modulus F v x.val : ℂ) * (Real.sqrt N : ℂ)⁻¹) * d.hat v (d.axisLine v Φ (-1/x)) t := by
-  funext t
-  by_cases ht : t = 0
-  · subst t
-    rw [d.axisDensity_zero,← d.axisLine_hat_zero_of_charts v Φ Ψ hΨ _ hi,mul_assoc]
-  let u := Units.mk0 t ht
-  have h := (d.transform_pow_ray v Φ.val u).2 0 (-1/x)
-  rw [mul_zero,← hΨ] at h
-  change (modulus F v u.val : ℂ)^(n-1) * d.axis v Ψ (u^n*(-1/x)) =
-    (Real.sqrt N : ℂ)⁻¹ * d.hat v (d.axisLine v Φ (-1/x)) u.val at h
-  change d.axisDensity v Ψ x u.val = _
-  rw [d.axisDensity_unit,mul_assoc,← show u^n*(-1/x) = -(u^n)/x by rw [mul_div_assoc',mul_neg_one],h,mul_assoc]
-  rfl
-
-/-- The density of the transform of a test section is Schwartz–Bruhat at
-every real, complex, and finite place. -/
-theorem axisDensity_transformTest_bruhat (Φ : d.schwartz v) (hΦ : Φ.val ∈ d.testSet v) (x : Kˣ) :
-    Bruhat v (d.axisDensity v (d.transformTest v Φ hΦ) x) := by
-  have hb := d.axisLine_test_bruhat v Φ hΦ (-1/x)
-  rw [d.axisDensity_transform_eq_hat v Φ _ rfl x (hb.integrable d)]
-  apply Bruhat.const_mul
-  cases v with
-  | inl w => exact d.arch_hat_bruhat w hb
-  | inr p => exact d.hat_finite_bruhat p hb
 
 private theorem marginal_symbol_sign (x u : Kˣ) :
     let e : Kˣ := (-1)^(n+1)
@@ -148,51 +91,48 @@ def marginalLinear (x : Kˣ) : d.schwartz v →ₗ[ℂ] ℂ where
   map_add' Φ Ψ := integral_add (d.integrable_jacquet_slice v Φ x) (d.integrable_jacquet_slice v Ψ x)
   map_smul' c Φ := integral_const_mul c (Φ.val.1 x)
 
-private def axisDensityLinear (x : Kˣ) : d.schwartz v →ₗ[ℂ] (K → ℂ) where
-  toFun Φ := d.axisDensity v Φ x
+private def densityHatLinear (x u : Kˣ) : d.schwartz v →ₗ[ℂ] ℂ where
+  toFun Φ := d.hat v (d.axisDensity v Φ x) u.val
   map_add' Φ Ψ := by
-    funext t
-    by_cases ht : t = 0
-    · subst t
-      simp only [Pi.add_apply,axisDensity_zero,map_add]
-      exact mul_add _ _ _
-    · let u := Units.mk0 t ht
-      change d.axisDensity v (Φ+Ψ) x u.val = d.axisDensity v Φ x u.val + d.axisDensity v Ψ x u.val
-      simp only [d.axisDensity_unit]
-      exact mul_add _ _ _
+    let D := d.axisDensityLinear v x
+    change d.hat v (D (Φ + Ψ)) u.val = _
+    rw [map_add]
+    unfold hat
+    simp only [Pi.add_apply,add_mul]
+    exact integral_add (d.integrable_phase v ((d.axisDensity_bruhat v Φ x).integrable d) _)
+      (d.integrable_phase v ((d.axisDensity_bruhat v Ψ x).integrable d) _)
   map_smul' c Φ := by
-    funext t
-    by_cases ht : t = 0
-    · subst t
-      simp only [Pi.smul_apply,axisDensity_zero,map_smul,smul_eq_mul,RingHom.id_apply]
-      exact mul_left_comm _ _ _
-    · let u := Units.mk0 t ht
-      change d.axisDensity v (c • Φ) x u.val = c * d.axisDensity v Φ x u.val
-      simp only [d.axisDensity_unit]
-      exact mul_left_comm _ _ _
+    let D := d.axisDensityLinear v x
+    change d.hat v (D (c • Φ)) u.val = _
+    rw [map_smul]
+    unfold hat
+    simp only [Pi.smul_apply,smul_eq_mul,mul_assoc,integral_const_mul,RingHom.id_apply]
+    rfl
+
+/-- The reverse identity extends from test sections and their transforms by linearity. -/
+theorem reverse_marginal (Φ : d.schwartz v) (x u : Kˣ) :
+    d.marginal v (d.fourier v Φ) (u^n*x) =
+      (Real.sqrt N : ℂ)⁻¹ * d.hat v (d.axisDensity v Φ x) u := by
+  let A := (d.marginalLinear v (u^n*x)).comp (d.fourier v)
+  let B := (Real.sqrt N : ℂ)⁻¹ • d.densityHatLinear v x u
+  suffices he : A = B from DFunLike.congr_fun he Φ
+  apply LinearMap.ext_on (Submodule.span_span_coe_preimage (R := ℂ)
+    (s := d.testSet v ∪ d.integralTransform v '' d.testSet v))
+  rintro ⟨f,hf⟩ (ht | ⟨g,hg,rfl⟩)
+  · have he := d.reverse_marginal_on_test v ⟨f,hf⟩ ht x u
+    rwa [d.transformTest_eq_fourier] at he
+  · let Γ : d.schwartz v := ⟨g,Submodule.subset_span (Or.inl hg)⟩
+    let Ψ := d.fourier v Γ
+    have hgen : (⟨d.integralTransform v g,hf⟩ : d.schwartz v) = Ψ := Subtype.ext (d.fourier_apply v Γ).symm
+    change d.marginal v (d.fourier v ⟨_,hf⟩) _ = _ * d.hat v (d.axisDensity v ⟨_,hf⟩ x) _
+    rw [hgen]
+    exact d.reverse_marginal_transformTest_of_square v Γ hg Ψ (d.fourier v Ψ)
+      (d.fourier_apply v Γ) (d.schwartz_fourier_square v Γ) x u
 
 section Finite
 variable (p : Prime F)
 local notation "vp" => (Sum.inr p : Place F)
 local notation "Kv" => LocalField F vp
-
-private def finiteDensityHatLinear (x u : Kvˣ) : d.schwartz vp →ₗ[ℂ] ℂ where
-  toFun Φ := d.hat vp (d.axisDensity vp Φ x) u.val
-  map_add' Φ Ψ := by
-    let D := d.axisDensityLinear vp x
-    change d.hat vp (D (Φ + Ψ)) u.val = _
-    rw [map_add]
-    unfold hat
-    simp only [Pi.add_apply,add_mul]
-    exact integral_add (d.integrable_phase vp ((d.axisDensity_finite_bruhat p Φ x).integrable d) _)
-      (d.integrable_phase vp ((d.axisDensity_finite_bruhat p Ψ x).integrable d) _)
-  map_smul' c Φ := by
-    let D := d.axisDensityLinear vp x
-    change d.hat vp (D (c • Φ)) u.val = _
-    rw [map_smul]
-    unfold hat
-    simp only [Pi.smul_apply,smul_eq_mul,mul_assoc,integral_const_mul,RingHom.id_apply]
-    rfl
 
 /-- The converse marginal identity on the entire finite-place Schwartz
 space under nondegeneracy of the Hilbert pairing. The transform used here
@@ -203,7 +143,7 @@ theorem finite_reverse_marginal (hpow : ∀ a : Kvˣ, (∀ u, d.symbol vp u a = 
       (Real.sqrt (modulus F vp (n : Kv)) : ℂ)⁻¹ * d.hat vp (d.axisDensity vp Φ x) u.val := by
   let L := d.finiteSchwartzTransform p hpow
   let A := (d.marginalLinear vp (u^n*x)).comp L
-  let B := (Real.sqrt (modulus F vp (n : Kv)) : ℂ)⁻¹ • d.finiteDensityHatLinear p x u
+  let B := (Real.sqrt (modulus F vp (n : Kv)) : ℂ)⁻¹ • d.densityHatLinear vp x u
   suffices h : A = B from DFunLike.congr_fun h Φ
   apply LinearMap.ext_on (Submodule.span_span_coe_preimage (R := ℂ)
     (s := d.testSet vp ∪ d.integralTransform vp '' d.testSet vp))

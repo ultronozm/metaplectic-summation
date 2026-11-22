@@ -5,8 +5,8 @@ import MetaplecticSummation.LocalWeights
 import MetaplecticSummation.BasicMarginals
 import MetaplecticSummation.FourierCoefficients
 import MetaplecticSummation.FiniteLines
-import MetaplecticSummation.RadonDecay
+import MetaplecticSummation.Schwartz.FourierStability
 import MetaplecticSummation.WildSymbols
 import MetaplecticSummation.PowerSubgroup
-import MetaplecticSummation.TransformedMarginals
+import MetaplecticSummation.Marginals
 import MetaplecticSummation.LeadingAction

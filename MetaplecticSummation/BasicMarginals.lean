@@ -1,4 +1,4 @@
-import MetaplecticSummation.Marginals
+import MetaplecticSummation.Marginals.Basic
 import MetaplecticSummation.BasicWeights
 
 /-! The marginal kernels of the basic vector in Appendix A. -/

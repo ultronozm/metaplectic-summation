@@ -1,6 +1,6 @@
 import MetaplecticSummation.AdelicFourier
 import MetaplecticSummation.BoundaryDilation
-import MetaplecticSummation.DiagonalTransform
+import MetaplecticSummation.FiniteInversion
 import MetaplecticSummation.TensorDescent
 
 /-! The descent and reconstruction of the Poisson boundary functional in Appendix B. -/

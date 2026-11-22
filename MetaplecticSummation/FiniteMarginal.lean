@@ -1,5 +1,5 @@
 import MetaplecticSummation.MarginalRootFormula
-import MetaplecticSummation.FiniteInversion
+import MetaplecticSummation.TorusCharts
 import MetaplecticSummation.PowerArea
 import Mathlib.Topology.Algebra.IsOpenUnits
 
@@ -176,50 +176,7 @@ theorem finite_integralTransform_square_on_test (p : HeightOneSpectrum (𝓞 F))
     let v : Place F := .inr p
     d.integralTransform v (d.integralTransform v f) = d.torusCharts v ((-1)^(n+1)) f := by
   let v : Place F := .inr p
-  let T := d.integralTransform v
-  let e : (LocalField F v)ˣ := (-1)^(n+1)
-  have he : e.val*e.val = 1 := congrArg (Units.val : (LocalField F v)ˣ → LocalField F v)
-    (show e*e = 1 by simp only [e,← mul_pow,neg_one_mul,neg_neg,one_pow])
-  have Y (g : Charts (LocalField F v)) (hg : g ∈ d.testSet v) (x : LocalField F v) (y : (LocalField F v)ˣ) :
-      (T (T g)).2 x y = (d.torusCharts v e g).2 x y := by
-    let u := x/y.val
-    let g' := lowerShear (d.symbol v) u g
-    have hg' : g' ∈ d.testSet v := (d.finite_shear_test p hg u).2
-    let Φ : d.schwartz v := ⟨g',Submodule.subset_span (Or.inl hg')⟩
-    have ha := d.finite_integralTransform_square_axis p hpow Φ hg' y
-    change (T (T (lowerShear (d.symbol v) u g))).2 0 y =
-      d.symbol v e y * g.2 (0+u*(y/e).val) (y/e) at ha
-    have hl := transform_square_lower (d.symbol v) n (modulus F v) (selfDual F d.character v)
-      (d.character.localValue F v) u g 0 y
-    change (T (T (lowerShear (d.symbol v) u g))).2 0 y = (T (T g)).2 (0+u*y.val) y at hl
-    rw [hl,zero_add,zero_add] at ha
-    have h₁ : u*y.val = x := div_mul_cancel₀ x y.ne_zero
-    have h₂ : u*(y/e).val = e.val*x := by
-      rw [Units.val_div_eq_div_val,← mul_div_assoc,h₁,div_eq_mul_inv,inv_eq_of_mul_eq_one_right he,mul_comm]
-    rw [h₁,h₂] at ha
-    exact ha
-  have X (g : Charts (LocalField F v)) (hg : g ∈ d.testSet v) (x y : (LocalField F v)ˣ) :
-      (T (T g)).1 x y.val = (d.torusCharts v e g).1 x y.val :=
-    (d.integralTransform_glues v (d.integralTransform_glues v hg.1) x y).trans
-      ((congrArg (d.symbol v x y * ·) (Y g hg x.val y)).trans ((d.torusCharts_glues v e hg.1) x y).symm)
-  apply Prod.ext _ (funext fun x => funext (Y f hf x))
-  funext x y
-  by_cases hy : y ≠ 0
-  · exact X f hf x (Units.mk0 y hy)
-  · obtain rfl := not_ne_iff.mp hy
-    have h := X _ (d.finite_shear_test p hf (-1)).1 x x
-    change (T (T (upperShear (d.symbol v) (-1) f))).1 x x.val =
-      d.symbol v x e * d.symbol v (-1) e * f.1 (e*x) (x.val/e.val + -1*(e*x).val) at h
-    have hu := transform_square_upper (d.symbol v) n (modulus F v) (selfDual F d.character v)
-      (d.character.localValue F v) (-1) f x x.val
-    change (T (T (upperShear (d.symbol v) (-1) f))).1 x x.val = (T (T f)).1 x (x.val + -1*x.val) at hu
-    rw [hu,neg_one_mul,add_neg_cancel] at h
-    have hz : x.val/e.val + -1*(e*x).val = 0 := by
-      rw [Units.val_mul,neg_one_mul,← sub_eq_add_neg,sub_eq_zero]
-      apply (div_eq_iff e.ne_zero).2
-      linear_combination -x*he
-    rw [hz] at h
-    simpa only [torusCharts,zero_div] using h
+  exact d.integralTransform_square_of_test_axis v (d.finite_integralTransform_square_axis p hpow) hf
 
 /-- At a tame place the defining double integral equals the diagonal lift
 on the entire test section. -/

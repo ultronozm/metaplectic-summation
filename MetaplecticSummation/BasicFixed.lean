@@ -1,5 +1,5 @@
 import MetaplecticSummation.BasicShells
-import MetaplecticSummation.Marginals
+import MetaplecticSummation.Marginals.Basic
 
 /-! Fourier invariance of the explicit unramified basic vector, Proposition 6.3(i). -/
 

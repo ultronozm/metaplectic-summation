@@ -1,3 +1,4 @@
+import MetaplecticSummation.TransformedMarginals
 import MetaplecticSummation.AdeleLattice
 import MetaplecticSummation.MarginalDifference
 import MetaplecticSummation.LeadingAction
@@ -126,7 +127,7 @@ the densities at a rational frequency. -/
 theorem axisDensity_hat_product (Φ : ∀ v, d.schwartz v) (x u : Fˣ) :
     (∏ᶠ v, d.hat v (d.axisDensity v (Φ v) (atPlace v x)) (atPlace v u)) =
       ∏ᶠ v, d.marginal v (d.fourier v (Φ v)) (atPlace v (u^n*x)) := by
-  have he (v : Place F) := (d.schwartz_marginal_kernels v (Φ v) (atPlace v x) 1).2.2 (atPlace v u)
+  have he (v : Place F) := d.reverse_marginal v (Φ v) (atPlace v x) (atPlace v u)
   have h (v : Place F) : atPlace v (u^n*x) = (atPlace v u)^n * atPlace v x := by simp [atPlace]
   simp_rw [h,he]
   exact (remove_normalization fourier_normalization _).symm

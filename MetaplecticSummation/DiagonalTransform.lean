@@ -1,4 +1,4 @@
-import MetaplecticSummation.FiniteInversion
+import MetaplecticSummation.TorusCharts
 
 /-! Covariance of the defining integral under the diagonal lifts of §5. -/
 

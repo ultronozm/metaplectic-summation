@@ -1,5 +1,5 @@
 import MetaplecticSummation.FiniteSchwartzLines
-import MetaplecticSummation.Marginals
+import MetaplecticSummation.Marginals.Basic
 
 /-! Linearity of the two-chart transform where its integrals converge. -/
 

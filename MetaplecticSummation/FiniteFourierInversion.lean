@@ -1,4 +1,4 @@
-import MetaplecticSummation.Marginals
+import MetaplecticSummation.Marginals.Basic
 import MetaplecticSummation.DualBallVolumes
 import MetaplecticSummation.FieldFourierIntegral
 
