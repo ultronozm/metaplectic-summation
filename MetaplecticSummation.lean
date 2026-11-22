@@ -1,3 +1,4 @@
 import MetaplecticSummation.Inversion
 import MetaplecticSummation.LocalWeights
 import MetaplecticSummation.FourierCoefficients
+import MetaplecticSummation.FiniteLines

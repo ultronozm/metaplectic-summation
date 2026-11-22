@@ -1,5 +1,6 @@
 import MetaplecticSummation.Jacquet
 import Mathlib.RingTheory.DedekindDomain.SInteger
+import Mathlib.RingTheory.UniqueFactorizationDomain.Finite
 
 noncomputable section
 namespace MetaplecticPoisson.Datum
@@ -31,7 +32,14 @@ theorem finite_residues (S : Finset (Place F)) (c : NonzeroInteger S) :
 include hn in
 theorem finite_power_divisors (S : Finset (Place F)) [IsPrincipalIdealRing (SIntegers S)]
     (c : NonzeroInteger S) :
-    Set.Finite {t : Associates (SIntegers S) | t ^ n ∣ Associates.mk c.val} := by sorry
+    Set.Finite {t : Associates (SIntegers S) | t ^ n ∣ Associates.mk c.val} := by
+  classical
+  let a := Associates.mk c.val
+  have ha : a ≠ 0 := by simpa [a] using c.property
+  letI := Fintype.ofFinite (Associates (SIntegers S))ˣ
+  let s : Set (Associates (SIntegers S)) := {t | t ∣ a}
+  letI : Fintype s := UniqueFactorizationMonoid.fintypeSubtypeDvd a ha
+  exact s.toFinite.subset (fun t ht => (dvd_pow_self t (NeZero.ne n)).trans ht)
 
 /-- A unit residue class modulo (c) is evaluated on an S-integer representative.
 For a unit modulus the product defining the residue symbol is empty. -/

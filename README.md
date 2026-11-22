@@ -18,6 +18,9 @@ products and rational evaluations all depend on these inputs.
 | [Arithmetic](MetaplecticSummation/Arithmetic.lean) | Completions, local characters, normalized modulus, self-dual measures and the Hilbert symbol |
 | [Core](MetaplecticSummation/Core.lean) | The two chart integrals in Definition 4.4, normalized ray limits and maps of restricted tensor products |
 | [Schwartz](MetaplecticSummation/Schwartz.lean) | Local test functions, the span of test functions and their transforms, and the good-place basic vector |
+| [SymbolOnLines](MetaplecticSummation/SymbolOnLines.lean) | Equality of the two integrands up to the chart multiplier on every line, from the Steinberg relation |
+| [LocalSymbols](MetaplecticSummation/LocalSymbols.lean) | Continuity and unitarity of the complex symbol from the stated arithmetic characterization |
+| [FiniteLines](MetaplecticSummation/FiniteLines.lean) | Absolute convergence, joint continuity and uniform vanishing for large line parameter on finite-place test functions in Lemma 4.2 |
 | [Poisson](MetaplecticSummation/Poisson.lean) | The adelic spaces and maps, rational evaluation, Theorem 9.1, Corollary 9.2 and the degree-one boundary value |
 | [Shears](MetaplecticSummation/Shears.lean) | Proved chart gluing, additive composition and the two Radon and Fourier identities of Lemma 5.2 |
 | [Inversion](MetaplecticSummation/Inversion.lean) | The root kernel, the local cover acting on Schwartz functions, Fourier inversion, equivariance and Plancherel (Theorem 7.1) |
@@ -35,6 +38,10 @@ approximation isolates each exceptional place modulo n-th powers. The
 existence and uniqueness theorem for this characterization is admitted.
 This keeps the statement on Mathlib. A future class-field-theoretic proof can
 compare Tau Ceti's Kummer-cup invariant to the tame normalization.
+Tau Ceti proves the Steinberg relation for its local symbol in
+`TauCeti.ClassFieldTheory.localSymbol_kummerClass_eq_zero_of_add_eq_one`.
+Identifying its symbol with this project's arithmetic family remains open.
+`Datum.lineSymbol` takes that family's Steinberg relation as an explicit hypothesis.
 
 The local Fourier and leading-term maps are chosen from stated existence
 lemmas prescribing their values by the integrals and ray limits. At the
