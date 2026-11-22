@@ -51,6 +51,8 @@ products and rational evaluations all depend on these inputs.
 | [ResidueCRT](MetaplecticSummation/ResidueCRT.lean) | Chinese remainder isomorphism for the S-integer residue ring, including the unit modulus, and decomposition of the additive phase |
 | [GaussFactorization](MetaplecticSummation/GaussFactorization.lean) | The global Gauss sum as the product of the local Gauss sums for the scaled character |
 | [BasicProduct](MetaplecticSummation/BasicProduct.lean) | The product of basic Jacquet functions as a finite product of local series, and its evaluation for locally n-th-power-free moduli |
+| [PowerDivisors](MetaplecticSummation/PowerDivisors.lean) | Classification of global power divisors up to S-units by their tuples of local exponents under the PID hypothesis |
+| [GaussProduct](MetaplecticSummation/GaussProduct.lean) | The product of the basic functions outside S as a normalized global Gauss sum for arbitrary integral moduli |
 | [LocalWeights](MetaplecticSummation/LocalWeights.lean) | Mellin factors, transforms of basic and character weights, the Gauss-sum expression for ε, and the intertwining operator on leading terms |
 | [AdeleLattice](MetaplecticSummation/AdeleLattice.lean) | Discreteness of the diagonal field, an additive fundamental domain in the adeles, and compactness of the Hausdorff quotient |
 | [FourierCoefficients](MetaplecticSummation/FourierCoefficients.lean) | Unfolding at frequencies zero and one, the two local marginal identities, Poisson on power classes and the constant-term identity |
@@ -118,10 +120,10 @@ vanishes on nonintegral arguments and equals |b|ₛ^(−1/2) on S-units. The
 local generating series is proved for every nonzero modulus, as is the
 Chinese remainder factorization of the ordinary global Gauss sum. For an
 integral modulus, the product outside S reduces to the local series at the
-primes dividing the modulus. When every valuation outside S is less than n,
-only the constant terms contribute and Lean proves the normalized global
-formula. For higher valuations, the identification with the global sum over
-power divisors remains open in Lean.
+primes dividing the modulus. When the S-integers form a PID, the exponent tuples in these
+series enumerate the global power divisors up to S-units. Matching the norm
+weights and the local Gauss factors gives `product_basic` for every nonzero
+field element, including integral moduli divisible by repeated n-th powers.
 
 The residue-ring isomorphism uses only standard Lean axioms. The proof of the
 ordinary Gauss-sum factorization depends on the admitted characterization of
