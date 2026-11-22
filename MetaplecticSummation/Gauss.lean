@@ -1,70 +1,10 @@
-import MetaplecticSummation.Jacquet
-import Mathlib.RingTheory.DedekindDomain.SInteger
-import Mathlib.RingTheory.UniqueFactorizationDomain.Finite
+import MetaplecticSummation.SArithmetic
 
 noncomputable section
 namespace MetaplecticPoisson.Datum
 open NumberField IsDedekindDomain MeasureTheory
 open scoped ComplexConjugate
 variable {F : Type} [Field F] [NumberField F] {n : ℕ} [hn : NeZero n] (d : Datum F n)
-
-abbrev Prime (F : Type) [Field F] [NumberField F] := HeightOneSpectrum (𝓞 F)
-abbrev SIntegers (S : Finset (Place F)) := ({p : Prime F | Sum.inr p ∈ S}.integer F)
-abbrev NonzeroInteger (S : Finset (Place F)) := {c : SIntegers S // c ≠ 0}
-
-def fieldUnit {S : Finset (Place F)} (c : NonzeroInteger S) : Fˣ :=
-  Units.mk0 (c.val : F) (fun h => c.property (Subtype.ext h))
-
-def sNorm (S : Finset (Place F)) (x : F) := ∏ v ∈ S, modulus F v (diagonal F v x)
-def sPsi (S : Finset (Place F)) (x : F) := ∏ v ∈ S, d.character.localValue F v (diagonal F v x)
-def sSymbol (S : Finset (Place F)) (a b : Fˣ) := ∏ v ∈ S, d.symbol v (atPlace v a) (atPlace v b)
-
-def residue (S : Finset (Place F)) (a c : F) : ℂ := by
-  classical
-  exact ∏ᶠ p : Prime F, if Sum.inr p ∉ S ∧ ‖diagonal F (.inr p) c‖ < 1 then
-    if h : a ≠ 0 ∧ c ≠ 0 ∧ ‖diagonal F (.inr p) a‖ = 1 then
-      d.symbol (.inr p) (atPlace _ (Units.mk0 c h.2.1)) (atPlace _ (Units.mk0 a h.1))
-    else 0 else 1
-
-theorem finite_residues (S : Finset (Place F)) (c : NonzeroInteger S) :
-    Finite (SIntegers S ⧸ Ideal.span {c.val}) := by sorry
-
-include hn in
-theorem finite_power_divisors (S : Finset (Place F)) [IsPrincipalIdealRing (SIntegers S)]
-    (c : NonzeroInteger S) :
-    Set.Finite {t : Associates (SIntegers S) | t ^ n ∣ Associates.mk c.val} := by
-  classical
-  let a := Associates.mk c.val
-  have ha : a ≠ 0 := by simpa [a] using c.property
-  letI := Fintype.ofFinite (Associates (SIntegers S))ˣ
-  let s : Set (Associates (SIntegers S)) := {t | t ∣ a}
-  letI : Fintype s := UniqueFactorizationMonoid.fintypeSubtypeDvd a ha
-  exact s.toFinite.subset (fun t ht => (dvd_pow_self t (NeZero.ne n)).trans ht)
-
-/-- A unit residue class modulo (c) is evaluated on an S-integer representative.
-For a unit modulus the product defining the residue symbol is empty. -/
-def gauss (S : Finset (Place F)) (b c : SIntegers S) : ℂ :=
-  ∑ᶠ u : (SIntegers S ⧸ Ideal.span {c})ˣ,
-    let a : SIntegers S := Quotient.out (u : SIntegers S ⧸ Ideal.span {c})
-    d.residue S a c * d.sPsi S ((b : F) * a / c)
-
-theorem gauss_lift_independent {S : Finset (Place F)} (hS : d.GoodOutside S)
-    (b : SIntegers S) (c : NonzeroInteger S) (u : (SIntegers S ⧸ Ideal.span {c.val})ˣ)
-    (a a' : SIntegers S) (ha : Ideal.Quotient.mk _ a = u.val)
-    (ha' : Ideal.Quotient.mk _ a' = u.val) :
-    d.residue S a c.val * d.sPsi S ((b : F) * a / c.val) =
-    d.residue S a' c.val * d.sPsi S ((b : F) * a' / c.val) := by sorry
-
-theorem gauss_unit_power {S : Finset (Place F)} (hS : d.GoodOutside S)
-    (b : SIntegers S) (c : NonzeroInteger S) (u : (SIntegers S)ˣ) :
-    d.gauss S b ((u : SIntegers S)^n * c.val) = d.gauss S b c.val := by sorry
-
-def normalizedGauss (S : Finset (Place F)) (b c : SIntegers S) : ℂ := by
-  classical
-  exact (sNorm S c : ℂ)⁻¹ * ∑ᶠ t : Associates (SIntegers S),
-    let a : SIntegers S := Quotient.out t
-    if h : a ^ n ∣ c then
-      (sNorm S a : ℂ) ^ (n-1) * d.gauss S b h.choose else 0
 
 def UnramifiedAt (v : Place F) : Prop :=
   ∀ x : LocalField F v, (∀ y : LocalField F v, ‖y‖ ≤ 1 →
@@ -116,8 +56,19 @@ def epsilon {S : Finset (Place F)} {f : NonzeroInteger S} (T : Twist (n := n) S 
   ∏ p : T.primes, d.dualWeight (.inr p.val) (charWeight (T.character p))
     (atPlace _ (b * fieldUnit f ^ (n-1))⁻¹)
 
+omit hn in
 theorem exists_scaled (b : Fˣ) : ∃ ψ : Character F, ∀ x,
-    ψ.toChar x = d.character.toChar (algebraMap F (Adeles F) (b : F) * x) := by sorry
+    ψ.toChar x = d.character.toChar (algebraMap F (Adeles F) (b : F) * x) := by
+  let χ := d.character.toChar.mulShift (algebraMap F (Adeles F) (b : F))
+  refine ⟨⟨χ, d.character.continuous_toChar.comp (continuous_const.mul continuous_id), ?_, ?_⟩,
+    fun _ => rfl⟩
+  · obtain ⟨x, hx⟩ := d.character.nontrivial
+    refine ⟨algebraMap F (Adeles F) (↑b⁻¹ : F) * x, ?_⟩
+    simpa only [χ, AddChar.mulShift_apply, ← mul_assoc, ← map_mul, Units.mul_inv, map_one,
+      one_mul] using hx
+  · intro a
+    exact (congrArg d.character.toChar (map_mul _ (b : F) a).symm).trans
+      (d.character.trivial_diagonal _)
 
 def scaled (b : Fˣ) : Datum F n := { d with character := (d.exists_scaled b).choose }
 
@@ -127,8 +78,45 @@ def sWeight {S : Finset (Place F)} (W : Weights S) (c : Fˣ) :=
 def sDual {S : Finset (Place F)} (W : Weights S) (c : Fˣ) :=
   ∏ v : S, d.dualWeight v.val (W v) (atPlace v.val c)
 
+omit hn in
+theorem scaled_localValue (b : Fˣ) (v : Place F) (x : LocalField F v) :
+    (d.scaled b).character.localValue F v x = d.character.localValue F v (diagonal F v b * x) := by
+  unfold Character.localValue
+  rw [show (d.scaled b).character.toChar (singleAdele F v x) = _ from
+    (d.exists_scaled b).choose_spec (singleAdele F v x)]
+  congr 2
+  classical
+  cases v with
+  | inl w =>
+    apply Prod.ext
+    · funext u
+      change algebraMap F u.Completion (b : F) * Pi.single w x u = Pi.single w (_ * x) u
+      by_cases h : u = w
+      · subst u; simp only [Pi.single_eq_same]; rfl
+      · simp only [Pi.single_eq_of_ne h, mul_zero]
+    · exact mul_zero _
+  | inr p =>
+    apply Prod.ext (mul_zero _)
+    exact (RestrictedProduct.mul_single _ p x (algebraMap F (Adeles F) (b : F)).2).symm
+
+omit hn in
+/-- The annihilator of the integers for the scaled character is the
+inverse image of the original annihilator under multiplication by b. -/
+theorem scaled_conductor (b : Fˣ) (v : Place F) (h : d.UnramifiedAt v)
+    (x : LocalField F v) :
+    (∀ y : LocalField F v, ‖y‖ ≤ 1 → (d.scaled b).character.localValue F v (x*y) = 1) ↔
+      ‖x * diagonal F v b‖ ≤ 1 := by
+  simp only [d.scaled_localValue, ← mul_assoc]
+  simpa only [mul_comm x (diagonal F v b)] using h (diagonal F v b * x)
+
+omit hn in
 theorem scaled_good {S : Finset (Place F)} (h : d.ClassicalSetting S) (b : NonzeroInteger S) :
-    (d.scaled (fieldUnit b)).GoodOutside S := by sorry
+    (d.scaled (fieldUnit b)).GoodOutside S := by
+  refine ⟨h.good.1, h.good.2.1, fun p hp => ⟨(h.good.2.2 p hp).1, fun x hx => ?_⟩⟩
+  rw [d.scaled_localValue]
+  apply (h.good.2.2 p hp).2
+  rw [norm_mul]
+  exact mul_le_one₀ (integer_norm_le_one b.val p hp) (norm_nonneg _) hx
 
 def mainTerm {S : Finset (Place F)} (h : d.ClassicalSetting S) (b : NonzeroInteger S)
     (W : Weights S) : ℂ :=

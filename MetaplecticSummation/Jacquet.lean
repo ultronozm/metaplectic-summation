@@ -69,7 +69,24 @@ abbrev PowerClass (n : ℕ) (v : Place F) := (LocalField F v)ˣ ⧸ (powMonoidHo
 abbrev Classes (n : ℕ) (S : Finset (Place F)) := (v : S) → PowerClass n v.val
 
 include hn in
-theorem finite_power_classes (v : Place F) : Finite (PowerClass n v) := by sorry
+theorem finite_power_classes (v : Place F) : Finite (PowerClass n v) := by
+  cases v with
+  | inl w =>
+    letI : NontriviallyNormedField w.Completion := {
+      non_trivial := by
+        refine ⟨algebraMap F w.Completion (2 : F), ?_⟩
+        have h := InfinitePlace.Completion.norm_coe w ((WithAbs.equiv w.1).symm (2 : F))
+        change 1 < ‖algebraMap F w.Completion (2 : F)‖
+        rw [show ‖algebraMap F w.Completion (2 : F)‖ = w (2 : F) from h]
+        simpa only [← Nat.cast_ofNat (R := F) (n := 2), w.map_natCast] using (by norm_num : (1:ℝ) < (2:ℕ)) }
+    letI : ProperSpace w.Completion := .of_nontriviallyNormedField_of_weaklyLocallyCompactSpace _
+    letI : CharZero w.Completion := charZero_of_injective_ringHom (algebraMap F w.Completion).injective
+    exact finite_unit_power_quotient (K := w.Completion) n (Nat.cast_ne_zero.mpr (NeZero.ne n))
+  | inr p =>
+    letI : NontriviallyNormedField (p.adicCompletion F) := FinitePlace.nontriviallyNormedCompletion p
+    letI : ProperSpace (p.adicCompletion F) := .of_nontriviallyNormedField_of_weaklyLocallyCompactSpace _
+    letI : CharZero (p.adicCompletion F) := charZero_of_injective_ringHom (algebraMap F (p.adicCompletion F)).injective
+    exact finite_unit_power_quotient (K := p.adicCompletion F) n (Nat.cast_ne_zero.mpr (NeZero.ne n))
 
 def moment {S : Finset (Place F)} (W : Weights S) (β : Classes n S) : ℂ := by
   classical

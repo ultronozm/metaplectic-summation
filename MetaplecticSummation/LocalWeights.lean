@@ -1,4 +1,4 @@
-import MetaplecticSummation.Gauss
+import MetaplecticSummation.BasicWeights
 import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 
 noncomputable section

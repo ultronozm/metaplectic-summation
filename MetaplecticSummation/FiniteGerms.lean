@@ -12,46 +12,6 @@ open Classical
 
 variable {K : Type} [NontriviallyNormedField K] {n : ℕ}
 
-/-- A compact subset of the dominant-coordinate chart meets every power ray
-in that cone. The normalized dominant coordinate has norm between 1 and B. -/
-private theorem compact_ray_shell [ProperSpace K] (hn : n ≠ 0) :
-    ∃ (T : Set (Kˣ × K)) (B : ℝ), IsCompact T ∧ 0 < B ∧
-    ∀ (a : Kˣ) (b : K), ‖b‖ ≤ ‖a.val‖ → ∃ (q : Kˣ × K) (u : Kˣ), q ∈ T ∧
-      (u^n*q.1,u.val^n*q.2) = (a,b) ∧ ‖u.val‖^n ≤ ‖a.val‖ ∧ ‖a.val‖ ≤ B * ‖u.val‖^n := by
-  obtain ⟨c,hc⟩ := NormedField.exists_one_lt_norm K
-  let B := ‖c‖^n
-  have hB : 1 < B := one_lt_pow₀ hc hn
-  let A := closedBall (0:K) B ∩ {x : K | 1 ≤ ‖x‖}
-  have hA : IsCompact A := (isCompact_closedBall _ _).inter_right (isClosed_le continuous_const continuous_norm)
-  have hA' := Units.isEmbedding_val₀.isInducing.isCompact_preimage' hA (by
-    intro x hx
-    have hnz : x ≠ 0 := by
-      rintro rfl
-      exact (not_le_of_gt zero_lt_one) (by simpa using hx.2)
-    exact ⟨Units.mk0 x hnz,rfl⟩)
-  refine ⟨_ ×ˢ closedBall 0 B,B,hA'.prod (isCompact_closedBall _ _),zero_lt_one.trans hB,?_⟩
-  intro a b hab
-  obtain ⟨j,hj₁,hj₂⟩ := exists_mem_Ico_zpow (norm_pos_iff.mpr a.ne_zero) hB
-  let u := (Units.mk0 c (norm_pos_iff.mp (zero_lt_one.trans hc))) ^ j
-  have hu : ‖u.val‖^n = B^j := by
-    simp only [u,Units.val_zpow_eq_zpow_val,Units.val_mk0,norm_zpow,B]
-    rw [← zpow_natCast, ← zpow_natCast (‖c‖), ← zpow_mul, ← zpow_mul, mul_comm]
-  have hval : ‖a.val‖ ≤ B * ‖u.val‖^n := by
-    rw [hu,mul_comm,← zpow_add_one₀ (ne_of_gt (zero_lt_one.trans hB))]
-    exact hj₂.le
-  have hpos : 0 < ‖u.val‖^n := pow_pos (norm_pos_iff.mpr u.ne_zero) _
-  let q : Kˣ × K := (a/u^n,b/u.val^n)
-  have hq : ‖q.1.val‖ = ‖a.val‖ / ‖u.val‖^n := by simp [q,norm_div,norm_pow]
-  refine ⟨q,u,⟨⟨?_,?_⟩,?_⟩,?_,hu ▸ hj₁,hval⟩
-  · change q.1.val ∈ closedBall 0 B
-    simpa [mem_closedBall,dist_zero_right,hq] using (div_le_iff₀ hpos).mpr hval
-  · change 1 ≤ ‖q.1.val‖
-    rw [hq,one_le_div hpos,hu]
-    exact hj₁
-  · simpa [q,mem_closedBall,dist_zero_right,norm_div,norm_pow] using (div_le_iff₀ hpos).mpr (hab.trans hval)
-  · dsimp [q]
-    ext <;> simp [field]
-
 /-- Evaluation at frequency zero of a ray extension determines the leading
 term at every dilate of the base point. -/
 private theorem ray_extension_zero {P : Type*} [TopologicalSpace P] {dil : Kˣ → P → P}

@@ -24,7 +24,7 @@ products and rational evaluations all depend on these inputs.
 | [LineMeasures](MetaplecticSummation/LineMeasures.lean) | Affine change of variables and equality of the normalized Radon charts |
 | [ArchimedeanLines](MetaplecticSummation/ArchimedeanLines.lean) | The infinite-place modulus and Steinberg relation |
 | [FiniteHaar](MetaplecticSummation/FiniteHaar.lean) | The finite residue field, compact ring of integers and the equality of the Haar modulus and the adic norm |
-| [PowerSubgroup](MetaplecticSummation/PowerSubgroup.lean) | Openness of the nonzero n-th powers when n is nonzero in the local field |
+| [PowerSubgroup](MetaplecticSummation/PowerSubgroup.lean) | Openness of the nonzero n-th powers and finiteness of the power-class group over a proper complete local field when the exponent is nonzero in the field |
 | [TameSymbols](MetaplecticSummation/TameSymbols.lean) | Principal units are n-th powers at tame places, giving the tame Steinberg relation |
 | [WildSymbols](MetaplecticSummation/WildSymbols.lean) | Steinberg at the wild places by reciprocity, Lemma 4.2(ii) at every place, and gluing of every Schwartz section |
 | [FiniteLines](MetaplecticSummation/FiniteLines.lean) | Absolute convergence, joint continuity and uniform vanishing for large line parameter on finite-place test functions in Lemma 4.2 |
@@ -36,12 +36,15 @@ products and rational evaluations all depend on these inputs.
 | [FiniteRayFourier](MetaplecticSummation/FiniteRayFourier.lean) | Local constancy and nontriviality of finite-place additive characters, and uniform Schwartz–Bruhat bounds after one-dimensional Fourier transformation |
 | [FiniteRays](MetaplecticSummation/FiniteRays.lean) | Bounded families of normalized ray extensions for every finite-place Schwartz section in §8 |
 | [FiniteGerms](MetaplecticSummation/FiniteGerms.lean) | Local constancy and homogeneity of the leading term, compact support in the plane, agreement with the leading term near zero, and identification of its kernel with the test sections |
+| [AdelicCharacters](MetaplecticSummation/AdelicCharacters.lean) | Convergence of the sum of the single-place components of an adele and the product formula for its additive character |
 | [RationalEvaluation](MetaplecticSummation/RationalEvaluation.lean) | The product formula for the normalized modulus, adelic chart evaluations on the restricted tensor product, and agreement at rational points by Hilbert reciprocity |
 | [Poisson](MetaplecticSummation/Poisson.lean) | The adelic Fourier and leading-term maps, Theorem 9.1, Corollary 9.2 including its local vanishing criterion, and the degree-one boundary value |
 | [Shears](MetaplecticSummation/Shears.lean) | Proved chart gluing, additive composition and the two Radon and Fourier identities of Lemma 5.2 |
 | [Inversion](MetaplecticSummation/Inversion.lean) | The root kernel, the local cover acting on Schwartz functions, Fourier inversion, equivariance and Plancherel (Theorem 7.1) |
 | [Jacquet](MetaplecticSummation/Jacquet.lean) | Jacquet integrals, the explicit dual weight (Proposition 10.8), and adelic summation with its power-class main term (Theorem 10.16) |
-| [Gauss](MetaplecticSummation/Gauss.lean) | Power residue symbols, Gauss sums and their divisor sums over S-integers, the twisted formula (Theorem 10.34), and quadratic duals (Corollary 10.40) |
+| [SArithmetic](MetaplecticSummation/SArithmetic.lean) | Finiteness of residue rings, power residue symbols, independence of Gauss sums from residue representatives, and the divisor sum over S-integers |
+| [Gauss](MetaplecticSummation/Gauss.lean) | Scaling the additive character, the twisted formula (Theorem 10.34), and quadratic duals (Corollary 10.40) |
+| [BasicWeights](MetaplecticSummation/BasicWeights.lean) | The self-dual volume of the local integers from the conductor, the basic Jacquet weight at units and nonintegral arguments, and vanishing of the product outside S for nonintegral moduli |
 | [LocalWeights](MetaplecticSummation/LocalWeights.lean) | Mellin factors, transforms of basic and character weights, the Gauss-sum expression for ε, and the intertwining operator on leading terms |
 | [AdeleLattice](MetaplecticSummation/AdeleLattice.lean) | Discreteness of the diagonal field, an additive fundamental domain in the adeles, and compactness of the Hausdorff quotient |
 | [FourierCoefficients](MetaplecticSummation/FourierCoefficients.lean) | Unfolding at frequencies zero and one, the two local marginal identities, Poisson on power classes and the constant-term identity |
@@ -99,7 +102,15 @@ proof obligations, run `rg -n '\bsorry\b' MetaplecticSummation`.
 fixed set of places. Its outer sums run over nonzero field elements.
 `twistedGaussSummation` assumes the S-integers form a PID and sums over their
 nonzero **elements**. Only the inner divisor sum in `normalizedGauss` runs over
-associates. With empty twist set, `mainTerm` forms both the coefficients and the
+associates. Multiplying the modulus by the n-th power of an S-unit preserves
+the Gauss sum. The divisor summand therefore has the same value on every
+representative of an associate class. At a finite place where the original
+character is unramified, Plancherel on the indicator of the integers gives
+volume |b|ᵥ^(1/2) for the measure self-dual with respect to the scaled
+character. Consequently the product of basic Jacquet factors outside S
+vanishes on nonintegral arguments and equals |b|ₛ^(−1/2) on S-units. The
+identification with normalized Gauss sums for general nonunit moduli remains
+open. With empty twist set, `mainTerm` forms both the coefficients and the
 multiplicative measures using the scaled character. With nonempty twist set,
 the dual sum retains both residue symbols.
 

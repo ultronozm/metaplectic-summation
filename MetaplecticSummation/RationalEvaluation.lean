@@ -1,4 +1,5 @@
 import MetaplecticSummation.Schwartz
+import MetaplecticSummation.AdelicCharacters
 
 noncomputable section
 namespace MetaplecticPoisson
@@ -29,7 +30,7 @@ private theorem eventually_place_of_finite {P : Place F → Prop}
   · exact Or.inl ⟨w,rfl⟩
   · exact Or.inr ⟨w,hw,rfl⟩
 
-private theorem eventually_diagonal_norm_one {a : F} (ha : a ≠ 0) :
+theorem eventually_diagonal_norm_one {a : F} (ha : a ≠ 0) :
     ∀ᶠ w : HeightOneSpectrum (𝓞 F) in cofinite, ‖diagonal F (.inr w) a‖ = 1 :=
   NumberField.FinitePlace.equivHeightOneSpectrum.symm.injective.tendsto_cofinite.eventually
     (eventually_cofinite.mpr (NumberField.FinitePlace.hasFiniteMulSupport ha))
@@ -230,18 +231,6 @@ theorem evaluation_pure_y (f : ∀ v, d.schwartz v) (hf) (p : RationalPoint F) (
     simp_rw [hxy]
     rw [finprod_mul_distrib (eventually_cofinite.mp hs) (eventually_cofinite.mp hY),show (∏ᶠ v, χ v) = 1 from hp,one_mul]
   · simp [localValue,hx]
-
-def component (u : Adeles F) (v : Place F) : LocalField F v :=
-  match v with
-  | .inl w => u.1 w
-  | .inr p => u.2 p
-
-def componentHom (v : Place F) : Adeles F →+* LocalField F v where
-  toFun u := component u v
-  map_one' := by cases v <;> rfl
-  map_zero' := by cases v <;> rfl
-  map_add' _ _ := by cases v <;> rfl
-  map_mul' _ _ := by cases v <;> rfl
 
 private theorem eventually_integral_component (u : Adeles F) :
     ∀ᶠ w : HeightOneSpectrum (𝓞 F) in cofinite, ‖component u (.inr w)‖ ≤ 1 :=
