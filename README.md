@@ -67,8 +67,10 @@ products and rational evaluations all depend on these inputs.
 | [FiniteInversion](MetaplecticSummation/FiniteInversion.lean) | Composition of diagonal lifts, the metaplectic square formula from marginal and ordinary Fourier inversion, and bijectivity from the square |
 | [LocalParseval](MetaplecticSummation/LocalParseval.lean), [ArchimedeanInversion](MetaplecticSummation/ArchimedeanInversion.lean) | Polarization of the self-dual normalization and pointwise ordinary Fourier inversion for the chosen character at every infinite place |
 | [Inversion](MetaplecticSummation/Inversion.lean) | Theorem 7.1 assembled from the local marginal identities, ordinary inversion, and metaplectic Plancherel. Metaplectic Plancherel and the root-kernel integral formula are admitted |
+| [FiniteBoundaryImage](MetaplecticSummation/FiniteBoundaryImage.lean) | The quotient by test sections, its identification with the image of the intertwining operator, and the support and germ characterization of Schwartz sections (Corollary 8.4) |
 | [LineMoments](MetaplecticSummation/LineMoments.lean) | Normalized test weights on local power classes, surjectivity of the weighted moment map, and products of tests isolating individual coefficient tuples |
-| [Jacquet/PowerAverage](MetaplecticSummation/Jacquet/PowerAverage.lean) | Power averages of Jacquet lifts, including vanishing for a zero moment vector, and the statement of the local leading-term formula |
+| [PowerHaar](MetaplecticSummation/PowerHaar.lean), [Jacquet/LeadingKernel](MetaplecticSummation/Jacquet/LeadingKernel.lean) | The power-map Haar normalization (2.1) at every place and absolute convergence for interchanging the power average with a line integral |
+| [Jacquet/PowerAverage](MetaplecticSummation/Jacquet/PowerAverage.lean) | Power averages of Jacquet lifts, including vanishing for a zero moment vector, and the proof of the local leading-term formula (Lemma 8.3) |
 | [Jacquet/LineWeights](MetaplecticSummation/Jacquet/LineWeights.lean), [Jacquet](MetaplecticSummation/Jacquet.lean) | The explicit dual weight (Proposition 10.8), lifting and unfolding of both adelic sums, and the deduction of the line formula with its unique power-class coefficients (Theorem 10.16) |
 | [Jacquet/Kernel](MetaplecticSummation/Jacquet/Kernel.lean), [ArchimedeanFourierSchwartz](MetaplecticSummation/ArchimedeanFourierSchwartz.lean) | Schwartz–Bruhat regularity of the kernel in Proposition 10.8 and absolute convergence of its Fourier integral at every frequency |
 | [Jacquet/Weak](MetaplecticSummation/Jacquet/Weak.lean), [Jacquet/ArchWeak](MetaplecticSummation/Jacquet/ArchWeak.lean), [Jacquet/ShearRegion](MetaplecticSummation/Jacquet/ShearRegion.lean) | Weak and pointwise Jacquet identities, their finite-place proofs, and reduction at infinite places to the vertical part of the shear estimate |
@@ -324,8 +326,7 @@ therefore descends to a multilinear form on the moment vectors. Evaluation
 on products of the normalized tests determines its coefficients uniquely.
 The remaining project admissions used by this deduction are the normalized
 Hilbert symbol, the local Fourier endomorphism, Proposition B.6 on the theta
-difference, Fourier coefficient unfolding, and the local formula for the
-leading term of a transformed test.
+difference, and Fourier coefficient unfolding.
 For any covering degree, the original summand has finite support on those
 elements. The local tests at S give bounded radii, the basic factors outside S
 vanish on nonintegral elements, and the rational box count applies.

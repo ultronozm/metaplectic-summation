@@ -127,6 +127,20 @@ private theorem kernel_bound (hf : RapidLineChart f) (hphase : ∀ x a, ‖phase
     _ ≤ ‖f a y‖*((1+r)^(3+j)*D^j) := mul_le_mul_of_nonneg_left hh (norm_nonneg _)
     _ ≤ _ := by rw [← mul_assoc]; exact mul_le_mul_of_nonneg_right (H a y) (by positivity)
 
+omit [MeasurableSpace K] [BorelSpace K] in
+/-- A rapidly decreasing chart on a fixed pencil of lines admits a product
+majorant in the line parameter and the integration coordinate. -/
+theorem RapidLineChart.bound_on_lines (hf : RapidLineChart f) {n : ℕ} (hn : 0 < n)
+    (c : Kˣ) (b s : K) (hs : ‖s‖ = 1) :
+    ∃ B : ℝ, ∀ t x : Kˣ, ‖f x ((x.val*b+s*t.val^n)/c.val)‖ ≤
+      B*((1+‖t.val‖)^3)⁻¹*((1+‖x.val‖)^3)⁻¹ := by
+  have hp (t : K) : ‖s*t^n‖ = ‖t‖^n := by simp [norm_mul,hs]
+  obtain ⟨C,_,H⟩ := kernel_bound hf (phase := fun _ _ => 1) (fun _ _ => norm_one)
+    hn hp 3
+  refine ⟨C*(2+‖c.val‖+‖b‖)^3,?_⟩
+  intro t x
+  simpa only [sliceKernel,dif_pos x.ne_zero,Units.mk0_val,mul_one] using H (c,b) t.val x.val
+
 private theorem slice_analysis (μ : Measure K) (hint : Integrable (fun x : K => ((1+‖x‖)^3)⁻¹) μ)
     (hf : RapidLineChart f) (hc : Continuous (Function.uncurry phase)) (hphase : ∀ x a, ‖phase x a‖ = 1)
     {n : ℕ} (hn : 1 ≤ n) (hc' : Continuous p) (hp : ∀ t, ‖p t‖ = ‖t‖^n) :

@@ -1,5 +1,6 @@
 import MetaplecticSummation.UnramifiedGauss
 import MetaplecticSummation.Gauss
+import MetaplecticSummation.FiniteBoundaryImage
 import MetaplecticSummation.Inversion
 import MetaplecticSummation.Jacquet.Convergence
 import Mathlib.Analysis.SpecialFunctions.Pow.Complex
@@ -127,14 +128,5 @@ theorem mellin_dual (v : Place F) (W : Weight v) (hw : TestWeight v W) (β : (Lo
       d.mellin v (d.dualWeight v W) (fun x => ω x) s =
         (Real.sqrt (modulus F v (n : LocalField F v)) : ℂ)⁻¹ * η (-1) * γ₁ * γ₂ *
           d.mellin v W (fun x => (ω x : ℂ)⁻¹) (-s) := by sorry
-
-theorem finite_boundary_image (p : Prime F) (g : Charts (LocalField F (.inr p))) :
-    let v : Place F := .inr p
-    g ∈ LinearMap.range (d.leading v) ↔ ∃ f : Charts (LocalField F v),
-      Glues (d.symbol v) f ∧ IsLocallyConstant (fun z : (LocalField F v)ˣ × LocalField F v => f.1 z.1 z.2) ∧
-      IsLocallyConstant (fun z : LocalField F v × (LocalField F v)ˣ => f.2 z.1 z.2) ∧
-      (∀ u : (LocalField F v)ˣ, dilateCharts (u^n) f =
-        ((modulus F v (u^n : (LocalField F v)ˣ) ^ (-1-1/(n : ℝ)) : ℝ) : ℂ) • f) ∧
-      g = d.intertwiner v f := by sorry
 
 end MetaplecticPoisson.Datum
