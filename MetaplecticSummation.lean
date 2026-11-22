@@ -1,4 +1,5 @@
 import MetaplecticSummation.Inversion
+import MetaplecticSummation.UnitTransformBounds
 import MetaplecticSummation.LocalWeights
 import MetaplecticSummation.BasicMarginals
 import MetaplecticSummation.FourierCoefficients
