@@ -1,5 +1,6 @@
 import MetaplecticSummation.ThetaMajorant
 import MetaplecticSummation.FiniteGerms
+import MetaplecticSummation.ArchimedeanFourierDecay
 
 /-! The local growth bounds for the theta estimate. -/
 noncomputable section
@@ -321,13 +322,6 @@ theorem arch_test_growth (w : InfinitePlace F) {f : Charts w.Completion} (hf : f
       (by simpa only [testSet,dif_pos hw] using hf.2) N hN
   · exact archTest_growth _ (InfinitePlace.Completion.isometry_extensionEmbedding w)
       (by simpa only [testSet,dif_neg hw] using hf.2) N hN
-
-/-- The remaining high-frequency estimate from the bounded Schwartz families
-in Lemma 4.2(iii), for the ordinary Fourier integrals of the line slices. -/
-theorem arch_radon_hat_decay (w : InfinitePlace F) {f : Charts w.Completion} (hf : f ∈ d.testSet (.inl w))
-    (T : Set (w.Completionˣ × w.Completion)) (hT : IsCompact T) (j : ℕ) :
-    ∃ C : ℝ, 0 ≤ C ∧ ∀ q ∈ T, ∀ u : w.Completion, 1 ≤ ‖u‖ →
-      ‖d.archRadonHat w f q u‖ * (1+‖u‖)^j ≤ C := by sorry
 
 private theorem arch_hat_weight (w : InfinitePlace F) {f : Charts w.Completion} (hf : f ∈ d.testSet (.inl w))
     (T : Set (w.Completionˣ × w.Completion)) (hT : IsCompact T) (j : ℕ) :

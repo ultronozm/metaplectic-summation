@@ -1,4 +1,5 @@
 import MetaplecticSummation.FiniteLeading
+import MetaplecticSummation.CharacterNontrivial
 import Mathlib.Analysis.SpecialFunctions.Complex.Circle
 import Mathlib.Analysis.Normed.Field.Ultra
 
@@ -34,34 +35,6 @@ theorem locallyConstant_addChar {K : Type*} [NormedField K] [IsUltrametricDist K
   have h := χ.map_add_eq_mul (y-x) x
   simpa [hk _ (show ‖y-x‖ < r by simpa [mem_ball,dist_eq_norm] using hy)] using h
 
-/-- Nontriviality follows already from Plancherel on the indicator of the unit ball.
-For a trivial character its transform would be a nonzero constant on a field of infinite measure. -/
-private theorem nontrivial_of_plancherel {K : Type*} [NontriviallyNormedField K] [IsUltrametricDist K]
-    [ProperSpace K] [MeasurableSpace K] [BorelSpace K] (dx : Measure K) [dx.IsAddHaarMeasure]
-    (ψ : K → ℂ) (hP : ∀ f : K → ℂ, Continuous f → HasCompactSupport f →
-      (∫⁻ y, ‖∫ x, f x * ψ (x*y) ∂dx‖ₑ ^ 2 ∂dx) = ∫⁻ x, ‖f x‖ₑ ^ 2 ∂dx) :
-    ∃ x, ψ x ≠ 1 := by
-  by_contra! hψ
-  let B := ball (0 : K) 1
-  let g := B.indicator (fun _ => (1 : ℂ))
-  have hc : IsClopen B := IsUltrametricDist.isClopen_ball _ _
-  have hk : IsCompact B := (isCompact_closedBall (0 : K) 1).of_isClosed_subset hc.isClosed ball_subset_closedBall
-  have hpos : 0 < dx B := hc.isOpen.measure_pos _ ⟨0, mem_ball_self one_pos⟩
-  have hfin := hk.measure_lt_top (μ := dx)
-  have he := hP g (hc.continuous_indicator continuous_const)
-    (HasCompactSupport.intro hk (fun _ hx => indicator_of_notMem hx _))
-  have hi : (∫ x, g x ∂dx) = (dx.real B : ℂ) := by
-    simp [g,integral_indicator hc.isOpen.measurableSet,Measure.real]
-  have hr : (∫⁻ x, ‖g x‖ₑ ^ 2 ∂dx) = dx B := by
-    have eg (x : K) : ‖g x‖ₑ ^ 2 = B.indicator (fun _ => (1 : ℝ≥0∞)) x := by
-      by_cases hx : x ∈ B <;> simp [g,hx]
-    simp_rw [eg]
-    simp [lintegral_indicator hc.isOpen.measurableSet]
-  have hn : (dx.real B : ℂ) ≠ 0 := Complex.ofReal_ne_zero.mpr (ENNReal.toReal_pos hpos.ne' hfin.ne).ne'
-  simp only [hψ, mul_one, hi, lintegral_const, measure_univ_of_isAddLeftInvariant, hr] at he
-  rw [ENNReal.mul_top (pow_ne_zero 2 (enorm_ne_zero.mpr hn))] at he
-  exact hfin.ne he.symm
-
 namespace Character
 open NumberField IsDedekindDomain
 variable {F : Type} [Field F] [NumberField F] (χ : Character F)
@@ -77,16 +50,7 @@ theorem locallyConstant_finiteValue (p : HeightOneSpectrum (𝓞 F)) :
   exact (locallyConstant_addChar ψ (χ.continuous_toChar.comp (continuous_singleAdele v))).comp Subtype.val
 
 theorem nontrivial_finiteValue (p : HeightOneSpectrum (𝓞 F)) :
-    ∃ x, χ.localValue F (.inr p) x ≠ 1 := by
-  let v : Place F := .inr p
-  letI : NontriviallyNormedField (p.adicCompletion F) := FinitePlace.nontriviallyNormedCompletion p
-  letI : ProperSpace (p.adicCompletion F) := .of_nontriviallyNormedField_of_weaklyLocallyCompactSpace _
-  letI : MeasurableSpace (p.adicCompletion F) := borel _
-  letI : BorelSpace (p.adicCompletion F) := ⟨rfl⟩
-  let dx : Measure (p.adicCompletion F) := selfDual F χ v
-  obtain ⟨hh,hP⟩ := (existsUnique_selfDual F χ v).exists.choose_spec
-  letI : dx.IsAddHaarMeasure := hh
-  exact nontrivial_of_plancherel dx _ hP
+    ∃ x, χ.localValue F (.inr p) x ≠ 1 := χ.nontrivial_localValue (.inr p)
 
 end Character
 
