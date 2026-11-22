@@ -103,4 +103,16 @@ theorem eventually_axisDensity_basic (Φ : ∀ v, d.schwartz v) (hΦ : ∀ᶠ v 
   rw [hp]
   exact d.axisDensity_basic p (FinitePlace.tame_of_degree_not_mem n p hdeg) hn _ hx
 
+/-- The transformed local density of a pure tensor has the same reference
+factor at almost every finite place, simultaneously at all frequencies. -/
+theorem eventually_hat_axisDensity_basic (Φ : ∀ v, d.schwartz v) (hΦ : ∀ᶠ v in cofinite, Φ v = d.basic v)
+    (x : Fˣ) : ∀ᶠ p : Prime F in cofinite, ∀ u : LocalField F (.inr p),
+      d.hat (.inr p) (d.axisDensity (.inr p) (Φ (.inr p)) (atPlace (.inr p) x)) u =
+        if ‖u‖ ≤ 1 then 1 else 0 := by
+  filter_upwards [d.eventually_axisDensity_basic Φ hΦ x,d.eventually_unramified] with p h hp
+  intro u
+  unfold hat
+  simp_rw [h,mul_comm u]
+  exact d.integral_unitBall_character p hp u
+
 end MetaplecticPoisson.Datum

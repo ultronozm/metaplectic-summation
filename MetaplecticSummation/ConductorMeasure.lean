@@ -1,4 +1,4 @@
-import MetaplecticSummation.LocalCharacterScaling
+import MetaplecticSummation.AdelicConductor
 import MetaplecticSummation.FourierOrthogonality
 import MetaplecticSummation.FiniteRayFourier
 
@@ -152,6 +152,13 @@ theorem selfDual_volume_unramified (p : Prime F) (hψ : d.UnramifiedAt (.inr p))
     (selfDual F d.character (.inr p)).real {x | ‖x‖ ≤ 1} = 1 := by
   simpa only [Units.val_one, norm_one, Real.sqrt_one] using
     d.selfDual_volume_of_conductor p 1 (fun x => by rw [Units.val_one, mul_one]; exact hψ x)
+
+omit [NeZero n] in
+/-- The self-dual measures give the integral reference factors volume one
+outside a finite set of primes. -/
+theorem eventually_selfDual_volume_one :
+    ∀ᶠ p : Prime F in Filter.cofinite, (selfDual F d.character (.inr p)).real {x | ‖x‖ ≤ 1} = 1 :=
+  d.eventually_unramified.mono (fun p hp => d.selfDual_volume_unramified p hp)
 
 omit [NeZero n] in
 theorem scaled_selfDual_volume (p : Prime F) (hψ : d.UnramifiedAt (.inr p)) (b : Fˣ) :

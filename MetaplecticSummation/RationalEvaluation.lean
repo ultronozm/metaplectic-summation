@@ -22,15 +22,6 @@ def diagonalPoint (p : RationalPoint F) (v : Place F) : LocalField F v × LocalF
 def localValue (p : RationalPoint F) (v : Place F) (f : d.schwartz v) : ℂ := by
   classical exact if p.val.1 ≠ 0 then xChart f (diagonalPoint p v) else yChart f (diagonalPoint p v)
 
-theorem eventually_place_of_finite {P : Place F → Prop}
-    (h : ∀ᶠ w in cofinite, P (.inr w)) : ∀ᶠ v in cofinite, P v := by
-  apply eventually_cofinite.mpr
-  apply ((Set.finite_range (Sum.inl : InfinitePlace F → Place F)).union
-    ((eventually_cofinite.mp h).image Sum.inr)).subset
-  rintro (w | w) hw
-  · exact Or.inl ⟨w,rfl⟩
-  · exact Or.inr ⟨w,hw,rfl⟩
-
 theorem eventually_diagonal_norm_one {a : F} (ha : a ≠ 0) :
     ∀ᶠ w : HeightOneSpectrum (𝓞 F) in cofinite, ‖diagonal F (.inr w) a‖ = 1 :=
   NumberField.FinitePlace.equivHeightOneSpectrum.symm.injective.tendsto_cofinite.eventually

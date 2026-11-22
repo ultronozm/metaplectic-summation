@@ -1,7 +1,6 @@
-import MetaplecticSummation.ArchimedeanCharacters
+import MetaplecticSummation.ArchimedeanPlancherel
 import MetaplecticSummation.ArchimedeanInversion
 import Mathlib.Analysis.Distribution.SchwartzSpace.Fourier
-import Mathlib.Analysis.InnerProductSpace.Dual
 
 /-! Ordinary Fourier transformation on Schwartz space for the chosen local
 character and Haar measure at a real or complex place. -/
@@ -10,29 +9,6 @@ namespace MetaplecticPoisson.Datum
 open NumberField MeasureTheory InnerProductSpace
 open scoped Topology FourierTransform RealInnerProductSpace NNReal
 open Classical
-
-/-- In inner-product coordinates the nontrivial character of the field
-pairing differs from the standard Fourier character by a linear isomorphism. -/
-private theorem frequency_equiv {L : Type} [RCLike L] (χ : AddChar L ℂ) (hc : Continuous χ)
-    (hu : ∀ t, ‖χ t‖ = 1) (hn : ∃ t, χ t ≠ 1) :
-    ∃ T : L ≃L[ℝ] L, ∀ x y, χ (x*y) = (Real.fourierChar (-inner ℝ y (T x)) : ℂ) := by
-  obtain ⟨l,hl⟩ := continuous_unitary_character_linear χ hc hu
-  let B := ((ContinuousLinearMap.compL ℝ L L ℝ) (-l)).comp (ContinuousLinearMap.mul ℝ L)
-  let A := continuousLinearMapOfBilin B
-  have pair (x y : L) : inner ℝ (A x) y = -l (x*y) := continuousLinearMapOfBilin_apply B x y
-  have hi : Function.Injective A := by
-    apply (injective_iff_map_eq_zero A).2
-    intro x hx
-    by_contra he
-    obtain ⟨t,ht⟩ := hn
-    have h := pair x (t/x)
-    rw [hx,inner_zero_left,mul_div_cancel₀ _ he] at h
-    rw [hl,show l t = 0 by simpa using h] at ht
-    simp at ht
-  let T := (LinearEquiv.ofInjectiveEndo A.toLinearMap hi).toContinuousLinearEquiv
-  refine ⟨T,fun x y => ?_⟩
-  change χ (x*y) = (Real.fourierChar (-inner ℝ y (A x)) : ℂ)
-  rw [real_inner_comm,pair,neg_neg,hl]
 
 variable {F : Type} [Field F] [NumberField F] {n : ℕ} (d : Datum F n) (w : InfinitePlace F)
 local notation "vi" => (Sum.inl w : Place F)
@@ -50,7 +26,7 @@ private theorem arch_hat_coordinates {L : Type} [RCLike L] (e : w.Completion ≃
   have hn : ∃ x, χ x ≠ 1 := by
     obtain ⟨x,hx⟩ := d.character.nontrivial_localValue vi
     exact ⟨e x,by simpa only [χ,AddChar.coe_mk,e.symm_apply_apply] using hx⟩
-  obtain ⟨T,hT⟩ := frequency_equiv χ hc (fun x => d.character.norm_localValue vi _) hn
+  obtain ⟨T,hT⟩ := character_frequency_equiv χ hc (fun x => d.character.norm_localValue vi _) hn
   let ν := (dx).map i
   letI : (dx).IsAddHaarMeasure := (existsUnique_selfDual F d.character vi).exists.choose_spec.1
   letI : ν.IsAddHaarMeasure := e.toAddEquiv.isAddHaarMeasure_map dx he.continuous i.symm.continuous

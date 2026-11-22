@@ -15,10 +15,11 @@ products and rational evaluations all depend on these inputs.
 
 | File | Mathematical content |
 | --- | --- |
-| [Arithmetic](MetaplecticSummation/Arithmetic.lean) | Completions, local characters, normalized modulus, self-dual measures and the Hilbert symbol |
+| [Places](MetaplecticSummation/Places.lean), [Arithmetic](MetaplecticSummation/Arithmetic.lean) | Completions, local characters, normalized modulus, self-dual measures and the Hilbert symbol |
+| [ArchimedeanPlancherel](MetaplecticSummation/ArchimedeanPlancherel.lean), [ArchimedeanSelfDual](MetaplecticSummation/ArchimedeanSelfDual.lean) | Construction of the self-dual Haar measure for the specified additive character at each real or complex place |
 | [Core](MetaplecticSummation/Core.lean) | The two chart integrals in Definition 4.4, normalized ray limits and maps of restricted tensor products |
 | [Schwartz/Local](MetaplecticSummation/Schwartz/Local.lean) | Local test functions, their transforms, the Schwartz space they span, and the explicit basic charts |
-| [Schwartz/Basic](MetaplecticSummation/Schwartz/Basic.lean) | Choice of the reference vector for the restricted tensor product |
+| [Schwartz/Basic](MetaplecticSummation/Schwartz/Basic.lean) | Choice of the reference vector for the restricted tensor product and its Fourier invariance at almost every place |
 | [Schwartz](MetaplecticSummation/Schwartz.lean) | The leading-term map and its values on both types of generator at every place |
 | [SymbolOnLines](MetaplecticSummation/SymbolOnLines.lean) | Equality of the two integrands up to the chart multiplier on every line, from the Steinberg relation |
 | [LocalSymbols](MetaplecticSummation/LocalSymbols.lean) | Continuity and unitarity of the complex symbol from the stated arithmetic characterization |
@@ -34,7 +35,7 @@ products and rational evaluations all depend on these inputs.
 | [FiniteLines](MetaplecticSummation/FiniteLines.lean) | Absolute convergence, joint continuity and uniform vanishing for large line parameter on finite-place test functions in Lemma 4.2 |
 | [SmoothFiniteLines](MetaplecticSummation/SmoothFiniteLines.lean) | Joint local constancy of both finite-place Radon charts and uniform Schwartz–Bruhat bounds for the line slices over compact sets of output vectors |
 | [LocalCharacters](MetaplecticSummation/LocalCharacters.lean) | Continuity, additivity and unitarity of the restrictions of the adelic character |
-| [CharacterNontrivial](MetaplecticSummation/CharacterNontrivial.lean) | Nontriviality of the additive character at every place from its self-dual normalization |
+| [CharacterNontrivial](MetaplecticSummation/CharacterNontrivial.lean) | Nontriviality of a character satisfying the local Plancherel identity |
 | [ArchimedeanSlice](MetaplecticSummation/ArchimedeanSlice.lean), [SchwartzSliceIntegral](MetaplecticSummation/SchwartzSliceIntegral.lean), [SchwartzSliceFamily](MetaplecticSummation/SchwartzSliceFamily.lean) | Differentiation of affine line integrals and compact-uniform Schwartz bounds under the determinant substitution τ ↦ τⁿ |
 | [FourierDifferences](MetaplecticSummation/FourierDifferences.lean), [ArchimedeanFourierDecay](MetaplecticSummation/ArchimedeanFourierDecay.lean) | Fourier multipliers for translations and differences, integral decay estimates from real derivatives, and uniform Fourier decay for bounded Schwartz families |
 | [FiniteTransform](MetaplecticSummation/FiniteTransform.lean) | Absolute convergence of the outer transform integral on finite-place test sections and local constancy of both charts of every finite-place Schwartz section |
@@ -46,6 +47,7 @@ products and rational evaluations all depend on these inputs.
 | [FiniteRayFourier](MetaplecticSummation/FiniteRayFourier.lean) | Local constancy and nontriviality of finite-place additive characters, and uniform Schwartz–Bruhat bounds after one-dimensional Fourier transformation |
 | [FiniteRays](MetaplecticSummation/FiniteRays.lean) | Bounded families of normalized ray extensions for every finite-place Schwartz section in §8 |
 | [FiniteGerms](MetaplecticSummation/FiniteGerms.lean) | Local constancy and homogeneity of the leading term, compact support in the plane, agreement with the leading term near zero, and identification of its kernel with the test sections |
+| [AdelicAnnihilator](MetaplecticSummation/AdelicAnnihilator.lean), [AdelicConductor](MetaplecticSummation/AdelicConductor.lean) | Compact annihilator of a compact set of representatives for the adelic quotient and the unramified conductor at almost every finite place |
 | [AdelicCharacters](MetaplecticSummation/AdelicCharacters.lean) | Convergence of the sum of the single-place components of an adele and the product formula for its additive character |
 | [RationalEvaluation](MetaplecticSummation/RationalEvaluation.lean) | The product formula for the normalized modulus, adelic chart evaluations on the restricted tensor product, and agreement at rational points by Hilbert reciprocity |
 | [BoundaryDilation](MetaplecticSummation/BoundaryDilation.lean) | The local modification in Appendix B, preserving the leading term and killing the transformed leading term (B.8) |
@@ -123,8 +125,14 @@ products and rational evaluations all depend on these inputs.
 At every place the self-dual Haar measure is unique if it exists. Multiplying
 Haar measure by a positive scalar multiplies the squared norm of the transform
 by its cube and the squared norm of the input by the scalar itself. A nonzero
-compactly supported test forces the scalar to equal one. Existence remains
-admitted in `exists_selfDual`.
+compactly supported test forces the scalar to equal one. At real and complex
+places the character pairing is the standard Fourier character composed
+with an invertible real linear change of frequency. The ordinary integral
+agrees almost everywhere with the L² Fourier transform for functions in
+L¹ ∩ L². Rescaling Euclidean volume by the inverse square root of its
+pushforward Haar factor gives Plancherel for the chosen character. Transport
+to the completion proves `exists_arch_selfDual`. The finite-place existence
+theorem `exists_finite_selfDual` remains admitted.
 
 At infinite places `arch_hat_hat_of_integrable` proves pointwise ordinary
 Fourier inversion for a continuous integrable function with integrable transform.
@@ -265,10 +273,21 @@ Pullback by τ ↦ τⁿ preserves bounded sets of Schwartz functions. Together 
 prove the slice assertion of Lemma 4.2(iii). Its additional assertions about
 joint smoothness and derivatives in the output vector remain open at infinite places.
 
-Triviality of an adelic character on the local integer ring holds outside
-a finite set. This gives a set satisfying `GoodOutside` for the line formula.
-Proving that the annihilator of the local integer ring equals that ring at
-almost every place is a stronger conductor statement.
+For every nontrivial adelic character trivial on the diagonal, the annihilator
+of the local integers equals the local integers at almost every finite place.
+To see this, take compact representatives for the adelic quotient with
+integral finite components. Only finitely many rational translates of this
+compact set meet its annihilator. The rational translation parameters are
+integral at almost every prime, which bounds the local annihilator there.
+The same compactness argument proves that every local component of the
+character is nontrivial. Both character results follow from the adelic
+character and lattice alone.
+
+At almost every finite place the self-dual measure gives the local integers
+volume one, the local Fourier operator fixes the basic vector, and the
+ordinary Fourier transform of a pure tensor's axis density is the indicator
+of the local integers at every frequency. The basic-vector identity supplies
+the compatibility required to form the adelic Fourier operator.
 
 The global vanishing statement of Proposition B.6 remains admitted in
 `thetaDifference_vanishing`. Given this input, Lean constructs the boundary
@@ -303,8 +322,8 @@ field element, including integral moduli divisible by repeated n-th powers.
 
 The residue-ring isomorphism uses only standard Lean axioms. The proof of the
 ordinary Gauss-sum factorization depends on the admitted characterization of
-the Hilbert symbols. The basic Jacquet formulas additionally use the admitted
-self-dual measure theorem.
+the Hilbert symbols. The basic Jacquet formulas additionally use the admitted existence of
+the finite-place self-dual measure.
 
 At a tame finite place, the explicit charts for the basic vector satisfy gluing
 and invariance under integral shears. With unramified character the integral
@@ -353,7 +372,7 @@ with integrable X-chart. In particular, the explicit lift of every test
 weight W satisfies both $J\Phi = W$ and $J(\mathcal F\Phi) = W^\vee$ at every
 place, with the explicit kernel formula for $W^\vee$. The finite-place formulas and the all-place lift
 use the admitted existence of the normalized Hilbert symbols and of
-the self-dual measure, together with stability of the local Schwartz space under
+the finite-place self-dual measure, together with stability of the local Schwartz space under
 the defining Fourier integral.
 
 For an arbitrary section at a real or complex place, the weak and pointwise

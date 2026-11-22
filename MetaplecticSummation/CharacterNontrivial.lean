@@ -1,8 +1,8 @@
 import MetaplecticSummation.ArchimedeanLines
 import MetaplecticSummation.FiniteHaar
-import MetaplecticSummation.LocalCharacters
+import MetaplecticSummation.AdelicAnnihilator
 
-/-! Nontriviality of the additive character at every place, from its self-dual normalization. -/
+/-! A local character satisfying Plancherel is nontrivial. -/
 noncomputable section
 open MeasureTheory Set
 namespace MetaplecticPoisson
@@ -29,25 +29,5 @@ theorem character_nontrivial_of_plancherel {K : Type*} [NontriviallyNormedField 
   simp only [hψ,mul_one,lintegral_const,measure_univ_of_isAddLeftInvariant,
     ENNReal.mul_top (pow_ne_zero 2 (enorm_ne_zero.mpr hi))] at H
   exact hr.ne H.symm
-open NumberField
-
-/-- Every local component of the adelic character is nontrivial. -/
-theorem Character.nontrivial_localValue {F : Type} [Field F] [NumberField F] (χ : Character F) (v : Place F) :
-    ∃ t, χ.localValue F v t ≠ 1 := by
-  let K := LocalField F v
-  have hK : ∃ x : LocalField F v, 1 < ‖x‖ := by
-    cases v with
-    | inl w => exact (Datum.archNontriviallyNormedCompletion w).non_trivial
-    | inr p => exact (FinitePlace.nontriviallyNormedCompletion p).non_trivial
-  letI : NontriviallyNormedField K := { localNormedField F v with non_trivial := hK }
-  letI : LocallyCompactSpace K := by
-    cases v with
-    | inl w => exact inferInstanceAs (LocallyCompactSpace w.Completion)
-    | inr p => exact inferInstanceAs (LocallyCompactSpace (p.adicCompletion F))
-  letI : ProperSpace K := .of_nontriviallyNormedField_of_weaklyLocallyCompactSpace _
-  let μ : Measure K := selfDual F χ v
-  obtain ⟨hh,hP⟩ := (existsUnique_selfDual F χ v).exists.choose_spec
-  letI : μ.IsAddHaarMeasure := hh
-  exact character_nontrivial_of_plancherel μ _ hP
 
 end MetaplecticPoisson

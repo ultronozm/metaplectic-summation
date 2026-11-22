@@ -1,4 +1,4 @@
-import MetaplecticSummation.FiniteHaar
+import MetaplecticSummation.FiniteCompletionTopology
 import Mathlib.NumberTheory.NumberField.AdeleRing
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
 import Mathlib.MeasureTheory.Measure.Haar.Unique

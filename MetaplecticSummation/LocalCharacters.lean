@@ -1,4 +1,4 @@
-import MetaplecticSummation.Arithmetic
+import MetaplecticSummation.Places
 
 /-! Restriction of the adelic additive character to one completion. The
 finite-place continuity argument uses the restricted-product inclusion as

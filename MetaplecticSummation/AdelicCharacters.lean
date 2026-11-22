@@ -8,6 +8,15 @@ open NumberField IsDedekindDomain Filter
 open scoped RestrictedProduct Topology
 variable {F : Type} [Field F] [NumberField F]
 
+theorem eventually_place_of_finite {P : Place F → Prop}
+    (h : ∀ᶠ w in cofinite, P (.inr w)) : ∀ᶠ v in cofinite, P v := by
+  apply eventually_cofinite.mpr
+  apply ((Set.finite_range (Sum.inl : InfinitePlace F → Place F)).union
+    ((eventually_cofinite.mp h).image Sum.inr)).subset
+  rintro (w | w) hw
+  · exact Or.inl ⟨w,rfl⟩
+  · exact Or.inr ⟨w,hw,rfl⟩
+
 def component (u : Adeles F) (v : Place F) : LocalField F v :=
   match v with
   | .inl w => u.1 w
@@ -19,6 +28,30 @@ def componentHom (v : Place F) : Adeles F →+* LocalField F v where
   map_zero' := by cases v <;> rfl
   map_add' _ _ := by cases v <;> rfl
   map_mul' _ _ := by cases v <;> rfl
+
+theorem component_single_self (v : Place F) (x : LocalField F v) :
+    component (singleAdele F v x) v = x := by
+  cases v with
+  | inl w => exact Pi.single_eq_same w x
+  | inr p => exact Pi.single_eq_same (M := fun q : HeightOneSpectrum (𝓞 F) => q.adicCompletion F) p x
+
+theorem singleAdele_mul (v : Place F) (x : LocalField F v) (a : Adeles F) :
+    singleAdele F v x * a = singleAdele F v (x * component a v) := by
+  cases v with
+  | inl w =>
+    change w.Completion at x
+    apply Prod.ext _ (zero_mul _)
+    funext j
+    change Pi.single w x j * a.1 j = Pi.single w (x*a.1 w) j
+    by_cases hj : j = w
+    · subst j; simp only [Pi.single_eq_same]
+    · simp only [Pi.single_eq_of_ne hj,zero_mul]
+  | inr p => exact Prod.ext (zero_mul _) (RestrictedProduct.single_mul _ p x a.2).symm
+
+theorem continuous_component (v : Place F) : Continuous (fun a : Adeles F => component a v) := by
+  cases v with
+  | inl w => exact (continuous_apply w).comp continuous_fst
+  | inr p => exact (RestrictedProduct.continuous_eval p).comp continuous_snd
 
 private theorem component_single (x : Adeles F) (i v : Place F) :
     component (singleAdele F i (component x i)) v =
