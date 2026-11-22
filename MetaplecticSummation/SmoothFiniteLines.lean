@@ -1,6 +1,7 @@
 import MetaplecticSummation.FiniteLines
 import MetaplecticSummation.WildSymbols
 import MetaplecticSummation.PowerSubgroup
+import MetaplecticSummation.Shears
 
 /-! Smooth extension of the line integrands at the axes and local constancy
 under integration at a finite place (Lemma 4.2(iii)). -/
@@ -154,6 +155,66 @@ private theorem glues_swap (H : LineSymbol K n) {f : Charts K} (hf : Glues (fun 
   change f.2 y x = _ * f.1 y x
   rw [hf, ← mul_assoc, ← Units.val_mul, H.skew x y, inv_mul_cancel, Units.val_one, one_mul]
 
+/-- The upper translation preserves test sections, including local constancy
+across the axis where its second chart changes formula. -/
+theorem finiteTest_upperShear (H : LineSymbol K n) (hn : (n : K) ≠ 0)
+    (hl : IsLocallyConstant (fun w : Kˣ × Kˣ => (H.pairing w.1 w.2 : ℂ)))
+    {f : Charts K} (gl : Glues (fun a b => H.pairing a b) f) (hf : finiteTest f) (u : K) :
+    finiteTest (upperShear (fun a b => H.pairing a b) u f) := by
+  let sh (z : K × K) := (z.1,z.2+u*z.1)
+  let back (z : K × K) := (z.1,z.2-u*z.1)
+  have hb : Continuous back := by dsimp [back]; fun_prop
+  obtain ⟨C,hC,h₀,hout⟩ := hf.2.2
+  refine ⟨hf.1.comp_continuous (continuous_fst.prodMk (continuous_snd.add
+    (continuous_const.mul (Units.continuous_val.comp continuous_fst)))),?_,back '' C,hC.image hb,?_,?_⟩
+  · let y (z : K × Kˣ) := z.2.val+u*z.1
+    have he := locallyConstant_extendedIntegrand H hn hl gl hf (x := Prod.fst) (y := y)
+      (c := fun z : K × Kˣ => z.2⁻¹) continuous_fst
+      ((Units.continuous_val.comp continuous_snd).add (continuous_const.mul continuous_fst))
+      continuous_snd.inv (by
+        intro z hz _
+        exact ⟨1,by simp [y,hz,z.2.ne_zero]⟩)
+    convert he using 1
+    funext z
+    by_cases hx : z.1 = 0
+    · simp [upperShear,extendedIntegrand,hx,y,yChart,z.2.ne_zero]
+    · simp [upperShear,extendedIntegrand,hx,liftUnit,y,div_eq_mul_inv]
+  · rintro ⟨⟨x,y⟩,h,he⟩
+    have hx : x = 0 := congrArg Prod.fst he
+    have hy : y-u*x = 0 := congrArg Prod.snd he
+    apply h₀
+    change ((0,0) : K × K) ∈ C
+    simpa [hx,show y = 0 by simpa [hx] using hy] using h
+  · rintro ⟨x,y⟩ hz
+    have ho : sh (x,y) ∉ C := fun h => hz ⟨_,h,by simp [back,sh]⟩
+    obtain ⟨hx,hy⟩ := hout _ ho
+    change xChart f (x,y+u*x) = 0 at hx
+    change yChart f (x,y+u*x) = 0 at hy
+    by_cases h : x = 0
+    · subst x
+      by_cases h' : y = 0
+      · simp [xChart,yChart,h']
+      · simpa [upperShear,xChart,yChart,h'] using hy
+    · simp only [xChart,dif_pos h] at hx
+      by_cases h' : y = 0
+      · subst y
+        simpa [upperShear,xChart,yChart,h] using hx
+      · simp [upperShear,xChart,yChart,h,h',hx]
+
+theorem finiteTest_lowerShear (H : LineSymbol K n) (hn : (n : K) ≠ 0)
+    (hl : IsLocallyConstant (fun w : Kˣ × Kˣ => (H.pairing w.1 w.2 : ℂ)))
+    {f : Charts K} (gl : Glues (fun a b => H.pairing a b) f) (hf : finiteTest f) (u : K) :
+    finiteTest (lowerShear (fun a b => H.pairing a b) u f) := by
+  have ht := finiteTest_swap (finiteTest_upperShear H hn hl (glues_swap H gl) (finiteTest_swap hf) u)
+  convert ht using 1
+  apply Prod.ext
+  · funext x y
+    by_cases hy : y = 0
+    · simp [lowerShear,swapCharts,upperShear,hy]
+    · simp only [lowerShear,swapCharts,upperShear,dif_pos hy,div_eq_mul_inv]
+      rw [H.skew (Units.mk0 y hy) x,Units.val_inv_eq_inv_val,inv_inv,mul_comm]
+  · rfl
+
 theorem locallyConstant_norm_units {K : Type*} [NontriviallyNormedField K] [IsUltrametricDist K] :
     IsLocallyConstant (fun u : Kˣ => ‖u.val‖) := by
   rw [IsLocallyConstant.iff_eventually_eq]
@@ -284,6 +345,22 @@ theorem finiteTest_smoothFamilies [MeasurableSpace K] [IsUltrametricDist K] [Pro
 namespace Datum
 open NumberField IsDedekindDomain
 variable {F : Type} [Field F] [NumberField F] [NeZero n] (d : Datum F n)
+
+/-- Both unipotent translations preserve the test space at every finite place. -/
+theorem finite_shear_test (p : HeightOneSpectrum (𝓞 F)) {f : Charts (LocalField F (.inr p))}
+    (hf : f ∈ d.testSet (.inr p)) (u : LocalField F (.inr p)) :
+    let v : Place F := .inr p
+    upperShear (d.symbol v) u f ∈ d.testSet v ∧ lowerShear (d.symbol v) u f ∈ d.testSet v := by
+  let v : Place F := .inr p
+  letI : NontriviallyNormedField (p.adicCompletion F) := FinitePlace.nontriviallyNormedCompletion p
+  letI : CharZero (p.adicCompletion F) := charZero_of_injective_ringHom (algebraMap F (p.adicCompletion F)).injective
+  let H := d.lineSymbol v (d.finite_steinberg p)
+  have ht : Glues (d.symbol v) f ∧ finiteTest f := hf
+  have hn : (n : p.adicCompletion F) ≠ 0 := Nat.cast_ne_zero.mpr (NeZero.ne n)
+  have hl := (d.locallyConstant_unitPairing v).comp Units.val
+  exact ⟨⟨upperShear_glues _ (fun a b => (d.unitPairing v a b).ne_zero) _ _,
+      finiteTest_upperShear (K := p.adicCompletion F) H hn hl ht.1 ht.2 u⟩,
+    ⟨lowerShear_glues _ _ _,finiteTest_lowerShear (K := p.adicCompletion F) H hn hl ht.1 ht.2 u⟩⟩
 
 /-- Lemma 4.2(iii) at every finite place of the number field. -/
 theorem smooth_finiteTest_lines (p : HeightOneSpectrum (𝓞 F)) {f : Charts (LocalField F (.inr p))}

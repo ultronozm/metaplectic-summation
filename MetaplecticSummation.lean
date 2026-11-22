@@ -5,5 +5,4 @@ import MetaplecticSummation.FourierCoefficients
 import MetaplecticSummation.FiniteLines
 import MetaplecticSummation.WildSymbols
 import MetaplecticSummation.PowerSubgroup
-import MetaplecticSummation.MarginalRootFormula
-import MetaplecticSummation.PowerJacobian
+import MetaplecticSummation.FiniteMarginal

@@ -37,6 +37,24 @@ private theorem difference_root_sum (p : HeightOneSpectrum (𝓞 F)) {f ρ : Loc
 
 /-- Pairing the transformed marginal with an arbitrary test supported away from
 zero gives the sum of the Fourier integrals over the local n-th roots. -/
+theorem finite_tested_root_sum_on_test (p : HeightOneSpectrum (𝓞 F)) (Φ : d.schwartz (.inr p))
+    (hΦ : Φ.val ∈ d.testSet (.inr p)) (s : (LocalField F (.inr p))ˣ)
+    (hpow : ∀ a : (LocalField F (.inr p))ˣ, (∀ u, d.symbol (.inr p) u a = 1) → ∃ b, b^n = a)
+    {ρ : LocalField F (.inr p) → ℂ} (hρ : Bruhat (.inr p) ρ) (h₀ : ρ 0 = 0) :
+    let v : Place F := .inr p
+    (Real.sqrt (modulus F v (n : LocalField F v)) : ℂ) *
+      d.lineIntegral v (fun μ => d.marginal v (d.transformTest v Φ hΦ) (μ^n*s) * ρ μ.val) =
+      ∫ y, (if hy : y ≠ 0 then d.axis v Φ (Units.mk0 y hy) else 0) *
+        ∑ r ∈ nthRootsFinset n (-(s.val*y)), d.lineIntegral v (fun μ => ρ μ.val * d.character.localValue F v (μ.val*r))
+        ∂(selfDual F d.character v) := by
+  refine (d.finite_tested_marginal_difference_on_test p Φ hΦ s hρ h₀).trans (integral_congr_ae ?_)
+  filter_upwards with y
+  by_cases hy : y = 0
+  · simp [hy]
+  · let Y := Units.mk0 y hy
+    have he := d.difference_root_sum p (d.finiteTest_axisSlice p hΦ Y) hρ h₀ (-(s*Y)) (hpow _)
+    simpa only [Y,Units.val_neg,Units.val_mul,Units.val_mk0,sub_neg_eq_add,dif_pos hy,axis] using he
+
 theorem finite_tested_root_sum (p : HeightOneSpectrum (𝓞 F)) (Φ : d.schwartz (.inr p))
     (hΦ : Φ.val ∈ d.testSet (.inr p)) (s : (LocalField F (.inr p))ˣ)
     (hpow : ∀ a : (LocalField F (.inr p))ˣ, (∀ u, d.symbol (.inr p) u a = 1) → ∃ b, b^n = a)
@@ -47,13 +65,7 @@ theorem finite_tested_root_sum (p : HeightOneSpectrum (𝓞 F)) (Φ : d.schwartz
       ∫ y, (if hy : y ≠ 0 then d.axis v Φ (Units.mk0 y hy) else 0) *
         ∑ r ∈ nthRootsFinset n (-(s.val*y)), d.lineIntegral v (fun μ => ρ μ.val * d.character.localValue F v (μ.val*r))
         ∂(selfDual F d.character v) := by
-  refine (d.finite_tested_marginal_difference p Φ hΦ s hρ h₀).trans (integral_congr_ae ?_)
-  filter_upwards with y
-  by_cases hy : y = 0
-  · simp [hy]
-  · let Y := Units.mk0 y hy
-    have he := d.difference_root_sum p (d.finiteTest_axisSlice p hΦ Y) hρ h₀ (-(s*Y)) (hpow _)
-    simpa only [Y,Units.val_neg,Units.val_mul,Units.val_mk0,sub_neg_eq_add,dif_pos hy,axis] using he
+  simpa only [d.transformTest_eq_fourier] using d.finite_tested_root_sum_on_test p Φ hΦ s hpow hρ h₀
 
 private instance finiteProper (p : HeightOneSpectrum (𝓞 F)) : ProperSpace (LocalField F (.inr p)) := by
   letI : NontriviallyNormedField (p.adicCompletion F) := FinitePlace.nontriviallyNormedCompletion p
@@ -75,7 +87,7 @@ theorem finite_marginal_locallyConstant (p : HeightOneSpectrum (𝓞 F)) (Φ : d
       simpa only [xChart,dif_pos b.ne_zero,Units.mk0_val] using h)⟩)
   exact hs.comp (fun f => ∫ y, f y ∂dx)
 
-private theorem axis_roots_bounded (p : HeightOneSpectrum (𝓞 F)) (Φ : d.schwartz (.inr p))
+theorem axis_roots_bounded (p : HeightOneSpectrum (𝓞 F)) (Φ : d.schwartz (.inr p))
     (hΦ : Φ.val ∈ d.testSet (.inr p)) (s : (LocalField F (.inr p))ˣ) :
     ∃ B : ℝ, ∀ (y : (LocalField F (.inr p))ˣ), d.axis (.inr p) Φ y ≠ 0 →
       ∀ r ∈ nthRootsFinset n (-(s.val*y.val)), ‖r‖ ≤ B := by
@@ -178,22 +190,22 @@ private theorem root_frequency_test (p : HeightOneSpectrum (𝓞 F)) (μ₀ : (L
 
 /-- Equation (axis-marginal-roots) of Appendix A. The arithmetic hypothesis
 is exactly property 2(b) at the chosen completion. -/
-theorem finite_marginal_root_formula (p : HeightOneSpectrum (𝓞 F)) (Φ : d.schwartz (.inr p))
+theorem finite_marginal_root_formula_on_test (p : HeightOneSpectrum (𝓞 F)) (Φ : d.schwartz (.inr p))
     (hΦ : Φ.val ∈ d.testSet (.inr p)) (s μ : (LocalField F (.inr p))ˣ)
     (hpow : ∀ a : (LocalField F (.inr p))ˣ, (∀ u, d.symbol (.inr p) u a = 1) → ∃ b, b^n = a) :
     let v : Place F := .inr p
-    (Real.sqrt (modulus F v (n : LocalField F v)) : ℂ) * d.marginal v (d.fourier v Φ) (μ^n*s) =
+    (Real.sqrt (modulus F v (n : LocalField F v)) : ℂ) * d.marginal v (d.transformTest v Φ hΦ) (μ^n*s) =
       ∫ y, (if hy : y ≠ 0 then d.axis v Φ (Units.mk0 y hy) else 0) *
         ∑ a ∈ nthRootsFinset n (-(s.val*y)), d.character.localValue F v (μ.val*a)
         ∂(selfDual F d.character v) := by
   let v : Place F := .inr p
   let K := LocalField F v
-  let m (u : Kˣ) := d.marginal v (d.fourier v Φ) (u^n*s)
+  let m (u : Kˣ) := d.marginal v (d.transformTest v Φ hΦ) (u^n*s)
   have hm : IsLocallyConstant m := (d.finite_marginal_locallyConstant p _).comp_continuous
     ((continuous_id.pow n).mul continuous_const)
   obtain ⟨B,hB⟩ := d.axis_roots_bounded p Φ hΦ s
   obtain ⟨ρ,c,hρ,h₀,hc,hmc,hphase⟩ := d.root_frequency_test p μ m hm (Metric.closedBall (0 : K) B) (isCompact_closedBall _ _)
-  have h := d.finite_tested_root_sum p Φ hΦ s hpow hρ h₀
+  have h := d.finite_tested_root_sum_on_test p Φ hΦ s hpow hρ h₀
   dsimp only at h ⊢
   apply mul_right_cancel₀ hc
   rw [mul_assoc,← hmc,← integral_mul_const]
@@ -208,6 +220,16 @@ theorem finite_marginal_root_formula (p : HeightOneSpectrum (𝓞 F)) (Φ : d.sc
     · rw [mul_assoc,Finset.sum_mul]
       congr 1
       exact Finset.sum_congr rfl fun a ha => hphase a (mem_closedBall_zero_iff.mpr (hB (Units.mk0 y hy) hz a ha))
+
+theorem finite_marginal_root_formula (p : HeightOneSpectrum (𝓞 F)) (Φ : d.schwartz (.inr p))
+    (hΦ : Φ.val ∈ d.testSet (.inr p)) (s μ : (LocalField F (.inr p))ˣ)
+    (hpow : ∀ a : (LocalField F (.inr p))ˣ, (∀ u, d.symbol (.inr p) u a = 1) → ∃ b, b^n = a) :
+    let v : Place F := .inr p
+    (Real.sqrt (modulus F v (n : LocalField F v)) : ℂ) * d.marginal v (d.fourier v Φ) (μ^n*s) =
+      ∫ y, (if hy : y ≠ 0 then d.axis v Φ (Units.mk0 y hy) else 0) *
+        ∑ a ∈ nthRootsFinset n (-(s.val*y)), d.character.localValue F v (μ.val*a)
+        ∂(selfDual F d.character v) := by
+  simpa only [d.transformTest_eq_fourier] using d.finite_marginal_root_formula_on_test p Φ hΦ s μ hpow
 
 /-- The reverse marginal's pointwise root-sum formula at every finite place
 of residue characteristic prime to the degree. -/

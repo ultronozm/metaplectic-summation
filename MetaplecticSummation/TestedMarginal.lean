@@ -9,6 +9,15 @@ open NumberField IsDedekindDomain MeasureTheory Set
 open Classical
 variable {F : Type} [Field F] [NumberField F] {n : ℕ} [NeZero n] (d : Datum F n)
 
+/-- The integral transform of a test section belongs to the defining span of
+the Schwartz space before stability of the space under iteration is known. -/
+def transformTest (v : Place F) (Φ : d.schwartz v) (hΦ : Φ.val ∈ d.testSet v) : d.schwartz v :=
+  ⟨d.integralTransform v Φ.val, Submodule.subset_span (Or.inr ⟨Φ.val,hΦ,rfl⟩)⟩
+
+theorem transformTest_eq_fourier (v : Place F) (Φ : d.schwartz v) (hΦ : Φ.val ∈ d.testSet v) :
+    d.transformTest v Φ hΦ = d.fourier v Φ :=
+  Subtype.ext (d.fourier_apply v Φ).symm
+
 /-- The X-chart Radon integral expressed entirely in the Y chart, as in
 Appendix A before the substitution u = 1/y'. -/
 theorem radon_X_via_Y (v : Place F) {f : Charts (LocalField F v)} (hf : Glues (d.symbol v) f)
@@ -36,31 +45,40 @@ theorem radon_X_via_Y (v : Place F) {f : Charts (LocalField F v)} (hf : Glues (d
 
 /-- The Fourier transform of the Radon slice at a nonzero frequency, with the
 normalization needed when testing a marginal against multiplicative measure. -/
-theorem hat_radon_scaled (v : Place F) (Φ : d.schwartz v) (s u : (LocalField F v)ˣ) (y : LocalField F v) :
+theorem hat_radon_scaled_charts (v : Place F) (f : Charts (LocalField F v)) (s u : (LocalField F v)ˣ) (y : LocalField F v) :
     let dx := selfDual F d.character v
-    d.hat v (fun t => (radon n (d.symbol v) (modulus F v) dx Φ.val t).1 s y) u.val =
+    d.hat v (fun t => (radon n (d.symbol v) (modulus F v) dx f t).1 s y) u.val =
       (Real.sqrt (modulus F v (n : LocalField F v)) : ℂ) * (modulus F v u.val : ℂ)^(n-1) *
-        (d.fourier v Φ).val.1 (u^n*s) (u.val^n*y) := by
+        (d.integralTransform v f).1 (u^n*s) (u.val^n*y) := by
   have hn : (n : LocalField F v) ≠ 0 := by
     have h := (diagonal F v).injective.ne (Nat.cast_ne_zero.mpr (NeZero.ne n) : (n : F) ≠ 0)
     simpa only [map_natCast,map_zero] using h
   have hpos : 0 < modulus F v (n : LocalField F v) := by cases v <;> simp [modulus,norm_pos_iff,hn,pow_pos]
   have hk := Complex.ofReal_ne_zero.mpr (Real.sqrt_pos_of_pos hpos).ne'
-  have h := (d.transform_pow_ray v Φ.val u).1 s y
+  have h := (d.transform_pow_ray v f u).1 s y
   dsimp only at h ⊢
-  rw [d.fourier_apply,mul_assoc,h,← mul_assoc,mul_inv_cancel₀ hk,one_mul]
+  rw [mul_assoc,h,← mul_assoc,mul_inv_cancel₀ hk,one_mul]
   rfl
+
+theorem hat_radon_scaled (v : Place F) (Φ : d.schwartz v) (s u : (LocalField F v)ˣ) (y : LocalField F v) :
+    let dx := selfDual F d.character v
+    d.hat v (fun t => (radon n (d.symbol v) (modulus F v) dx Φ.val t).1 s y) u.val =
+      (Real.sqrt (modulus F v (n : LocalField F v)) : ℂ) * (modulus F v u.val : ℂ)^(n-1) *
+        (d.fourier v Φ).val.1 (u^n*s) (u.val^n*y) := by
+  rw [d.fourier_apply]
+  exact d.hat_radon_scaled_charts v Φ.val s u y
 
 /-- The first identity in the proof of the axis-to-marginal lemma, after
 changing the marginal variable by the n-th power of the frequency. -/
-theorem marginal_scaled_radon (v : Place F) (Φ : d.schwartz v) (s u : (LocalField F v)ˣ) :
+theorem marginal_scaled_radon_of_charts (v : Place F) (Φ Ψ : d.schwartz v)
+    (hΨ : Ψ.val = d.integralTransform v Φ.val) (s u : (LocalField F v)ˣ) :
     let dx := selfDual F d.character v
-    (Real.sqrt (modulus F v (n : LocalField F v)) : ℂ) * d.marginal v (d.fourier v Φ) (u^n*s) =
+    (Real.sqrt (modulus F v (n : LocalField F v)) : ℂ) * d.marginal v Ψ (u^n*s) =
       (modulus F v u.val : ℂ) * ∫ y,
         d.hat v (fun t => (radon n (d.symbol v) (modulus F v) dx Φ.val t).1 s y) u.val ∂dx := by
   dsimp only
-  simp_rw [d.hat_radon_scaled v Φ s u,integral_const_mul]
-  have h := d.integral_local_mul v (u^n) ((d.fourier v Φ).val.1 (u^n*s))
+  simp_rw [d.hat_radon_scaled_charts v Φ.val s u,← hΨ,integral_const_mul]
+  have h := d.integral_local_mul v (u^n) (Ψ.val.1 (u^n*s))
   simp only [Units.val_pow_eq_pow_val] at h
   have hm : modulus F v (u.val^n) = (modulus F v u.val)^n := by
     cases v <;> simp [modulus,norm_pow,pow_right_comm]
@@ -71,7 +89,14 @@ theorem marginal_scaled_radon (v : Place F) (Φ : d.schwartz v) (s u : (LocalFie
   have hne := Complex.ofReal_ne_zero.mpr (modulus_ne_zero v u)
   field_simp
   linear_combination (Real.sqrt (modulus F v (n : LocalField F v)) : ℂ) *
-    (∫ y, (d.fourier v Φ).val.1 (u^n*s) y ∂(selfDual F d.character v)) * (hpow (modulus F v u.val)).symm
+    (∫ y, Ψ.val.1 (u^n*s) y ∂(selfDual F d.character v)) * (hpow (modulus F v u.val)).symm
+
+theorem marginal_scaled_radon (v : Place F) (Φ : d.schwartz v) (s u : (LocalField F v)ˣ) :
+    let dx := selfDual F d.character v
+    (Real.sqrt (modulus F v (n : LocalField F v)) : ℂ) * d.marginal v (d.fourier v Φ) (u^n*s) =
+      (modulus F v u.val : ℂ) * ∫ y,
+        d.hat v (fun t => (radon n (d.symbol v) (modulus F v) dx Φ.val t).1 s y) u.val ∂dx :=
+  d.marginal_scaled_radon_of_charts v Φ _ (d.fourier_apply v Φ) s u
 
 private theorem compact_frequency_set {K : Type*} [NormedField K] {ρ : K → ℂ}
     (hl : IsLocallyConstant ρ) (hk : HasCompactSupport ρ) (h₀ : ρ 0 = 0) :
@@ -87,6 +112,7 @@ private theorem compact_frequency_set {K : Type*} [NormedField K] {ρ : K → �
 The frequencies range over a compact subset of the units. The support of the
 transformed section bounds the rescaled transverse coordinate uniformly. -/
 private theorem finite_tested_radon_integrable (p : HeightOneSpectrum (𝓞 F)) (Φ : d.schwartz (.inr p))
+    (Ψ : d.schwartz (.inr p)) (hΨ : Ψ.val = d.integralTransform (.inr p) Φ.val)
     (s : (LocalField F (.inr p))ˣ) {ρ : LocalField F (.inr p) → ℂ} (hρ : Bruhat (.inr p) ρ) (h₀ : ρ 0 = 0) :
     let v : Place F := .inr p
     let dx := selfDual F d.character v
@@ -99,11 +125,10 @@ private theorem finite_tested_radon_integrable (p : HeightOneSpectrum (𝓞 F)) 
   letI : dx.IsAddHaarMeasure := (existsUnique_selfDual F d.character v).exists.choose_spec.1
   letI : NontriviallyNormedField (p.adicCompletion F) := FinitePlace.nontriviallyNormedCompletion p
   letI : ProperSpace K := .of_nontriviallyNormedField_of_weaklyLocallyCompactSpace (p.adicCompletion F)
-  let Ψ := d.fourier v Φ
   let k : ℂ := Real.sqrt (modulus F v (n : K))
   let G (z : Kˣ × K) := ‖z.1.val‖ • (ρ z.1.val * (k * (‖z.1.val‖ : ℂ)^(n-1) * Ψ.val.1 (z.1^n*s) (z.1.val^n*z.2)))
   dsimp only
-  simp_rw [d.hat_radon_scaled]
+  simp_rw [d.hat_radon_scaled_charts,← hΨ]
   change Integrable G ((d.lineMeasure v).prod dx)
   apply Continuous.integrable_of_hasCompactSupport
   · have hc := (d.locallyConstant_finite_schwartz p Ψ).1.continuous
@@ -141,14 +166,14 @@ private theorem finite_family_slice {P K : Type*} [TopologicalSpace P] [NormedFi
 
 /-- The tested marginal formula before passing to the multiplicative difference
 integral. Both Fourier integrations here use additive self-dual measure. -/
-theorem finite_tested_marginal (p : HeightOneSpectrum (𝓞 F)) (Φ : d.schwartz (.inr p))
+theorem finite_tested_marginal_on_test (p : HeightOneSpectrum (𝓞 F)) (Φ : d.schwartz (.inr p))
     (hΦ : Φ.val ∈ d.testSet (.inr p)) (s : (LocalField F (.inr p))ˣ)
     {ρ : LocalField F (.inr p) → ℂ} (hρ : Bruhat (.inr p) ρ) (h₀ : ρ 0 = 0) :
     let v : Place F := .inr p
     let dx := selfDual F d.character v
     let R := radon n (d.symbol v) (modulus F v) dx Φ.val
     (Real.sqrt (modulus F v (n : LocalField F v)) : ℂ) *
-      d.lineIntegral v (fun u => d.marginal v (d.fourier v Φ) (u^n*s) * ρ u.val) =
+      d.lineIntegral v (fun u => d.marginal v (d.transformTest v Φ hΦ) (u^n*s) * ρ u.val) =
       ∫ y, ∫ t, d.hat v ρ t * (R t).1 s y ∂dx ∂dx := by
   let v : Place F := .inr p
   let dx := selfDual F d.character v
@@ -158,13 +183,13 @@ theorem finite_tested_marginal (p : HeightOneSpectrum (𝓞 F)) (Φ : d.schwartz
   let R := radon n (d.symbol v) (modulus F v) dx Φ.val
   let G (u : (LocalField F v)ˣ) (y : LocalField F v) :=
     modulus F v u.val • (ρ u.val * d.hat v (fun t => (R t).1 s y) u.val)
-  have hi : Integrable (Function.uncurry G) ((d.lineMeasure v).prod dx) := d.finite_tested_radon_integrable p Φ s hρ h₀
+  have hi : Integrable (Function.uncurry G) ((d.lineMeasure v).prod dx) := d.finite_tested_radon_integrable p Φ (d.transformTest v Φ hΦ) rfl s hρ h₀
   dsimp only
   rw [← d.integral_lineMeasure,← integral_const_mul]
   refine Eq.trans (integral_congr_ae (Filter.Eventually.of_forall fun u => ?_))
     ((integral_integral_swap hi).trans ?_)
   · simp only [G,Complex.real_smul,integral_const_mul]
-    rw [← mul_assoc,d.marginal_scaled_radon]
+    rw [← mul_assoc,d.marginal_scaled_radon_of_charts v Φ (d.transformTest v Φ hΦ) rfl]
     ring
   · apply integral_congr_ae
     filter_upwards with y
@@ -176,6 +201,17 @@ theorem finite_tested_marginal (p : HeightOneSpectrum (𝓞 F)) (Φ : d.schwartz
     have h := d.finite_linearFactor_pairing p hr hρ 0 1
     simpa only [Units.val_one,sub_zero,mul_one,div_one,mul_zero,Character.localValue_zero,
       modulus,norm_one,Complex.ofReal_one] using h.symm
+
+theorem finite_tested_marginal (p : HeightOneSpectrum (𝓞 F)) (Φ : d.schwartz (.inr p))
+    (hΦ : Φ.val ∈ d.testSet (.inr p)) (s : (LocalField F (.inr p))ˣ)
+    {ρ : LocalField F (.inr p) → ℂ} (hρ : Bruhat (.inr p) ρ) (h₀ : ρ 0 = 0) :
+    let v : Place F := .inr p
+    let dx := selfDual F d.character v
+    let R := radon n (d.symbol v) (modulus F v) dx Φ.val
+    (Real.sqrt (modulus F v (n : LocalField F v)) : ℂ) *
+      d.lineIntegral v (fun u => d.marginal v (d.fourier v Φ) (u^n*s) * ρ u.val) =
+      ∫ y, ∫ t, d.hat v ρ t * (R t).1 s y ∂dx ∂dx := by
+  simpa only [d.transformTest_eq_fourier] using d.finite_tested_marginal_on_test p Φ hΦ s hρ h₀
 
 /-- The Y-chart integrand after the substitution u = 1/y'. The deleted line
 y = 0 has additive measure zero. -/
@@ -227,6 +263,16 @@ theorem tested_radon_reciprocal (v : Place F) {f : Charts (LocalField F v)} (hf 
 
 /-- A test section's Fourier marginal paired with ρ, expressed using its
 original Y chart and the multiplicative measure of Appendix A. -/
+theorem finite_tested_marginal_slice_on_test (p : HeightOneSpectrum (𝓞 F)) (Φ : d.schwartz (.inr p))
+    (hΦ : Φ.val ∈ d.testSet (.inr p)) (s : (LocalField F (.inr p))ˣ)
+    {ρ : LocalField F (.inr p) → ℂ} (hρ : Bruhat (.inr p) ρ) (h₀ : ρ 0 = 0) :
+    let v : Place F := .inr p
+    let dx := selfDual F d.character v
+    (Real.sqrt (modulus F v (n : LocalField F v)) : ℂ) *
+      d.lineIntegral v (fun u => d.marginal v (d.transformTest v Φ hΦ) (u^n*s) * ρ u.val) =
+      d.lineIntegral v (fun u => ∫ t, d.hat v ρ t * (∫ y, d.marginalSlice v Φ.val s u t y ∂dx) ∂dx) :=
+  (d.finite_tested_marginal_on_test p Φ hΦ s hρ h₀).trans (d.tested_radon_reciprocal _ hΦ.1 s _)
+
 theorem finite_tested_marginal_slice (p : HeightOneSpectrum (𝓞 F)) (Φ : d.schwartz (.inr p))
     (hΦ : Φ.val ∈ d.testSet (.inr p)) (s : (LocalField F (.inr p))ˣ)
     {ρ : LocalField F (.inr p) → ℂ} (hρ : Bruhat (.inr p) ρ) (h₀ : ρ 0 = 0) :
@@ -234,7 +280,7 @@ theorem finite_tested_marginal_slice (p : HeightOneSpectrum (𝓞 F)) (Φ : d.sc
     let dx := selfDual F d.character v
     (Real.sqrt (modulus F v (n : LocalField F v)) : ℂ) *
       d.lineIntegral v (fun u => d.marginal v (d.fourier v Φ) (u^n*s) * ρ u.val) =
-      d.lineIntegral v (fun u => ∫ t, d.hat v ρ t * (∫ y, d.marginalSlice v Φ.val s u t y ∂dx) ∂dx) :=
-  (d.finite_tested_marginal p Φ hΦ s hρ h₀).trans (d.tested_radon_reciprocal _ hΦ.1 s _)
+      d.lineIntegral v (fun u => ∫ t, d.hat v ρ t * (∫ y, d.marginalSlice v Φ.val s u t y ∂dx) ∂dx) := by
+  simpa only [d.transformTest_eq_fourier] using d.finite_tested_marginal_slice_on_test p Φ hΦ s hρ h₀
 
 end MetaplecticPoisson.Datum

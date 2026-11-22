@@ -113,8 +113,8 @@ theorem axisLine_zero (v : Place F) (Φ : d.schwartz v) (y : (LocalField F v)ˣ)
   · rw [dif_neg hz,dif_neg hz,mul_zero]
 
 /-- The first Fourier identity of Appendix A at every place. -/
-theorem axis_fourier (v : Place F) (Φ : d.schwartz v) (y u : (LocalField F v)ˣ) :
-    d.axis v (d.fourier v Φ) (u^n*y) =
+theorem axis_integralTransform (v : Place F) (Φ : d.schwartz v) (y u : (LocalField F v)ˣ) :
+    (d.integralTransform v Φ.val).2 0 (u^n*y) =
       (Real.sqrt (modulus F v (n : LocalField F v)) : ℂ)⁻¹ *
       (modulus F v u : ℂ)^(1-(n : ℤ)) * d.hat v (d.axisLine v Φ y) u := by
   have h := (d.transform_pow_ray v Φ.val u).2 0 y
@@ -124,11 +124,18 @@ theorem axis_fourier (v : Place F) (Φ : d.schwartz v) (y u : (LocalField F v)ˣ
     push_cast
     ring
   have hm := Complex.ofReal_ne_zero.mpr (modulus_ne_zero v u)
-  unfold axis
-  rw [d.fourier_apply,he,zpow_neg,zpow_natCast]
+  rw [he,zpow_neg,zpow_natCast]
   change _ = _ * _ * d.hat v (d.axisLine v Φ y) u
   field_simp [hm]
   simpa only [hat,axisLine,div_eq_mul_inv,mul_comm] using h
+
+theorem axis_fourier (v : Place F) (Φ : d.schwartz v) (y u : (LocalField F v)ˣ) :
+    d.axis v (d.fourier v Φ) (u^n*y) =
+      (Real.sqrt (modulus F v (n : LocalField F v)) : ℂ)⁻¹ *
+      (modulus F v u : ℂ)^(1-(n : ℤ)) * d.hat v (d.axisLine v Φ y) u := by
+  unfold axis
+  rw [d.fourier_apply]
+  exact d.axis_integralTransform v Φ y u
 
 /-- At frequency zero the Fourier transform of the vertical line integral gives
 the leading term of the transformed section on the axis. -/
@@ -152,7 +159,7 @@ theorem axisLine_hat_zero (v : Place F) (Φ : d.schwartz v) (y : (LocalField F v
   simpa only [axisLine,hat,Function.comp_apply,d.fourier_apply] using
     (d.transform_pow_ray v Φ.val u).2 0 y
 
-private theorem bruhat_finite_slice {P : Type*} [TopologicalSpace P] {p : HeightOneSpectrum (𝓞 F)}
+theorem bruhat_finite_slice {P : Type*} [TopologicalSpace P] {p : HeightOneSpectrum (𝓞 F)}
     {g : P → LocalField F (.inr p) → ℂ} (hg : SmoothFiniteFamily g) (q : P) :
     Bruhat (.inr p) (g q) := by
   obtain ⟨C,hC,ho⟩ := (hg.2 {q} (isCompact_singleton)).2.1

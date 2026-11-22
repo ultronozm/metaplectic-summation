@@ -106,4 +106,23 @@ theorem transform_lower (ψ : K → ℂ) (u : K) (f : Charts K) (a : K) (b : Kˣ
       (transform n ψ h modulus dx f).2 (a + u*b) b := by
   simp only [transform, radon_lower]
 
+/-- Covariance of the twice-iterated integral on each shear's translation chart. -/
+theorem transform_square_upper (ψ : K → ℂ) (u : K) (f : Charts K) (a : Kˣ) (b : K) :
+    let T := transform n ψ h modulus dx
+    (T (T (upperShear h u f))).1 a b = (T (T f)).1 a (b+u*a) := by
+  let T := transform n ψ h modulus dx
+  have he : (T (upperShear h u f)).1 = (upperShear h u (T f)).1 :=
+    funext fun x => funext (transform_upper h n modulus dx ψ u f x)
+  exact (congrArg (fun X => (T (X,(T f).2)).1 a b) he).trans
+    (transform_upper h n modulus dx ψ u (T f) a b)
+
+theorem transform_square_lower (ψ : K → ℂ) (u : K) (f : Charts K) (a : K) (b : Kˣ) :
+    let T := transform n ψ h modulus dx
+    (T (T (lowerShear h u f))).2 a b = (T (T f)).2 (a+u*b) b := by
+  let T := transform n ψ h modulus dx
+  have he : (T (lowerShear h u f)).2 = (lowerShear h u (T f)).2 :=
+    funext fun x => funext (transform_lower h n modulus dx ψ u f x)
+  exact (congrArg (fun Y => (T ((T f).1,Y)).2 a b) he).trans
+    (transform_lower h n modulus dx ψ u (T f) a b)
+
 end MetaplecticPoisson

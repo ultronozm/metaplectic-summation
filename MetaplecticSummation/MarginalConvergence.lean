@@ -271,14 +271,14 @@ theorem finite_joint_difference_integrable (p : HeightOneSpectrum (𝓞 F)) {f :
 /-- Equation (axis-marginal-L) of Appendix A at a finite completion. The
 zero Fourier mean removes the term independent of t before Fubini interchanges
 the scaling and chart variables. -/
-theorem finite_tested_marginal_difference (p : HeightOneSpectrum (𝓞 F)) (Φ : d.schwartz (.inr p))
+theorem finite_tested_marginal_difference_on_test (p : HeightOneSpectrum (𝓞 F)) (Φ : d.schwartz (.inr p))
     (hΦ : Φ.val ∈ d.testSet (.inr p)) (s : (LocalField F (.inr p))ˣ)
     {ρ : LocalField F (.inr p) → ℂ} (hρ : Bruhat (.inr p) ρ) (h₀ : ρ 0 = 0) :
     let v : Place F := .inr p
     let dx := selfDual F d.character v
     let h := d.hat v ρ
     (Real.sqrt (modulus F v (n : LocalField F v)) : ℂ) *
-      d.lineIntegral v (fun μ => d.marginal v (d.fourier v Φ) (μ^n*s) * ρ μ.val) =
+      d.lineIntegral v (fun μ => d.marginal v (d.transformTest v Φ hΦ) (μ^n*s) * ρ μ.val) =
       ∫ y, if hy : y ≠ 0 then
         ∫ t, h t * d.differenceIntegral v (fun x => Φ.val.2 x (Units.mk0 y hy))
           (-(s * Units.mk0 y hy)) (t^n+s.val*y) ∂dx else 0 ∂dx := by
@@ -294,7 +294,7 @@ theorem finite_tested_marginal_difference (p : HeightOneSpectrum (𝓞 F)) (Φ :
   have hi : Integrable (Function.uncurry D) ((ν.prod dx).prod dx) := d.finite_joint_difference_integrable p hΦ s hh
   obtain ⟨A,hA⟩ := d.chartSection_bound p hΦ s
   have hz : (∫ t, h t ∂dx) = 0 := (d.integral_hat_finite p hρ).trans h₀
-  refine (d.finite_tested_marginal_slice p Φ hΦ s hρ h₀).trans ?_
+  refine (d.finite_tested_marginal_slice_on_test p Φ hΦ s hρ h₀).trans ?_
   rw [← d.integral_lineMeasure]
   trans ∫ z : Kˣ × K, ∫ y, D z y ∂dx ∂(ν.prod dx)
   · rw [integral_prod (fun z : Kˣ × K => ∫ y, D z y ∂dx) hi.integral_prod_left]
@@ -325,6 +325,19 @@ theorem finite_tested_marginal_difference (p : HeightOneSpectrum (𝓞 F)) (Φ :
     simp only [D,chartDifference,dif_pos (show y ≠ 0 from hy),integral_const_mul,
       differenceIntegral,dif_pos ht₀,← d.integral_lineMeasure,marginalDifference,Units.val_mul,Units.val_mk0]
     rfl
+
+theorem finite_tested_marginal_difference (p : HeightOneSpectrum (𝓞 F)) (Φ : d.schwartz (.inr p))
+    (hΦ : Φ.val ∈ d.testSet (.inr p)) (s : (LocalField F (.inr p))ˣ)
+    {ρ : LocalField F (.inr p) → ℂ} (hρ : Bruhat (.inr p) ρ) (h₀ : ρ 0 = 0) :
+    let v : Place F := .inr p
+    let dx := selfDual F d.character v
+    let h := d.hat v ρ
+    (Real.sqrt (modulus F v (n : LocalField F v)) : ℂ) *
+      d.lineIntegral v (fun μ => d.marginal v (d.fourier v Φ) (μ^n*s) * ρ μ.val) =
+      ∫ y, if hy : y ≠ 0 then
+        ∫ t, h t * d.differenceIntegral v (fun x => Φ.val.2 x (Units.mk0 y hy))
+          (-(s * Units.mk0 y hy)) (t^n+s.val*y) ∂dx else 0 ∂dx := by
+  simpa only [d.transformTest_eq_fourier] using d.finite_tested_marginal_difference_on_test p Φ hΦ s hρ h₀
 
 end Datum
 end MetaplecticPoisson

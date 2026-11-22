@@ -108,18 +108,19 @@ theorem fourier_bijective_of_square
 
 /-- On the axis only the reverse marginal identity for the given section and
 ordinary inversion of its density at frequency one are needed. -/
-theorem fourier_square_axis_of_marginal (Φ : d.schwartz v) (y : (LocalField F v)ˣ)
-    (hrev : ∀ t : (LocalField F v)ˣ, d.marginal v (d.fourier v Φ) (t^n*y⁻¹) =
-      (Real.sqrt (modulus F v (n : LocalField F v)) : ℂ)⁻¹ * d.hat v (d.axisDensity v Φ y⁻¹) t)
-    (hinv : d.hat v (d.hat v (d.axisDensity v Φ y⁻¹)) 1 = d.axisDensity v Φ y⁻¹ (-1)) :
+theorem integralTransform_axis_of_marginal (Φ Ψ : d.schwartz v) (y : (LocalField F v)ˣ)
+    (σ : LocalField F v → ℂ)
+    (hev : σ (-1) = (modulus F v (n : LocalField F v) : ℂ) / (modulus F v y⁻¹.val : ℂ) *
+      (modulus F v ((-1 : (LocalField F v)ˣ).val) : ℂ)^(n-1) * d.axis v Φ (-((-1)^n)/y⁻¹))
+    (hrev : ∀ t : (LocalField F v)ˣ, d.marginal v Ψ (t^n*y⁻¹) =
+      (Real.sqrt (modulus F v (n : LocalField F v)) : ℂ)⁻¹ * d.hat v σ t)
+    (hinv : d.hat v (d.hat v σ) 1 = σ (-1)) :
     let e : (LocalField F v)ˣ := (-1)^(n+1)
-    d.axis v (d.fourier v (d.fourier v Φ)) y = d.symbol v e y * d.axis v Φ (y/e) := by
+    (d.integralTransform v Ψ.val).2 0 y = d.symbol v e y * d.axis v Φ (y/e) := by
   let e : (LocalField F v)ˣ := (-1)^(n+1)
   let m : ℝ := modulus F v (n : LocalField F v)
   let k : ℂ := (Real.sqrt m : ℂ)⁻¹
   let c : ℂ := d.symbol v (-1) y / (modulus F v y.val : ℂ) * k
-  let σ := d.axisDensity v Φ y⁻¹
-  let Ψ := d.fourier v Φ
   have he (t : (LocalField F v)ˣ) : d.axisLine v Ψ y t = c * d.hat v σ t := by
     rw [d.axisLine_unit,div_eq_mul_inv (t^n),hrev]
     exact (mul_assoc ..).symm
@@ -132,14 +133,12 @@ theorem fourier_square_axis_of_marginal (Φ : d.schwartz v) (y : (LocalField F v
     filter_upwards [dx.ae_ne 0] with z hz
     rw [show d.axisLine v Ψ y z = c * d.hat v σ z from he (Units.mk0 z hz),mul_assoc]
     rfl
-  have ha := d.axis_fourier v Ψ y 1
+  have ha := d.axis_integralTransform v Ψ y 1
   simp only [one_pow,one_mul,Units.val_one] at ha
   have hM : modulus F v 1 = 1 := by cases v <;> simp [modulus]
   rw [hM,Complex.ofReal_one,one_zpow,mul_one,hhat,hinv] at ha
-  have ev := d.axisDensity_unit v Φ y⁻¹ (-1)
-  change σ (-1) = _ at ev
-  change d.axis v (d.fourier v Ψ) y = k * (c * σ (-1)) at ha
-  rw [ev] at ha
+  change (d.integralTransform v Ψ.val).2 0 y = k * (c * σ (-1)) at ha
+  rw [hev] at ha
   have he₂ : e*e=1 := by simp only [e,← mul_pow,neg_one_mul,neg_neg,one_pow]
   have harg : -((-1:(LocalField F v)ˣ)^n)/y⁻¹ = y/e := by
     have he' : e⁻¹ = e := inv_eq_of_mul_eq_one_right he₂
@@ -160,12 +159,23 @@ theorem fourier_square_axis_of_marginal (Φ : d.schwartz v) (y : (LocalField F v
   have hk : (Real.sqrt m : ℂ) * (Real.sqrt m : ℂ) = (m : ℂ) := by
     rw [← Complex.ofReal_mul,Real.mul_self_sqrt hm.le]
   have hk₀ : (Real.sqrt m : ℂ) ≠ 0 := Complex.ofReal_ne_zero.mpr (Real.sqrt_pos_of_pos hm).ne'
-  change d.axis v (d.fourier v Ψ) y = d.symbol v e y * d.axis v Φ (y/e)
+  change (d.integralTransform v Ψ.val).2 0 y = d.symbol v e y * d.axis v Φ (y/e)
   rw [ha,hsym,harg]
   simp only [c,k,hyi,hneg,Complex.ofReal_inv,Complex.ofReal_one,one_pow,mul_one,div_inv_eq_mul]
   change _ * (d.symbol v (-1) y / (modulus F v y.val : ℂ) * _ * ((m : ℂ) * _ * _)) = _
   rw [← hk]
   field_simp
+
+theorem fourier_square_axis_of_marginal (Φ : d.schwartz v) (y : (LocalField F v)ˣ)
+    (hrev : ∀ t : (LocalField F v)ˣ, d.marginal v (d.fourier v Φ) (t^n*y⁻¹) =
+      (Real.sqrt (modulus F v (n : LocalField F v)) : ℂ)⁻¹ * d.hat v (d.axisDensity v Φ y⁻¹) t)
+    (hinv : d.hat v (d.hat v (d.axisDensity v Φ y⁻¹)) 1 = d.axisDensity v Φ y⁻¹ (-1)) :
+    let e : (LocalField F v)ˣ := (-1)^(n+1)
+    d.axis v (d.fourier v (d.fourier v Φ)) y = d.symbol v e y * d.axis v Φ (y/e) := by
+  dsimp only
+  unfold axis
+  rw [d.fourier_apply]
+  exact d.integralTransform_axis_of_marginal v Φ _ y _ (d.axisDensity_unit v Φ y⁻¹ (-1)) hrev hinv
 
 /-- Lower translations carry the axis formula to the entire Y chart.
 Upper translations recover the X-axis from the overlap of the charts. -/

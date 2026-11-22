@@ -73,6 +73,8 @@ products and rational evaluations all depend on these inputs.
 | [TamePowers](MetaplecticSummation/TamePowers.lean) | Identification of the radical of the normalized tame Hilbert pairing with the subgroup of n-th powers |
 | [MarginalRootFormula](MetaplecticSummation/MarginalRootFormula.lean) | The pointwise sum over roots in Appendix A for finite-place test sections, conditional on Hilbert nondegeneracy at wild places |
 | [PowerJacobian](MetaplecticSummation/PowerJacobian.lean) | Bijection of sufficiently small balls under the power map, with radius scaled by the norm of its derivative |
+| [PowerArea](MetaplecticSummation/PowerArea.lean) | Integrated change of variables for the power map on locally constant compactly supported functions vanishing at zero, at every finite place |
+| [FiniteMarginal](MetaplecticSummation/FiniteMarginal.lean) | Reverse marginal Fourier identity and the square of the defining integral transform on tame test sections |
 | [BasicMarginals](MetaplecticSummation/BasicMarginals.lean) | The basic axis density at almost all places, its ordinary Fourier transform for an unramified character, and the basic marginal at a unit |
 | [FourierCoefficients](MetaplecticSummation/FourierCoefficients.lean) | Rational products of the marginal kernels, unfolding at frequencies zero and one, Poisson on power classes and the constant-term identity |
 
@@ -135,12 +137,20 @@ Localizing the frequency test therefore gives the pointwise sum over the
 roots of −sy in Appendix A. The same argument works at wild places once
 the radical of the Hilbert pairing is identified with the n-th powers there.
 On a sufficiently small ball around a nonzero root a, the power map is
-bijective onto a ball with radius scaled by |n a^(n−1)|. To obtain the
-ordinary Fourier integral one still needs the integrated change of variables.
-The reverse identity on test sections enters the square formula, after which
-inversion extends the reverse identity to the full Schwartz space.
-The global
-product calculations cancel the normalizing constants at rational arguments
+bijective onto a ball with radius scaled by |n a^(n−1)|. Partitioning the
+compact support into disjoint such balls gives the integrated change of
+variables at all finite places. At tame places this proves the reverse
+marginal Fourier identity on test sections. Ordinary Fourier inversion gives
+the square of the defining integral transform on the vertical axis. The upper
+and lower shears preserve finite-place test sections, so the equality extends
+to both charts. The proof of the square on tame test sections uses only two
+admitted project results, the arithmetic characterization of the Hilbert symbols
+and the existence and uniqueness of self-dual measure. At a wild place it gives
+the same square formula assuming the radical condition.
+Extending inversion to the full Schwartz space still requires linearity and
+stability of the transform on that space.
+
+The global product calculations cancel the normalizing constants at rational arguments
 and identify the leading-term contributions at zero. The unfolding identities
 at frequencies zero and one and the global constant-term identity remain admitted.
 
