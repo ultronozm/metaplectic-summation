@@ -25,7 +25,8 @@ private theorem norm_one_of_power {x : K} (hx : x^n = 1) : ‖x‖ = 1 := by
 include d in
 /-- Reduction of a primitive root stays primitive when n is invertible in
 the residue field, by reduction of the n-th cyclotomic polynomial. -/
-theorem tame_degree_dvd (hp : p.asIdeal.absNorm.Coprime n) : n ∣ p.asIdeal.absNorm - 1 := by
+private theorem tame_primitive_lift (hp : p.asIdeal.absNorm.Coprime n) :
+    ∃ z : O, IsPrimitiveRoot z n ∧ IsPrimitiveRoot (IsLocalRing.residue O z) n := by
   letI : Fintype k := Fintype.ofFinite k
   have hcard : Fintype.card k = p.asIdeal.absNorm := by
     rw [← Nat.card_eq_fintype_card,FinitePlace.natCard_residueField_adicCompletionIntegers]
@@ -39,14 +40,32 @@ theorem tame_degree_dvd (hp : p.asIdeal.absNorm.Coprime n) : n ∣ p.asIdeal.abs
     apply Polynomial.isRoot_cyclotomic_iff.mp
     change Polynomial.eval _ _ = 0
     rw [Polynomial.cyclotomic.eval_apply,(show Polynomial.eval z (Polynomial.cyclotomic n O) = 0 from hz.isRoot_cyclotomic (NeZero.pos n)),map_zero]
+  exact ⟨z,hz,hr⟩
+
+include d in
+theorem tame_degree_dvd (hp : p.asIdeal.absNorm.Coprime n) : n ∣ p.asIdeal.absNorm - 1 := by
+  obtain ⟨z,_,hr⟩ := d.tame_primitive_lift p hp
+  letI : Fintype k := Fintype.ofFinite k
+  have hcard : Fintype.card k = p.asIdeal.absNorm := by
+    rw [← Nat.card_eq_fintype_card,FinitePlace.natCard_residueField_adicCompletionIntegers]
   rw [← hcard]
   exact hr.dvd_of_pow_eq_one _ (FiniteField.pow_card_sub_one_eq_one _ (hr.ne_zero (NeZero.ne n)))
 
-private theorem residue_eq_iff_norm_sub_lt (a b : O) :
+theorem residue_eq_iff_norm_sub_lt (a b : O) :
     IsLocalRing.residue O a = IsLocalRing.residue O b ↔ ‖(a : K) - b‖ < 1 := by
   rw [← sub_eq_zero,← map_sub,residue_eq_zero_iff,mem_maximalIdeal,mem_nonunits_iff,
     localInteger_isUnit_iff]
   exact ne_iff_lt_iff_le.mpr ((mem_localIntegers_iff p _).mp (a-b).property)
+
+include d in
+/-- Reduction modulo a tame finite prime distinguishes n-th roots of unity. -/
+theorem tame_root_reduction_injective (hp : p.asIdeal.absNorm.Coprime n) {x y : O}
+    (hx : x^n = 1) (hy : y^n = 1) (h : IsLocalRing.residue O x = IsLocalRing.residue O y) : x = y := by
+  obtain ⟨z,hz,hr⟩ := d.tame_primitive_lift p hp
+  obtain ⟨i,hi,ei⟩ := hz.eq_pow_of_pow_eq_one hx
+  obtain ⟨j,hj,ej⟩ := hz.eq_pow_of_pow_eq_one hy
+  rw [← ei,← ej,map_pow,map_pow] at h
+  exact ei.symm.trans ((congrArg (fun l : ℕ => z^l) (hr.pow_inj hi hj h)).trans ej)
 
 private theorem units_lift (g : kˣ) : ∃ G : Oˣ, red G = g := by
   obtain ⟨x,hx⟩ := (IsLocalRing.residue_surjective (R := O)) g.val

@@ -6,8 +6,9 @@ namespace MetaplecticPoisson.Datum
 
 variable {F : Type} [Field F] [NumberField F] {n : ℕ} [NeZero n] (d : Datum F n)
 
-private abbrev family := (existsUnique_hilbert F n d.primitive).exists.choose
-private theorem family_spec : IsHilbertFamily F n d.family :=
+/-- The Hilbert symbol before applying the chosen complex embedding. -/
+abbrev family := (existsUnique_hilbert F n d.primitive).exists.choose
+theorem family_spec : IsHilbertFamily F n d.family :=
   (existsUnique_hilbert F n d.primitive).exists.choose_spec
 
 /-- The unit-valued pairing underlying the chart transition function. -/

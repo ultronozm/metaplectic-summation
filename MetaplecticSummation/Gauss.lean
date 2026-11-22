@@ -1,4 +1,6 @@
 import MetaplecticSummation.TwistedSummation
+import MetaplecticSummation.SexticResidue
+import MetaplecticSummation.QuadraticTwist
 
 noncomputable section
 namespace MetaplecticPoisson.Datum
@@ -160,7 +162,35 @@ theorem quadraticDual {S : Finset (Place F)} (hS : d.ClassicalSetting S)
         d.residue S (fieldUnit c) (fieldUnit h) ^ 2 * d.normalizedGauss S 1 c.val) =
       ε * ∑' c : NonzeroInteger S, d.sDual W (fieldUnit c / fieldUnit h ^ (n-1)) *
         d.sSymbol S (fieldUnit h) (fieldUnit c) * d.quadraticDatum.residue S (fieldUnit c) (fieldUnit h) *
-        d.normalizedGauss S 1 c.val := by sorry
+        d.normalizedGauss S 1 c.val := by
+  let one : NonzeroInteger S := ⟨1,one_ne_zero⟩
+  let T := d.quadraticTwist d.quadraticDatum hS odd awayTwo h nonunit squarefree
+  have h1 : fieldUnit one = 1 := Units.ext rfl
+  have cop : IsCoprime one.val h.val := isCoprime_one_left
+  refine ⟨d.epsilon T (fieldUnit one),d.epsilon_norm hS h one T cop,fun W hW => ?_⟩
+  have hT : T.primes.card ≠ 0 := (Finset.card_pos.mpr
+    (d.quadraticTwist_nonempty d.quadraticDatum hS odd awayTwo h nonunit squarefree)).ne'
+  have idW : (fun (v : S) x => W v x * d.symbol v.val x (atPlace _ (fieldUnit one))) = W := by
+    funext v x
+    rw [h1,show atPlace v.val (1 : Fˣ) = 1 from map_one _]
+    change W v x * ((d.unitPairing v.val x 1 : ℂˣ) : ℂ) = W v x
+    rw [map_one,Units.val_one,mul_one]
+  have he := (d.twistedGaussSummation hS h one T cop W hW).2
+  rw [if_neg hT,add_zero,idW] at he
+  simp only [h1,one_mul] at he ⊢
+  apply Eq.trans _ (he.trans _)
+  · apply tsum_congr
+    intro c
+    rw [show twistValue T (fieldUnit c) = _ from
+      d.quadraticTwist_value d.quadraticDatum hS odd awayTwo h nonunit squarefree (fieldUnit c)]
+    ring
+  · congr 1
+    apply tsum_congr
+    intro c
+    have H := d.quadraticTwist_dual_value d.quadraticDatum hS odd awayTwo h nonunit squarefree c
+    change conj (twistValue T _) * _ * _ = _ at H
+    linear_combination d.sDual W (fieldUnit c / fieldUnit h ^ (n-1)) *
+      d.normalizedGauss S 1 c.val * H
 
 /-- In degree three the twist on the left of Corollary 10.40 is the
 sextic residue symbol for the compatible embedding of μ₆. -/
@@ -175,6 +205,13 @@ theorem sextic_to_quadratic (a : Datum F 3) (six : Datum F 6)
         a.normalizedGauss S 1 c.val) =
       ε * ∑' c : NonzeroInteger S, a.sDual W (fieldUnit c / fieldUnit h ^ 2) *
         a.sSymbol S (fieldUnit h) (fieldUnit c) * a.quadraticDatum.residue S (fieldUnit c) (fieldUnit h) *
-        a.normalizedGauss S 1 c.val := by sorry
+        a.normalizedGauss S 1 c.val := by
+  obtain ⟨ε,hε,H⟩ := a.quadraticDual hS (by decide) awayTwo h nonunit squarefree
+  refine ⟨ε,hε,fun W hW => ?_⟩
+  rw [← H W hW]
+  apply tsum_congr
+  intro c
+  rw [sextic_residue six a a.quadraticDatum compatible hS.good awayTwo (fieldUnit c) h]
+  ring
 
 end MetaplecticPoisson.Datum

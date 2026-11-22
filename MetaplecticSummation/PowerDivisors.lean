@@ -135,6 +135,46 @@ abbrev DivisorExponents (n : ℕ) := (p : modulusPrimes c) → Fin (primeOrder p
 
 def primeGenerator (p : Prime F) (hp : Sum.inr p ∉ S) := (exists_prime_generator p hp).choose
 
+omit [IsPrincipalIdealRing (SIntegers S)] in
+/-- A nonunit modulus has a prime divisor outside S. -/
+theorem modulusPrimes_nonempty_of_nonunit (hn : ¬ IsUnit c.val) : (modulusPrimes c).Nonempty := by
+  by_contra he
+  apply hn
+  apply isUnit_iff_dvd_one.mpr
+  apply (integer_dvd_iff_valuation_le c.val 1 c.property).mpr
+  intro p hp
+  have h := primeOrder_eq_zero_of_not_mem c p hp (fun h => he ⟨p,h⟩)
+  rw [valuation_primeOrder p hp c,h]
+  simp
+
+/-- Every prime in a squarefree modulus has valuation exponent one. -/
+theorem primeOrder_squarefree (h : Squarefree c.val) (p : modulusPrimes c) :
+    primeOrder p.val c.val = 1 := by
+  obtain ⟨hp,hl⟩ := (mem_modulusPrimes c p.val).mp p.property
+  have hpos : primeOrder p.val c.val ≠ 0 := by
+    intro hz
+    rw [norm_primeOrder p.val hp c,hz,pow_zero] at hl
+    exact hl.false
+  by_contra hne
+  have htwo : 2 ≤ primeOrder p.val c.val := by omega
+  obtain ⟨t,ht,ht'⟩ := exists_prime_generator p.val hp
+  have hd : t.val * t.val ∣ c.val := by
+    apply (integer_dvd_iff_valuation_le _ _ (mul_ne_zero t.property t.property)).mpr
+    intro q hq
+    change q.valuation F (c.val : F) ≤ q.valuation F ((t.val : F)*(t.val : F))
+    rw [map_mul]
+    by_cases he : q = p.val
+    · subst q
+      rw [valuation_primeOrder p.val hp c, ht, ← exp_add, exp_le_exp]
+      omega
+    · rw [ht' q hq he,one_mul]
+      exact c.val.property q hq
+  have htunit := h t.val hd
+  have hl' := (integer_dvd_iff_valuation_le t.val 1 t.property).mp htunit.dvd p.val hp
+  rw [ht,Subalgebra.coe_one,map_one] at hl'
+  change (1 : WithZero (Multiplicative ℤ)) ≤ exp (-1 : ℤ) at hl'
+  exact (exp_lt_exp.mpr (show (-1 : ℤ) < 0 by decide)).not_ge hl'
+
 /-- A representative for the divisor with the given finite tuple of prime exponents. -/
 def divisorMonomial (k : modulusPrimes c → ℕ) : NonzeroInteger S :=
   ⟨∏ p : modulusPrimes c,

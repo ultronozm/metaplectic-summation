@@ -312,6 +312,15 @@ primes gives ε, the conjugate twisting character and the residue symbol
 with denominator f. Theorem 10.34 still requires matching the remaining local
 factors and the two adelic sums with the stated S-integer expressions.
 
+The quadratic-dual corollary and its sextic specialization now follow in Lean
+from Theorem 10.34. For an odd covering degree, the quadratic twist has
+conductor exponent one at each prime dividing the squarefree modulus.
+Power reciprocity identifies the dual summand, including its Hilbert factor
+at S. For degree three, compatibility between the degree-six and degree-three
+embeddings yields the sextic specialization. The residue-symbol identities
+also cover numerators sharing a prime with the modulus, where the symbols
+vanish.
+
 The scope is the principal formulas over number fields and their completions.
 The local estimates, illustrative examples and intermediate proof lemmas do
 not have individual Lean statements throughout.

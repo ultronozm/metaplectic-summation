@@ -185,4 +185,26 @@ theorem sPsi_fraction (hS : d.GoodOutside S) (a : SIntegers S) :
     _ = _ := by rw [← mul_assoc,show (∏ v ∈ S, χ v) * (∏ p : T, χ (.inr p.val)) = 1 from hm,one_mul]
 
 end Character
+/-- A residue symbol with nonzero integral modulus is a finite product over the primes
+dividing that modulus, including its zero factors at common primes. -/
+theorem residue_on_modulus_primes {k : ℕ} [NeZero k] (D : Datum F k)
+    {S : Finset (Place F)} (c : Fˣ) (h : NonzeroInteger S) :
+    D.residue S c (fieldUnit h) = ∏ p ∈ modulusPrimes h,
+      if ‖diagonal F (.inr p) (c : F)‖ = 1 then
+        D.symbol (.inr p) (atPlace _ (fieldUnit h)) (atPlace _ c) else 0 := by
+  unfold residue
+  rw [finprod_eq_prod_of_mulSupport_subset (s := modulusPrimes h) _ (by
+    intro p hp
+    by_contra hn
+    exact hp (if_neg (fun he => hn ((mem_modulusPrimes h p).mpr he))))]
+  apply Finset.prod_congr rfl
+  intro p hp
+  have cond : Sum.inr p ∉ S ∧ ‖diagonal F (.inr p) (fieldUnit h : F)‖ < 1 := (mem_modulusPrimes h p).mp hp
+  rw [if_pos cond]
+  by_cases hu : ‖diagonal F (.inr p) (c : F)‖ = 1
+  · rw [dif_pos ⟨c.ne_zero,(fieldUnit h).ne_zero,hu⟩, if_pos hu,
+      show Units.mk0 (fieldUnit h : F) (fieldUnit h).ne_zero = fieldUnit h from Units.ext rfl,
+      show Units.mk0 (c : F) c.ne_zero = c from Units.ext rfl]
+  · rw [dif_neg (fun he => hu he.2.2),if_neg hu]
+
 end MetaplecticPoisson.Datum
