@@ -1,4 +1,4 @@
-import MetaplecticSummation.Schwartz
+import MetaplecticSummation.FiniteGerms
 import MetaplecticSummation.Shears
 import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 
@@ -49,33 +49,6 @@ theorem schwartz_inversion :
     (∀ Φ, (d.fourier v (d.fourier v Φ)).val = d.torusCharts v ((-1) ^ (n+1)) Φ.val) ∧
     (∀ (g : d.cover v) Φ, d.fourier v (g.val Φ) = g.val (d.fourier v Φ)) ∧
     (∀ Φ, d.mass v Φ < ⊤ ∧ d.mass v (d.fourier v Φ) = d.mass v Φ) := by sorry
-
-theorem finite_support_and_germ (p : HeightOneSpectrum (𝓞 F)) (Φ : d.schwartz (.inr p)) :
-    (∃ C : Set (LocalField F (.inr p) × LocalField F (.inr p)), IsCompact C ∧
-      ∀ z ∉ C, xChart Φ z = 0 ∧ yChart Φ z = 0) ∧
-    ∀ᶠ z in 𝓝 (0 : LocalField F (.inr p) × LocalField F (.inr p)),
-      xChart Φ z = xChart (d.leading (.inr p) Φ) z ∧
-      yChart Φ z = yChart (d.leading (.inr p) Φ) z := by sorry
-
-theorem finite_germs (p : HeightOneSpectrum (𝓞 F)) (Φ : d.schwartz (.inr p)) :
-    (d.leading (.inr p) Φ = 0 ↔ Φ.val ∈ d.testSet (.inr p)) ∧
-    (∃ C : Set (LocalField F (.inr p) × LocalField F (.inr p)), IsCompact C ∧
-      ∀ z ∉ C, xChart Φ z = 0 ∧ yChart Φ z = 0) ∧
-    ∀ᶠ z in 𝓝 (0 : LocalField F (.inr p) × LocalField F (.inr p)),
-      xChart Φ z = xChart (d.leading (.inr p) Φ) z ∧
-      yChart Φ z = yChart (d.leading (.inr p) Φ) z := by
-  obtain ⟨⟨C,hC,hout⟩,hg⟩ := d.finite_support_and_germ p Φ
-  refine ⟨⟨?_,d.leading_finiteTest_eq_zero p Φ⟩,⟨C,hC,hout⟩,hg⟩
-  intro hb
-  rw [hb] at hg
-  obtain ⟨U,hU,ho,h0⟩ := mem_nhds_iff.mp hg
-  obtain ⟨hx,hy⟩ := d.locallyConstant_finite_schwartz p Φ
-  refine ⟨d.schwartz_glues _ Φ,hx,hy,C \ U,hC.diff ho,fun h => h.2 h0,?_⟩
-  intro z hz
-  by_cases hc : z ∈ C
-  · have hu : z ∈ U := by_contra fun hn => hz ⟨hc,hn⟩
-    simpa [xChart,yChart] using hU hu
-  · exact hout z hc
 
 /-- Section 4's root kernel in the X chart. The deleted axis and the
 zero-determinant line have measure zero and are assigned value zero. -/

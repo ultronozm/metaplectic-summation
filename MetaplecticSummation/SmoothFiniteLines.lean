@@ -154,8 +154,7 @@ private theorem glues_swap (H : LineSymbol K n) {f : Charts K} (hf : Glues (fun 
   change f.2 y x = _ * f.1 y x
   rw [hf, ← mul_assoc, ← Units.val_mul, H.skew x y, inv_mul_cancel, Units.val_one, one_mul]
 
-omit [CompleteSpace K] in
-private theorem locallyConstant_norm_units [IsUltrametricDist K] :
+theorem locallyConstant_norm_units {K : Type*} [NontriviallyNormedField K] [IsUltrametricDist K] :
     IsLocallyConstant (fun u : Kˣ => ‖u.val‖) := by
   rw [IsLocallyConstant.iff_eventually_eq]
   intro u
@@ -223,7 +222,7 @@ def SmoothFiniteFamily {P K : Type*} [TopologicalSpace P] [NormedField K] (g : P
     (∃ C : Set K, IsCompact C ∧ ∀ p ∈ T, ∀ t ∉ C, g p t = 0) ∧
     ∀ᶠ h in 𝓝 (0 : K), ∀ p ∈ T, ∀ t, g p (t+h) = g p t
 
-private theorem smoothFiniteFamily_of_support {P K : Type*} [TopologicalSpace P] [NormedField K]
+theorem smoothFiniteFamily_of_support {P K : Type*} [TopologicalSpace P] [NormedField K]
     {g : P → K → ℂ} (hl : IsLocallyConstant (Function.uncurry g))
     (hs : ∀ T : Set P, IsCompact T → ∃ C : Set K, IsCompact C ∧ ∀ p ∈ T, ∀ t ∉ C, g p t = 0) :
     SmoothFiniteFamily g := by

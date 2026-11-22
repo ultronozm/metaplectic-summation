@@ -33,6 +33,9 @@ products and rational evaluations all depend on these inputs.
 | [FiniteTransform](MetaplecticSummation/FiniteTransform.lean) | Absolute convergence of the outer transform integral on finite-place test sections and local constancy of both charts of every finite-place Schwartz section |
 | [RayFourier](MetaplecticSummation/RayFourier.lean) | The normalized transform on each power ray as a one-dimensional Fourier integral, at every place |
 | [FiniteLeading](MetaplecticSummation/FiniteLeading.lean) | Construction of the leading-term map on the full finite-place Schwartz space and its formula at frequency zero |
+| [FiniteRayFourier](MetaplecticSummation/FiniteRayFourier.lean) | Local constancy and nontriviality of finite-place additive characters, and uniform Schwartz–Bruhat bounds after one-dimensional Fourier transformation |
+| [FiniteRays](MetaplecticSummation/FiniteRays.lean) | Bounded families of normalized ray extensions for every finite-place Schwartz section in §8 |
+| [FiniteGerms](MetaplecticSummation/FiniteGerms.lean) | Local constancy and homogeneity of the leading term, compact support in the plane, agreement with the leading term near zero, and identification of its kernel with the test sections |
 | [Poisson](MetaplecticSummation/Poisson.lean) | The adelic spaces and maps, rational evaluation, Theorem 9.1, Corollary 9.2 and the degree-one boundary value |
 | [Shears](MetaplecticSummation/Shears.lean) | Proved chart gluing, additive composition and the two Radon and Fourier identities of Lemma 5.2 |
 | [Inversion](MetaplecticSummation/Inversion.lean) | The root kernel, the local cover acting on Schwartz functions, Fourier inversion, equivariance and Plancherel (Theorem 7.1) |
@@ -64,7 +67,13 @@ leading-term map is admitted. At a finite place the normalized ray identity
 and absolute convergence give the leading term on transforms of test sections.
 Test sections themselves vanish near the origin. Linearity and uniqueness of
 limits extend these values to the entire finite-place Schwartz space. This
-construction uses the arithmetic inputs above, including self-dual Haar measure. At the
+construction uses the arithmetic inputs above, including self-dual Haar measure.
+The normalized rays extend to bounded Schwartz–Bruhat families over compact
+sets of chart vectors. A compact annulus meets every power ray, so uniform
+bounds there give compact support in the plane and equality with the leading
+term near the origin.
+
+At the
 finitely many places without a basic vector, the restricted tensor construction
 uses zero as an arbitrary reference value. Local factors at these places vary
 freely. The boundary space is the restricted tensor product of the **local
