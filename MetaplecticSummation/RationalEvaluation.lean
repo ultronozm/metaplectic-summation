@@ -106,7 +106,7 @@ private theorem eventually_tame :
   (FinitePlace.finite_places_over_degree (K := F) n).eventually_cofinite_notMem.mono
     (fun w hw => FinitePlace.tame_of_degree_not_mem n w hw)
 
-private theorem eventually_diagonal_integral (a : F) :
+theorem eventually_diagonal_integral (a : F) :
     ∀ᶠ w : HeightOneSpectrum (𝓞 F) in cofinite, ‖diagonal F (.inr w) a‖ ≤ 1 := by
   by_cases ha : a = 0
   · simp [ha]
@@ -236,7 +236,7 @@ private theorem eventually_integral_component (u : Adeles F) :
   u.2.property.mono fun w hw => (Valued.toNormedField.norm_le_one_iff (x := u.2 w)).mpr
     ((HeightOneSpectrum.mem_adicCompletionIntegers (𝓞 F) F w).mp hw)
 
-private theorem eventually_unit_component (a : (Adeles F)ˣ) :
+theorem eventually_unit_component (a : (Adeles F)ˣ) :
     ∀ᶠ w : HeightOneSpectrum (𝓞 F) in cofinite, ‖component a.val (.inr w)‖ = 1 := by
   filter_upwards [eventually_integral_component a.val,eventually_integral_component a⁻¹.val] with w h₁ h₂
   let b := Units.map (componentHom (.inr w)).toMonoidHom a

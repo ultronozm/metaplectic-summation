@@ -42,7 +42,12 @@ products and rational evaluations all depend on these inputs.
 | [AdelicCharacters](MetaplecticSummation/AdelicCharacters.lean) | Convergence of the sum of the single-place components of an adele and the product formula for its additive character |
 | [RationalEvaluation](MetaplecticSummation/RationalEvaluation.lean) | The product formula for the normalized modulus, adelic chart evaluations on the restricted tensor product, and agreement at rational points by Hilbert reciprocity |
 | [BoundaryDilation](MetaplecticSummation/BoundaryDilation.lean) | The local modification in Appendix B, preserving the leading term and killing the transformed leading term (B.8) |
-| [Poisson](MetaplecticSummation/Poisson.lean) | The adelic Fourier and leading-term maps, Theorem 9.1, Corollary 9.2 including its local vanishing criterion, and the degree-one boundary value |
+| [AdelicFourier](MetaplecticSummation/AdelicFourier.lean) | The adelic Fourier and leading-term maps on restricted tensor products |
+| [ThetaBoxes](MetaplecticSummation/ThetaBoxes.lean), [ThetaEstimate](MetaplecticSummation/ThetaEstimate.lean), [ThetaMajorant](MetaplecticSummation/ThetaMajorant.lean) | The rational-point count, dyadic summation, and uniform idele estimate of Lemma B.1 |
+| [LocalGrowth](MetaplecticSummation/LocalGrowth.lean) | Local bounds for the theta series, including the finite-place estimate and the archimedean reduction to transforms of test functions |
+| [ThetaSquare](MetaplecticSummation/ThetaSquare.lean), [Theta](MetaplecticSummation/Theta.lean) | Absolute convergence of the theta series from local growth and invariance of its sum under the square of the adelic transform |
+| [TensorDescent](MetaplecticSummation/TensorDescent.lean), [BoundaryConstruction](MetaplecticSummation/BoundaryConstruction.lean) | Descent of a functional through a restricted tensor product of surjections, Lemma B.10, and construction of the boundary functional from Proposition B.6 |
+| [Poisson](MetaplecticSummation/Poisson.lean) | Theorem 9.1, Corollary 9.2 including its local vanishing criterion, and the degree-one boundary value |
 | [Shears](MetaplecticSummation/Shears.lean) | Proved chart gluing, additive composition and the two Radon and Fourier identities of Lemma 5.2 |
 | [RapidCharts](MetaplecticSummation/RapidCharts.lean) | Rapid derivative estimates under real-linear changes of variables and local changes of chart |
 | [ArchimedeanShears](MetaplecticSummation/ArchimedeanShears.lean) | Preservation of the real and complex test spaces by both shear operators |
@@ -184,16 +189,24 @@ The global product calculations cancel the normalizing constants at rational arg
 and identify the leading-term contributions at zero. The unfolding identities
 at frequencies zero and one and the global constant-term identity remain admitted.
 
-In Theorem 9.1, Lean proves that two functionals satisfying the boundary
-identity agree. Applying (B.8) in one finite factor leaves the adelic leading
-term unchanged and makes the transformed leading term zero. Equality on these
-modified pure tensors and surjectivity of the adelic leading map give
-uniqueness. The proof uses the current all-place Fourier and leading-term maps
-and the almost-everywhere fixed-reference-vector assertion. Existence of the
-functional and absolute convergence of the
-rational-point series remain admitted. Corollary 9.2 follows from Theorem 9.1. To list the current
-proof obligations, run `rg -n '\bsorry\b' MetaplecticSummation`.
+For Theorem 9.1, `theta_idele_bound` proves Lemma B.1 over number fields.
+The sum of the majorant over nonzero rational vectors is bounded by a
+constant times |a|^(−2−κ), uniformly for all ideles a. Applying this to
+Schwartz sections uses local growth. At finite places Lean derives it from
+the ray extensions and compact support, with constant one for the basic
+vector. At real and complex places the bound follows for test functions
+from their defining rapid decay. The bound for their transforms remains
+admitted in `arch_transform_growth`.
 
+The global vanishing statement of Proposition B.6 remains admitted in
+`thetaDifference_vanishing`. Given this input, Lean constructs the boundary
+functional. Modifying a single finite factor gives a functional that descends
+through the adelic leading-term map (Lemma B.10). Reindexing the theta sum
+under the square of Fourier transformation yields the boundary identity.
+The same local modification determines the boundary functional uniquely.
+These arguments also depend on earlier results about the local Fourier and
+leading-term maps and the basic vectors. For the current list of direct
+proof obligations, run `rg -n '\bsorry\b' MetaplecticSummation`.
 
 ## Reading the Gauss-sum formulas
 
