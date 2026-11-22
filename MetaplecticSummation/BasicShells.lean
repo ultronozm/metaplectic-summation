@@ -107,7 +107,7 @@ private theorem basic_slice_on_shell (hp : p.asIdeal.absNorm.Coprime n) (π x : 
     · simp [iff'.mpr h,phase,h,← hx]
     · rw [if_neg (mt iff'.mp h),zero_mul,if_neg (hx ▸ h)]
 
-private theorem lt_unit_iff (a : K) : ‖a‖ < 1 ↔ ‖a‖ ≤ q⁻¹ := by
+theorem finite_norm_lt_one_iff (a : K) : ‖a‖ < 1 ↔ ‖a‖ ≤ q⁻¹ := by
   have hq : 1 < q := by exact_mod_cast NumberField.HeightOneSpectrum.one_lt_absNorm p
   refine ⟨fun h => ?_, fun h => h.trans_lt (inv_lt_one_of_one_lt₀ hq)⟩
   by_cases ha : a = 0
@@ -154,21 +154,25 @@ private theorem ball_integral (hψ : d.UnramifiedAt v) (t : Kˣ) :
   simp_rw [he] at h
   simpa only [h₁,Units.val_inv_eq_inv_val,norm_inv,Complex.ofReal_inv,div_inv_eq_mul,one_mul] using h
 
+theorem sphereValue_eq_sub (π t : Kˣ) (hπ : ‖π.val‖ = q⁻¹) :
+    (fun y : K => if ‖y‖ = ‖t.val‖ then (1:ℂ) else 0) =
+      fun y => ballValue p ‖t.val‖ y - ballValue p ‖(π*t).val‖ y := by
+  funext y
+  have hlt : ‖y‖ < ‖t.val‖ ↔ ‖y‖ ≤ ‖(π*t).val‖ := by
+    have h := finite_norm_lt_one_iff p (y/t.val)
+    rwa [norm_div,div_lt_one (norm_pos_iff.mpr t.ne_zero),div_le_iff₀ (norm_pos_iff.mpr t.ne_zero),
+      ← hπ,← norm_mul] at h
+  rcases lt_trichotomy ‖y‖ ‖t.val‖ with h | h | h
+  · simp only [ballValue,if_neg h.ne,if_pos h.le,if_pos (hlt.mp h),sub_self]
+  · simp only [ballValue,if_pos h,if_pos h.le,if_neg (hlt.not.mp h.not_lt),sub_zero]
+  · simp only [ballValue,if_neg h.ne',if_neg h.not_ge,if_neg (hlt.not.mp h.not_gt),sub_self]
+
 omit [NeZero n] in
 private theorem sphere_integral (hψ : d.UnramifiedAt v) (π t : Kˣ) (hπ : ‖π.val‖ = q⁻¹) :
     let s := fun y : K => if ‖y‖ = ‖t.val‖ then (1:ℂ) else 0
     Integrable s dx ∧ (∫ y, s y ∂dx) = (‖t.val‖ : ℂ) * (1-(q : ℂ)⁻¹) := by
   let s (y : K) : ℂ := if ‖y‖ = ‖t.val‖ then 1 else 0
-  have he : s = fun y => ballValue p ‖t.val‖ y - ballValue p ‖(π*t).val‖ y := by
-    funext y
-    have hlt : ‖y‖ < ‖t.val‖ ↔ ‖y‖ ≤ ‖(π*t).val‖ := by
-      have h := lt_unit_iff p (y/t.val)
-      rwa [norm_div,div_lt_one (norm_pos_iff.mpr t.ne_zero),div_le_iff₀ (norm_pos_iff.mpr t.ne_zero),
-        ← hπ,← norm_mul] at h
-    rcases lt_trichotomy ‖y‖ ‖t.val‖ with h | h | h
-    · simp only [s,ballValue,if_neg h.ne,if_pos h.le,if_pos (hlt.mp h),sub_self]
-    · simp only [s,ballValue,if_pos h,if_pos h.le,if_neg (hlt.not.mp h.not_lt),sub_zero]
-    · simp only [s,ballValue,if_neg h.ne',if_neg h.not_ge,if_neg (hlt.not.mp h.not_gt),sub_self]
+  have he : s = _ := sphereValue_eq_sub p π t hπ
   change Integrable s dx ∧ (∫ y, s y ∂dx) = _
   rw [he]
   have ht := d.ball_integrable p ‖t.val‖

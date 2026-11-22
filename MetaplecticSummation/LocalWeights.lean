@@ -1,3 +1,4 @@
+import MetaplecticSummation.UnramifiedGauss
 import MetaplecticSummation.Gauss
 import MetaplecticSummation.Inversion
 import Mathlib.Analysis.SpecialFunctions.Pow.Complex
@@ -71,25 +72,6 @@ theorem mellin_dual (v : Place F) (W : Weight v) (hw : TestWeight v W) (β : (Lo
       d.mellin v (d.dualWeight v W) (fun x => ω x) s =
         (Real.sqrt (modulus F v (n : LocalField F v)) : ℂ)⁻¹ * η (-1) * γ₁ * γ₂ *
           d.mellin v W (fun x => (ω x : ℂ)⁻¹) (-s) := by sorry
-
-/-- Proposition 10.27, with valuations written as powers of the residue cardinality. -/
-theorem untwistedVector (p : Prime F) (hp : p.asIdeal.absNorm.Coprime n) (hψ : d.UnramifiedAt (.inr p))
-    (a c : (LocalField F (.inr p))ˣ) (i j : ℤ)
-    (ha : ‖(a : LocalField F (.inr p))‖ = (p.asIdeal.absNorm : ℝ)^(-i))
-    (hc : ‖(c : LocalField F (.inr p))‖ = (p.asIdeal.absNorm : ℝ)^(-j)) :
-    let v : Place F := .inr p
-    let q : ℝ := p.asIdeal.absNorm
-    let W : Weight v := fun x => if ‖(x : LocalField F v)‖ = 1 then d.symbol v a x else 0
-    let shell := fun U : Set (LocalField F v) =>
-      ∫ t in U, d.character.localValue F v t ∂(selfDual F d.character v)
-    (i ≡ j [ZMOD n] → d.dualWeight v W c =
-      (1 - (q : ℂ)⁻¹) * shell {t | ‖t‖ ^ n ≤ ‖(c : LocalField F v)‖} -
-      (q : ℂ)⁻¹ * shell {t | ‖t‖ ^ n = q * ‖(c : LocalField F v)‖}) ∧
-    (¬ i ≡ j [ZMOD n] →
-      (¬ (n : ℤ) ∣ j-1 → d.dualWeight v W c = 0) ∧
-      ∀ k : ℤ, j = n*k+1 → ∀ t : (LocalField F v)ˣ, ‖(t : LocalField F v)‖ = q^(-k) →
-        d.dualWeight v W c = d.unitGauss p (fun x => d.symbol v (c/a) x)
-          (-((t : LocalField F v)^n) / c) * shell {y | ‖y‖ = q^(-k)}) := by sorry
 
 def powerAverage (v : Place F) (f : Charts (LocalField F v)) : Charts (LocalField F v) :=
   let avg := fun g : Weight v => d.lineIntegral v fun x =>

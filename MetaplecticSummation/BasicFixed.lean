@@ -19,16 +19,16 @@ private abbrev value (k : ℕ) := (p.asIdeal.absNorm : ℂ)^((n-1)*k)
 local notation "W" => value (n := n) p
 
 omit [NeZero n] in
-private theorem integral_ball_character (hψ : d.UnramifiedAt v) (b : Kˣ) :
-    (∫ t, ψ t * (if ‖t‖ ≤ ‖b.val‖ then (1:ℂ) else 0) ∂dx) =
-      if ‖b.val‖ ≤ 1 then (‖b.val‖ : ℂ) else 0 := by
-  let g (t : K) := ψ t * (if ‖t‖ ≤ ‖b.val‖ then (1:ℂ) else 0)
-  have he (t : K) : g (b.val*t) = (if ‖t‖ ≤ 1 then 1 else 0) * ψ (t*b.val) := by
+theorem ball_character_integral (hψ : d.UnramifiedAt v) (b : Kˣ) (α : K) :
+    (∫ t, ballValue p ‖b.val‖ t * ψ (α*t) ∂dx) =
+      if ‖α*b.val‖ ≤ 1 then (‖b.val‖ : ℂ) else 0 := by
+  let g (t : K) := ballValue p ‖b.val‖ t * ψ (α*t)
+  have he (t : K) : g (b.val*t) = (if ‖t‖ ≤ 1 then 1 else 0) * ψ (t*(α*b.val)) := by
     have iff' : ‖b.val*t‖ ≤ ‖b.val‖ ↔ ‖t‖ ≤ 1 := by
       rw [norm_mul]
       simp [norm_pos_iff.mpr b.ne_zero]
-    unfold g
-    rw [if_congr iff' rfl rfl,mul_comm b.val t,mul_comm]
+    unfold g ballValue
+    rw [if_congr iff' rfl rfl,show α*(b.val*t) = t*(α*b.val) by ring]
   have h := d.integral_local_mul v b g
   simp_rw [he,d.integral_unitBall_character p hψ] at h
   change _ = (∫ y, g y ∂dx) / (‖b.val‖ : ℂ) at h
@@ -126,7 +126,10 @@ theorem basicCharts_fourier_fixed (hp : p.asIdeal.absNorm.Coprime n) (hψ : d.Un
       rw [h]
       simp only [div_eq_mul_inv]
       ac_rfl
-    rw [he,d.integral_ball_character p hψ]
+    have hc : (∫ t, ψ t * (if ‖t‖ ≤ ‖b.val‖ then (1:ℂ) else 0) ∂dx) =
+        if ‖b.val‖ ≤ 1 then (‖b.val‖ : ℂ) else 0 := by
+      simpa only [ballValue,one_mul,mul_one,mul_comm] using d.ball_character_integral p hψ b 1
+    rw [he,hc]
     by_cases hi : ‖b.val‖ ≤ 1
     · obtain ⟨k,hk⟩ := integral_norm_power p b hi
       change ‖b.val‖ = (q^k)⁻¹ at hk

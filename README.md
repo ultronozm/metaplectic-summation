@@ -88,6 +88,7 @@ products and rational evaluations all depend on these inputs.
 | [GaussProduct](MetaplecticSummation/GaussProduct.lean) | The product of the basic functions outside S as a normalized global Gauss sum for arbitrary integral moduli |
 | [CharacterScaling](MetaplecticSummation/CharacterScaling.lean) | Self-dual measure under scaling of the character, and the dilation and change-of-character formulas for the dual weight |
 | [UnitGauss](MetaplecticSummation/UnitGauss.lean) | Support and absolute value of a ramified character Gauss integral, and the unit-character reduction of the Jacquet kernel |
+| [UnramifiedGauss](MetaplecticSummation/UnramifiedGauss.lean) | Ramanujan integrals and both valuation cases of the Hilbert-character transform in Proposition 10.27 |
 | [RamifiedGauss](MetaplecticSummation/RamifiedGauss.lean) | Conductor of the Hilbert-symbol twist and the two Gauss factors in the ramified local transform |
 | [TwistedWeights](MetaplecticSummation/TwistedWeights.lean) | Character test weights, unit covariance of their transforms, vanishing of power-class moments, and the norm and Gauss-sum expression for ε |
 | [TwistedSummation](MetaplecticSummation/TwistedSummation.lean) | Adelic line summation at S ∪ T, vanishing of the main term for nonempty T, and the product of transformed weights at the conductor primes |
