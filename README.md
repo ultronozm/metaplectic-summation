@@ -35,6 +35,7 @@ products and rational evaluations all depend on these inputs.
 | [SmoothFiniteLines](MetaplecticSummation/SmoothFiniteLines.lean) | Joint local constancy of both finite-place Radon charts and uniform Schwartz–Bruhat bounds for the line slices over compact sets of output vectors |
 | [LocalCharacters](MetaplecticSummation/LocalCharacters.lean) | Continuity, additivity and unitarity of the restrictions of the adelic character |
 | [CharacterNontrivial](MetaplecticSummation/CharacterNontrivial.lean) | Nontriviality of the additive character at every place from its self-dual normalization |
+| [ArchimedeanSlice](MetaplecticSummation/ArchimedeanSlice.lean), [SchwartzSliceIntegral](MetaplecticSummation/SchwartzSliceIntegral.lean), [SchwartzSliceFamily](MetaplecticSummation/SchwartzSliceFamily.lean) | Differentiation of affine line integrals and compact-uniform Schwartz bounds under the determinant substitution τ ↦ τⁿ |
 | [FourierDifferences](MetaplecticSummation/FourierDifferences.lean), [ArchimedeanFourierDecay](MetaplecticSummation/ArchimedeanFourierDecay.lean) | Fourier multipliers for translations and differences, integral decay estimates from real derivatives, and uniform Fourier decay for bounded Schwartz families |
 | [FiniteTransform](MetaplecticSummation/FiniteTransform.lean) | Absolute convergence of the outer transform integral on finite-place test sections and local constancy of both charts of every finite-place Schwartz section |
 | [FiniteSchwartzLines](MetaplecticSummation/FiniteSchwartzLines.lean) | Absolute convergence of both line integrals on the full Schwartz space at every finite place for nonzero line parameters |
@@ -218,11 +219,13 @@ from the integral estimates. For high frequencies, translating a slice by
 a/u at frequency u gives a fixed nontrivial character multiplier. An iterated
 forward difference then bounds the Fourier integral by derivatives of the
 same order. This proves the required uniform Fourier decay for bounded
-Schwartz families at both real and complex places. The remaining local input
-is `arch_radon_schwartz_slices`, the assertion in Lemma 4.2(iii) that the
-Radon slices of a test section form such a family. Uniform bounds for their
-values are proved. Bounds for all derivatives in the line parameter and the
-paper’s additional estimates for derivatives in the output vector remain open.
+Schwartz families at both real and complex places. The theorem
+`arch_radon_schwartz_slices` proves that the Radon slices of a test section
+form such a family. For a linear determinant parameter, differentiating a chart
+along the affine line gives an integrable majorant at every derivative order.
+Pullback by τ ↦ τⁿ preserves bounded sets of Schwartz functions. Together these
+prove the slice assertion of Lemma 4.2(iii). Its additional assertions about
+joint smoothness and derivatives in the output vector remain open at infinite places.
 
 The global vanishing statement of Proposition B.6 remains admitted in
 `thetaDifference_vanishing`. Given this input, Lean constructs the boundary

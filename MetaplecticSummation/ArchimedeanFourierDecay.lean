@@ -1,20 +1,13 @@
 import MetaplecticSummation.ArchimedeanLeading
 import MetaplecticSummation.FourierDifferences
-import Mathlib.Analysis.Distribution.SchwartzSpace.Basic
+import MetaplecticSummation.ArchimedeanSlice
+import MetaplecticSummation.RapidCharts
 
 /-! The Fourier transform of a bounded family of archimedean Radon slices in §4. -/
 noncomputable section
 namespace MetaplecticPoisson
 open NumberField MeasureTheory Set
 open scoped ContDiff
-
-/-- A chart family consists of Schwartz functions in the line variable,
-with each derivative bounded in every polynomial weight on compact parameter sets. -/
-def SchwartzSliceFamily {P K L : Type} [TopologicalSpace P] [NormedField K]
-    [NormedField L] [NormedAlgebra ℝ L] (e : K ≃+* L) (R : P → K → ℂ) : Prop :=
-  ∃ G : P → SchwartzMap L ℂ, (∀ q t, R q t = G q (e t)) ∧
-    ∀ T : Set P, IsCompact T → ∀ k N : ℕ, ∃ C : ℝ, 0 ≤ C ∧ ∀ q ∈ T, ∀ y : L,
-      ‖iteratedFDeriv ℝ k (G q) y‖ * (1+‖y‖)^N ≤ C
 
 private theorem fwdDiff_pullback {K L : Type} [Field K] [Field L] (e : K ≃+* L)
     {f : K → ℂ} {g : L → ℂ} (H : ∀ t, f t = g (e t)) (h : K) (j : ℕ) (t : K) :
@@ -60,13 +53,84 @@ theorem hat_decay_of_schwartz_slices (w : InfinitePlace F) {P L : Type} [Topolog
   change D*‖h‖^j*V = D*V*‖h‖^j
   ring
 
+/-- The two fiber integrals with a linear determinant parameter and the original local symbol. -/
+theorem arch_linear_radon_schwartz_slices (w : InfinitePlace F) {f : Charts w.Completion} (hf : f ∈ d.testSet (.inl w))
+    {L : Type} [NormedField L] [NormedAlgebra ℝ L] (e : w.Completion ≃+* L) (he : Isometry e) :
+    let v : Place F := .inl w
+    let R := radon 1 (d.symbol v) (modulus F v) (selfDual F d.character v) f
+    SchwartzSliceFamily e (fun (q : w.Completionˣ × w.Completion) t => (R t).1 q.1 q.2) ∧
+    SchwartzSliceFamily e (fun (q : w.Completionˣ × w.Completion) t => (R t).2 q.2 q.1) := by
+  let v : Place F := .inl w
+  let K := LocalField F v
+  let μ := selfDual F d.character v
+  let S := d.symbol v
+  let m (a : Kˣ) := ‖a.val‖^w.mult
+  have hm : Continuous m := Units.continuous_val.norm.pow _
+  have hm' (a : Kˣ) : 0 < m a := pow_pos (norm_pos_iff.mpr a.ne_zero) _
+  letI : SecondCountableTopology K :=
+    (InfinitePlace.Completion.isometry_extensionEmbedding w).isEmbedding.secondCountableTopology
+  have go {B : Type} [NormedField B] [NormedAlgebra ℝ B] (b : K ≃+* B) (hb : Isometry b)
+      (htest : archTest b f) :
+      let R := radon 1 S (modulus F v) μ f
+      SchwartzSliceFamily b (fun (q : Kˣ × K) t => (R t).1 q.1 q.2) ∧
+      SchwartzSliceFamily b (fun (q : Kˣ × K) t => (R t).2 q.2 q.1) := by
+    have hs := d.continuous_symbol v
+    have hneg : Continuous (fun a : Kˣ => -a) := Units.isEmbedding_val₀.continuous_iff.mpr Units.continuous_val.neg
+    have cx : Continuous (Function.uncurry (fun x a : Kˣ => S x (-a))) :=
+      hs.comp (continuous_fst.prodMk (hneg.comp continuous_snd))
+    have cy : Continuous (Function.uncurry (fun x a : Kˣ => S x a * S (-1) a)) :=
+      hs.mul (hs.comp (continuous_const.prodMk continuous_snd))
+    have hy := rapidChart_comp_equiv htest.2 (ContinuousLinearEquiv.prodComm ℝ B B)
+    let X (p : B × B) := xChart f (b.symm p.1, b.symm p.2)
+    let Y (p : B × B) := yChart f (b.symm p.2, b.symm p.1)
+    have HX := schwartz_normalized_radon_chart μ b hb (-1) (by simp) (d.arch_integrable_inv_cube w)
+      X htest.1 _ cx (fun x a => d.norm_symbol v x (-a)) m hm hm'
+    have HY := schwartz_normalized_radon_chart μ b hb 1 (by simp) (d.arch_integrable_inv_cube w)
+      Y hy _ cy (fun x a => by simp [S]) m hm hm'
+    constructor
+    · convert HX using 1
+      funext q t
+      simp only [radon,pow_one]
+      congr 1
+      apply integral_congr_ae
+      filter_upwards with x
+      by_cases hx : x = 0 <;> simp [X,xChart,hx,sub_eq_add_neg]
+      split
+      · rename_i h
+        exact (hx ((b.symm_apply_apply x).symm.trans h)).elim
+      · rfl
+    · convert HY using 1
+      funext q t
+      simp only [radon,pow_one]
+      congr 1
+      apply integral_congr_ae
+      filter_upwards with x
+      by_cases hx : x = 0 <;> simp [Y,yChart,hx,mul_comm x q.2,mul_assoc]
+      split
+      · rename_i h
+        exact (hx ((b.symm_apply_apply x).symm.trans h)).elim
+      · rfl
+  have transfer {B : Type} [NormedField B] [NormedAlgebra ℝ B] (b : K ≃+* B) (hb : Isometry b)
+      (htest : archTest b f) := And.intro ((go b hb htest).1.change_coordinates hb e he)
+        ((go b hb htest).2.change_coordinates hb e he)
+  by_cases hw : w.IsReal
+  · exact transfer (InfinitePlace.Completion.ringEquivRealOfIsReal hw)
+      (InfinitePlace.Completion.isometry_extensionEmbeddingOfIsReal hw)
+      (by simpa only [testSet,dif_pos hw] using! hf.2)
+  · exact transfer (InfinitePlace.Completion.ringEquivComplexOfIsComplex (InfinitePlace.not_isReal_iff_isComplex.mp hw))
+      (InfinitePlace.Completion.isometry_extensionEmbedding w)
+      (by simpa only [testSet,dif_neg hw] using! hf.2)
+
 /-- The slice assertion of Lemma 4.2(iii) at a real or complex place. -/
 theorem arch_radon_schwartz_slices (w : InfinitePlace F) {f : Charts w.Completion} (hf : f ∈ d.testSet (.inl w))
     {L : Type} [NormedField L] [NormedAlgebra ℝ L] (e : w.Completion ≃+* L) (he : Isometry e) :
     let v : Place F := .inl w
     let R := radon n (d.symbol v) (modulus F v) (selfDual F d.character v) f
     SchwartzSliceFamily e (fun (q : w.Completionˣ × w.Completion) t => (R t).1 q.1 q.2) ∧
-    SchwartzSliceFamily e (fun (q : w.Completionˣ × w.Completion) t => (R t).2 q.2 q.1) := by sorry
+    SchwartzSliceFamily e (fun (q : w.Completionˣ × w.Completion) t => (R t).2 q.2 q.1) := by
+  obtain ⟨hx, hy⟩ := d.arch_linear_radon_schwartz_slices w hf e he
+  exact ⟨by simpa only [radon, pow_one] using! hx.comp_pow n,
+         by simpa only [radon, pow_one] using! hy.comp_pow n⟩
 
 /-- Uniform high-frequency decay of the ordinary one-dimensional Fourier integrals
 of both Radon charts. -/

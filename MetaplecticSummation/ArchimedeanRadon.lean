@@ -13,31 +13,31 @@ private def RapidLineChart {K : Type} [NormedField K] (f : Kˣ → K → ℂ) : 
   Continuous (Function.uncurry f) ∧ ∀ j : ℕ, ∃ C : ℝ, 0 ≤ C ∧ ∀ a b,
     ‖f a b‖ * (1 + max ‖a.val‖ ‖b‖)^j ≤ C
 
-private theorem rapidChart_polynomial {E : Type} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    {U : Set E} {g : E → ℂ} (hg : rapidChart U g) (j : ℕ) :
-    ∃ C : ℝ, 0 ≤ C ∧ ∀ z ∈ U, ‖g z‖*(1+‖z‖)^j ≤ C := by
-  obtain ⟨A,ha⟩ := hg.2 0 0
-  obtain ⟨B,hb⟩ := hg.2 0 j
+/-- Every derivative of a rapid chart satisfies a global polynomial decay bound on its domain. -/
+theorem rapidChart_derivative_polynomial {E : Type} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {U : Set E} {g : E → ℂ} (hg : rapidChart U g) (k j : ℕ) :
+    ∃ C : ℝ, 0 ≤ C ∧ ∀ z ∈ U, ‖iteratedFDeriv ℝ k g z‖*(1+‖z‖)^j ≤ C := by
+  obtain ⟨A,ha⟩ := hg.2 k 0
+  obtain ⟨B,hb⟩ := hg.2 k j
   let M := max 0 (max A B)
   have hM : 0 ≤ M := le_max_left ..
   refine ⟨M*2^j,by positivity,?_⟩
   intro z hz
-  have H : ‖g z‖ * (max 1 ‖z‖)^j ≤ M := by
+  have H : ‖iteratedFDeriv ℝ k g z‖ * (max 1 ‖z‖)^j ≤ M := by
     rcases le_total ‖z‖ 1 with h | h
     · rw [max_eq_left h,one_pow,mul_one]
-      exact (by simpa using ha z hz : ‖g z‖ ≤ A).trans ((le_max_left A B).trans (le_max_right ..))
+      exact (by simpa using ha z hz : ‖iteratedFDeriv ℝ k g z‖ ≤ A).trans ((le_max_left A B).trans (le_max_right ..))
     · rw [max_eq_right h]
       have hp : 0 < ‖z‖^j := pow_pos (zero_lt_one.trans_le h) _
       have hh := hb z hz
-      rw [norm_iteratedFDeriv_zero] at hh
       have hB : B ≤ M := (le_max_right A B).trans (le_max_right ..)
-      have he : ‖g z‖ ≤ M*(‖z‖^j)⁻¹ := hh.trans
+      have he : ‖iteratedFDeriv ℝ k g z‖ ≤ M*(‖z‖^j)⁻¹ := hh.trans
         ((mul_le_mul_of_nonneg_right hB (le_min hp.le (inv_nonneg.mpr hp.le))).trans
           (mul_le_mul_of_nonneg_left (min_le_right ..) hM))
       exact (le_div_iff₀ hp).mp (by simpa only [div_eq_mul_inv] using he)
   have hs : 1+‖z‖ ≤ (max 1 ‖z‖)*2 := by linarith [le_max_left 1 ‖z‖,le_max_right 1 ‖z‖]
   calc
-    _ ≤ ‖g z‖*((max 1 ‖z‖)*2)^j := mul_le_mul_of_nonneg_left (pow_le_pow_left₀ (by positivity) hs _) (norm_nonneg _)
+    _ ≤ ‖iteratedFDeriv ℝ k g z‖*((max 1 ‖z‖)*2)^j := mul_le_mul_of_nonneg_left (pow_le_pow_left₀ (by positivity) hs _) (norm_nonneg _)
     _ ≤ _ := by rw [mul_pow,← mul_assoc]; exact mul_le_mul_of_nonneg_right H (by positivity)
 
 private theorem archTest_lineCharts {K L : Type} [NormedField K] [NormedField L] [NormedAlgebra ℝ L]
@@ -58,12 +58,12 @@ private theorem archTest_lineCharts {K L : Type} [NormedField K] [NormedField L]
   constructor
   · refine ⟨(hf.1.1.continuousOn.comp_continuous cx hx).congr ex,?_⟩
     intro j
-    obtain ⟨C,hC,H⟩ := rapidChart_polynomial hf.1 j
+    obtain ⟨C,hC,H⟩ := rapidChart_derivative_polynomial hf.1 0 j
     refine ⟨C,hC,fun a b => ?_⟩
     simpa [Prod.norm_def,X,he.norm_map_of_map_zero e.map_zero,xChart,a.ne_zero] using H (X (a,b)) (hx _)
   · refine ⟨(hf.2.1.continuousOn.comp_continuous cy hy).congr ey,?_⟩
     intro j
-    obtain ⟨C,hC,H⟩ := rapidChart_polynomial hf.2 j
+    obtain ⟨C,hC,H⟩ := rapidChart_derivative_polynomial hf.2 0 j
     refine ⟨C,hC,fun a b => ?_⟩
     simpa [Prod.norm_def,Y,he.norm_map_of_map_zero e.map_zero,max_comm ‖b‖,yChart,a.ne_zero] using H (Y (a,b)) (hy _)
 
