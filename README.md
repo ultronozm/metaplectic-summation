@@ -66,6 +66,9 @@ products and rational evaluations all depend on these inputs.
 | [Marginals](MetaplecticSummation/Marginals.lean) | The marginal-to-axis Fourier identity, the two zero-parameter formulas, and Schwartz–Bruhat regularity of the finite-place axis density |
 | [MarginalDifference](MetaplecticSummation/MarginalDifference.lean) | The cocycle for the multiplicative difference integral in Appendix A, finite-place integrability, and cancellation for a nontrivial Hilbert character |
 | [MarginalRoots](MetaplecticSummation/MarginalRoots.lean) | Decomposition of the difference integral over the distinct roots of an n-th power, including the integrated identity |
+| [MultiplicativeMeasure](MetaplecticSummation/MultiplicativeMeasure.lean) | Multiplicative Haar measure on the units, invariance under inversion, and the substitution t = a/u at every completion |
+| [LinearFactor](MetaplecticSummation/LinearFactor.lean) | Absolute convergence and evaluation of the tested linear factor in Appendix A and the resulting sum over distinct roots at every finite place |
+| [TestedMarginal](MetaplecticSummation/TestedMarginal.lean) | The scaled marginal, the change to the Y chart, and the finite-place pairing against a test frequency with its first exchange of integrals |
 | [BasicMarginals](MetaplecticSummation/BasicMarginals.lean) | The basic axis density at almost all places, its ordinary Fourier transform for an unramified character, and the basic marginal at a unit |
 | [FourierCoefficients](MetaplecticSummation/FourierCoefficients.lean) | Rational products of the marginal kernels, unfolding at frequencies zero and one, Poisson on power classes and the constant-term identity |
 
@@ -117,8 +120,14 @@ The reverse marginal identity remains admitted. In its proof Lean establishes
 absolute convergence of the multiplicative difference integral for finite-place
 tests and its vanishing when the Hilbert character is nontrivial. For an n-th
 power parameter the cocycle splits the integral into contributions from its
-distinct roots. Ordinary finite-place Fourier inversion and the affine pairing
-are proved from self-duality. The square formula uses the reverse marginal
+distinct roots. At every finite place the linear-factor integral is absolutely
+convergent and evaluates to the axis value times the multiplicative Fourier
+integral of the test. The reciprocal change of variables uses the measure
+obtained by weighting additive self-dual measure by the inverse modulus.
+The first exchange of integrals in the tested marginal follows from compact
+support after rescaling the chart coordinate. Passing from this tested
+identity to the integral of the multiplicative differences still requires a
+joint convergence argument in the chart, frequency, and scaling variables. The square formula uses the reverse marginal
 identity and the existence of shear operators. The test-function case of the
 reverse identity is needed before using inversion to extend it to the full
 Schwartz space, as in Appendix A. The global

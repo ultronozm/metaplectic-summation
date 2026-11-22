@@ -5,4 +5,4 @@ import MetaplecticSummation.FourierCoefficients
 import MetaplecticSummation.FiniteLines
 import MetaplecticSummation.WildSymbols
 import MetaplecticSummation.PowerSubgroup
-import MetaplecticSummation.MarginalRoots
+import MetaplecticSummation.TestedMarginal
