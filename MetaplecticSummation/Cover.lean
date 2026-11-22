@@ -34,7 +34,7 @@ theorem kubota_projection :
 
 /-- Translation on the primary chart and the value on the missing axis
 determine the full shear of a genuine section. -/
-private theorem eq_upperShear {f g : Charts (LocalField F v)} (hg : Glues (d.symbol v) g)
+theorem eq_upperShear {f g : Charts (LocalField F v)} (hg : Glues (d.symbol v) g)
     (u : LocalField F v) (hx : ∀ x y, g.1 x y = f.1 x (y+u*x.val))
     (hy : ∀ y, g.2 0 y = f.2 0 y) : g = upperShear (d.symbol v) u f := by
   apply Prod.ext (funext fun x => funext (hx x))
@@ -47,7 +47,7 @@ private theorem eq_upperShear {f g : Charts (LocalField F v)} (hg : Glues (d.sym
   · obtain rfl := not_ne_iff.mp h
     simpa only [upperShear,dif_neg (not_ne_iff.mpr rfl)] using hy y
 
-private theorem eq_lowerShear {f g : Charts (LocalField F v)} (hg : Glues (d.symbol v) g)
+theorem eq_lowerShear {f g : Charts (LocalField F v)} (hg : Glues (d.symbol v) g)
     (u : LocalField F v) (hy : ∀ x y, g.2 x y = f.2 (x+u*y.val) y)
     (hx : ∀ x, g.1 x 0 = f.1 x 0) : g = lowerShear (d.symbol v) u f := by
   apply Prod.ext _ (funext fun x => funext (hy x))

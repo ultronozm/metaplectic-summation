@@ -47,6 +47,64 @@ private theorem cone_growth {K P : Type} [NontriviallyNormedField K] [ProperSpac
       ring
     _ ≤ _ := mul_le_mul_of_nonneg_right hbound (Real.rpow_nonneg hB.le _)
 
+/-- If the normalized transform decreases rapidly in the root variable on
+compact chart sets, it has the two exponents of (4.2) on the dominant cone. -/
+private theorem arch_cone_growth {K : Type} [NontriviallyNormedField K] [ProperSpace K]
+    {n : ℕ} [NeZero n] (m N : ℕ) (hN : 1 ≤ N) (g : Kˣ → K → ℂ)
+    (h : ∀ T : Set (Kˣ × K), IsCompact T → ∀ j : ℕ, ∃ C : ℝ, 0 ≤ C ∧ ∀ q ∈ T, ∀ u : Kˣ,
+      ‖g (u^n*q.1) (u.val^n*q.2)‖ * (‖u.val‖^m)^(n-1) * (1+‖u.val‖)^j ≤ C) :
+    ∃ C : ℝ, 0 ≤ C ∧ ∀ a b, ‖b‖ ≤ ‖a.val‖ →
+      let r := ‖a.val‖^m
+      ‖g a b‖ ≤ C * min (r^(-(growthExponent n))) (r^(-(N:ℝ))) := by
+  obtain ⟨T,B,hT,hB,hcover⟩ := compact_ray_shell (K := K) (NeZero.ne n)
+  obtain ⟨M,hM,H⟩ := h T hT (m*n*N)
+  let U := B^m
+  have hU : 0 ≤ U := (pow_pos hB _).le
+  let C := max (M*U^(growthExponent n)) (M*U^N)
+  have hC : 0 ≤ C := (mul_nonneg hM (Real.rpow_nonneg hU _)).trans (le_max_left ..)
+  refine ⟨C,hC,?_⟩
+  intro a b hab
+  obtain ⟨q,u,hq,he,_,hhi⟩ := hcover a b hab
+  let s := ‖u.val‖
+  let r := ‖a.val‖^m
+  have hs : 0 < s := norm_pos_iff.mpr u.ne_zero
+  have hr : 0 < r := pow_pos (norm_pos_iff.mpr a.ne_zero) _
+  have hr' : r ≤ U*(s^m)^n := by
+    have e := pow_le_pow_left₀ (norm_nonneg _) hhi m
+    simpa only [U,r,s,mul_pow,← pow_mul,Nat.mul_comm n m] using e
+  have HH := H q hq u
+  rw [show g (u^n*q.1) (u.val^n*q.2) = g a b from congrArg (Function.uncurry g) he] at HH
+  change ‖g a b‖ * (s^m)^(n-1) * (1+s)^(m*n*N) ≤ M at HH
+  have hlow : ‖g a b‖ * (s^m)^(n-1) ≤ M := (le_mul_of_one_le_right (by positivity)
+    (one_le_pow₀ (le_add_of_nonneg_right hs.le) : 1 ≤ (1+s)^(m*n*N))).trans HH
+  have hfast : ‖g a b‖ * s^(m*n*N) ≤ M := by
+    rcases le_total s 1 with h | h
+    · apply le_trans (mul_le_mul_of_nonneg_left _ (norm_nonneg _)) hlow
+      rw [← pow_mul]
+      apply pow_le_pow_of_le_one hs.le h
+      exact (Nat.mul_le_mul_left m (Nat.sub_le n 1)).trans (Nat.le_mul_of_pos_right _ hN)
+    · apply le_trans _ HH
+      rw [mul_assoc ‖g a b‖]
+      apply mul_le_mul_of_nonneg_left _ (norm_nonneg _)
+      exact (pow_le_pow_left₀ hs.le (le_add_of_nonneg_left zero_le_one) _).trans
+        (le_mul_of_one_le_left (by positivity) (one_le_pow₀ (one_le_pow₀ h)))
+  change ‖g a b‖ ≤ C * min (r^(-(growthExponent n))) (r^(-(N:ℝ)))
+  rw [mul_min_of_nonneg _ _ hC,Real.rpow_neg hr.le,Real.rpow_neg hr.le,Real.rpow_natCast,
+    ← div_eq_mul_inv,← div_eq_mul_inv,le_min_iff,le_div_iff₀ (Real.rpow_pos_of_pos hr _),le_div_iff₀ (pow_pos hr _)]
+  constructor
+  · have h' := Real.rpow_le_rpow hr.le hr' (growthExponent_nonneg n)
+    rw [Real.mul_rpow hU (pow_nonneg (pow_nonneg hs.le _) _),rpow_degree (pow_nonneg hs.le _)] at h'
+    calc
+      _ ≤ ‖g a b‖ * (U^(growthExponent n)*(s^m)^(n-1)) := mul_le_mul_of_nonneg_left h' (norm_nonneg _)
+      _ = (‖g a b‖*(s^m)^(n-1))*U^(growthExponent n) := by ring
+      _ ≤ C := (mul_le_mul_of_nonneg_right hlow (Real.rpow_nonneg hU _)).trans (le_max_left ..)
+  · have h' := pow_le_pow_left₀ hr.le hr' N
+    rw [mul_pow U,← pow_mul s m n,← pow_mul s (m*n) N] at h'
+    calc
+      _ ≤ ‖g a b‖ * (U^N*s^(m*n*N)) := mul_le_mul_of_nonneg_left h' (norm_nonneg _)
+      _ = (‖g a b‖*s^(m*n*N))*U^N := by ring
+      _ ≤ C := (mul_le_mul_of_nonneg_right hfast (pow_nonneg hU _)).trans (le_max_right ..)
+
 namespace Datum
 variable {F : Type} [Field F] [NumberField F] {n : ℕ} [NeZero n] (d : Datum F n)
 
@@ -264,9 +322,98 @@ theorem arch_test_growth (w : InfinitePlace F) {f : Charts w.Completion} (hf : f
   · exact archTest_growth _ (InfinitePlace.Completion.isometry_extensionEmbedding w)
       (by simpa only [testSet,dif_neg hw] using hf.2) N hN
 
+/-- The remaining high-frequency estimate from the bounded Schwartz families
+in Lemma 4.2(iii), for the ordinary Fourier integrals of the line slices. -/
+theorem arch_radon_hat_decay (w : InfinitePlace F) {f : Charts w.Completion} (hf : f ∈ d.testSet (.inl w))
+    (T : Set (w.Completionˣ × w.Completion)) (hT : IsCompact T) (j : ℕ) :
+    ∃ C : ℝ, 0 ≤ C ∧ ∀ q ∈ T, ∀ u : w.Completion, 1 ≤ ‖u‖ →
+      ‖d.archRadonHat w f q u‖ * (1+‖u‖)^j ≤ C := by sorry
+
+private theorem arch_hat_weight (w : InfinitePlace F) {f : Charts w.Completion} (hf : f ∈ d.testSet (.inl w))
+    (T : Set (w.Completionˣ × w.Completion)) (hT : IsCompact T) (j : ℕ) :
+    ∃ C : ℝ, 0 ≤ C ∧ ∀ q ∈ T, ∀ u : w.Completion, ‖d.archRadonHat w f q u‖ * (1+‖u‖)^j ≤ C := by
+  obtain ⟨A,hA,ha⟩ := (d.arch_radon_hat_bounded w hf).2 T hT
+  obtain ⟨B,_,hb⟩ := d.arch_radon_hat_decay w hf T hT j
+  refine ⟨max (A*2^j) B,(mul_nonneg hA (by positivity)).trans (le_max_left ..),?_⟩
+  intro q hq u
+  rcases le_total ‖u‖ 1 with h | h
+  · exact (mul_le_mul (ha q hq u) (pow_le_pow_left₀ (by positivity) (by linarith : 1+‖u‖ ≤ 2) j)
+      (by positivity) hA).trans (le_max_left ..)
+  · exact (hb q hq u h).trans (le_max_right ..)
+
+set_option maxHeartbeats 800000 in
 /-- The archimedean case of the transform decay corollary in §4. -/
 theorem arch_transform_growth (w : InfinitePlace F) {f : Charts w.Completion} (hf : f ∈ d.testSet (.inl w))
-    (N : ℕ) (hN : 1 ≤ N) : ArchGrowth w n N (d.integralTransform (.inl w) f) := by sorry
+    (N : ℕ) (hN : 1 ≤ N) : ArchGrowth w n N (d.integralTransform (.inl w) f) := by
+  let v : Place F := .inl w
+  let K := LocalField F v
+  letI : LocallyCompactSpace K := inferInstanceAs (LocallyCompactSpace w.Completion)
+  letI : NontriviallyNormedField K := archNontriviallyNormedCompletion w
+  letI : ProperSpace K := .of_nontriviallyNormedField_of_weaklyLocallyCompactSpace _
+  let g := d.integralTransform v f
+  let c : ℂ := (Real.sqrt (modulus F v (n : K)))⁻¹
+  have weight (T : Set (Kˣ × K)) (hT : IsCompact T) (j : ℕ) :
+      ∃ C : ℝ, 0 ≤ C ∧ ∀ q ∈ T, ∀ u : Kˣ,
+        let x := u^n*q.1
+        let y := u.val^n*q.2
+        let W := (‖u.val‖^w.mult)^(n-1)*(1+‖u.val‖)^j
+        ‖g.1 x y‖*W ≤ C ∧ ‖g.2 y x‖*W ≤ C := by
+    obtain ⟨M,hM,H⟩ := d.arch_hat_weight w hf T hT j
+    refine ⟨‖c‖*M,mul_nonneg (norm_nonneg _) hM,?_⟩
+    intro q hq u
+    let V := (‖u.val‖^w.mult)^(n-1)
+    have hm : 0 ≤ ‖u.val‖^w.mult := pow_nonneg (norm_nonneg _) _
+    have bound {a b : ℂ} (e : ((‖u.val‖^w.mult : ℝ) : ℂ)^(n-1)*a = c*b)
+        (hb : ‖b‖ ≤ ‖d.archRadonHat w f q u.val‖) : ‖a‖*(V*(1+‖u.val‖)^j) ≤ ‖c‖*M := by
+      have hh := congrArg norm e
+      rw [norm_mul,norm_pow,Complex.norm_real,Real.norm_of_nonneg hm,norm_mul,mul_comm] at hh
+      change ‖a‖*V = ‖c‖*‖b‖ at hh
+      rw [← mul_assoc,hh,mul_assoc]
+      exact mul_le_mul_of_nonneg_left ((mul_le_mul_of_nonneg_right hb (by positivity)).trans (H q hq u.val)) (norm_nonneg _)
+    exact ⟨bound ((d.transform_pow_ray v f u).1 q.1 q.2) (le_max_left ..),
+      bound ((d.transform_pow_ray v f u).2 q.2 q.1) (le_max_right ..)⟩
+  obtain ⟨A,hA,ha⟩ := arch_cone_growth (K := K) (n := n) w.mult N hN g.1 (by
+    intro T hT j
+    obtain ⟨M,hM,H⟩ := weight T hT j
+    exact ⟨M,hM,fun q hq u => by simpa only [mul_assoc] using (H q hq u).1⟩)
+  obtain ⟨B,hB,hb⟩ := arch_cone_growth (K := K) (n := n) w.mult N hN (fun y x => g.2 x y) (by
+    intro T hT j
+    obtain ⟨M,hM,H⟩ := weight T hT j
+    exact ⟨M,hM,fun q hq u => by simpa only [mul_assoc] using (H q hq u).2⟩)
+  let C := max A B
+  change ∃ C : ℝ, 0 ≤ C ∧ ∀ z : K × K, z ≠ 0 →
+    let r := max (modulus F v z.1) (modulus F v z.2)
+    let bound := C * min (r^(-(growthExponent n))) (r^(-(N : ℝ)))
+    ‖xChart g z‖ ≤ bound ∧ ‖yChart g z‖ ≤ bound
+  refine ⟨C,hA.trans (le_max_left ..),?_⟩
+  rintro ⟨x,y⟩ hn
+  let r := max (modulus F v x) (modulus F v y)
+  let W := min (r^(-(growthExponent n))) (r^(-(N:ℝ)))
+  have hr : 0 ≤ r := (pow_nonneg (norm_nonneg x) w.mult).trans (le_max_left ..)
+  have hW : 0 ≤ W := le_min (Real.rpow_nonneg hr _) (Real.rpow_nonneg hr _)
+  have hC : 0 ≤ C*W := mul_nonneg (hA.trans (le_max_left ..)) hW
+  have e (a b : Kˣ) : ‖g.1 a b.val‖ = ‖g.2 a.val b‖ := by
+    rw [d.arch_transform_glues w hf.1 a b,norm_mul,d.norm_symbol,one_mul]
+  change ‖xChart g (x,y)‖ ≤ C*W ∧ ‖yChart g (x,y)‖ ≤ C*W
+  rcases le_total ‖y‖ ‖x‖ with h | h
+  · have hx : x ≠ 0 := fun hx => hn (Prod.ext hx (norm_le_zero_iff.mp (by simpa [hx] using h)))
+    let a := Units.mk0 x hx
+    have er : r = ‖x‖^w.mult := max_eq_left (pow_le_pow_left₀ (norm_nonneg y) h _)
+    have hdom : ‖g.1 a y‖ ≤ C*W := le_trans (by simpa only [W,er,a,Units.val_mk0] using! ha a y h : ‖g.1 a y‖ ≤ A*W)
+      (mul_le_mul_of_nonneg_right (le_max_left ..) hW)
+    refine ⟨by simpa only [xChart,dif_pos hx,a] using hdom,?_⟩
+    by_cases hy : y ≠ 0
+    · simpa only [yChart,dif_pos hy,a,Units.val_mk0] using! (e a (Units.mk0 y hy)).symm.trans_le hdom
+    · simpa only [yChart,dif_neg hy,norm_zero] using hC
+  · have hy : y ≠ 0 := fun hy => hn (Prod.ext (norm_le_zero_iff.mp (by simpa [hy] using h)) hy)
+    let b := Units.mk0 y hy
+    have er : r = ‖y‖^w.mult := max_eq_right (pow_le_pow_left₀ (norm_nonneg x) h _)
+    have hdom : ‖g.2 x b‖ ≤ C*W := le_trans (by simpa only [W,er,b,Units.val_mk0] using! hb b x h : ‖g.2 x b‖ ≤ B*W)
+      (mul_le_mul_of_nonneg_right (le_max_right ..) hW)
+    refine ⟨?_,by simpa only [yChart,dif_pos hy,b] using hdom⟩
+    by_cases hx : x ≠ 0
+    · simpa only [xChart,dif_pos hx,b,Units.val_mk0] using! (e (Units.mk0 x hx) b).trans_le hdom
+    · simpa only [xChart,dif_neg hx,norm_zero] using hC
 
 /-- Every archimedean Schwartz section satisfies (4.2), by the two types of generators. -/
 theorem arch_local_growth (w : InfinitePlace F) (f : d.schwartz (.inl w)) (N : ℕ) (hN : 1 ≤ N) :

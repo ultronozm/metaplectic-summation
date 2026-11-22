@@ -19,11 +19,14 @@ products and rational evaluations all depend on these inputs.
 | [Core](MetaplecticSummation/Core.lean) | The two chart integrals in Definition 4.4, normalized ray limits and maps of restricted tensor products |
 | [Schwartz/Local](MetaplecticSummation/Schwartz/Local.lean) | Local test functions, their transforms, the Schwartz space they span, and the explicit basic charts |
 | [Schwartz/Basic](MetaplecticSummation/Schwartz/Basic.lean) | Choice of the reference vector for the restricted tensor product |
-| [Schwartz](MetaplecticSummation/Schwartz.lean) | The leading-term map and its values on both types of generator at finite places |
+| [Schwartz](MetaplecticSummation/Schwartz.lean) | The leading-term map and its values on both types of generator at every place |
 | [SymbolOnLines](MetaplecticSummation/SymbolOnLines.lean) | Equality of the two integrands up to the chart multiplier on every line, from the Steinberg relation |
 | [LocalSymbols](MetaplecticSummation/LocalSymbols.lean) | Continuity and unitarity of the complex symbol from the stated arithmetic characterization |
 | [LineMeasures](MetaplecticSummation/LineMeasures.lean) | Affine change of variables and equality of the normalized Radon charts |
 | [ArchimedeanLines](MetaplecticSummation/ArchimedeanLines.lean) | The infinite-place modulus and Steinberg relation |
+| [ArchimedeanRadon](MetaplecticSummation/ArchimedeanRadon.lean) | Absolute convergence on test sections in both charts, joint continuity of the Radon integrals, and rapid decay in the line parameter uniformly on compact sets of output vectors |
+| [ArchimedeanLeading](MetaplecticSummation/ArchimedeanLeading.lean) | Vanishing of the leading term on archimedean test functions, its Fourier integral at zero on transformed test functions, and construction on their span |
+| [LeadingAction](MetaplecticSummation/LeadingAction.lean) | Gluing and power-dilation homogeneity, continuity of the archimedean leading charts, and the induced action of the local cover on the leading-term space |
 | [FiniteHaar](MetaplecticSummation/FiniteHaar.lean) | The finite residue field, compact ring of integers and the equality of the Haar modulus and the adic norm |
 | [PowerSubgroup](MetaplecticSummation/PowerSubgroup.lean) | Openness of the nonzero n-th powers and finiteness of the power-class group over a proper complete local field when the exponent is nonzero in the field |
 | [TameSymbols](MetaplecticSummation/TameSymbols.lean) | Principal units are n-th powers at tame places, giving the tame Steinberg relation |
@@ -121,14 +124,24 @@ test sections and, for nonzero line parameter, on the full Schwartz space.
 At tame places the outer integrals converge absolutely for every Schwartz
 section at every output vector.
 
-The uniform all-place construction of the Fourier endomorphism and the
-archimedean leading-term map are admitted. At tame finite places
-`tame_schwartz_inversion` constructs the Fourier automorphism independently. At a finite place the normalized ray identity
-and absolute convergence give the leading term on transforms of test sections.
-Test sections themselves vanish near the origin. Linearity and uniqueness of
-limits extend these values to the entire finite-place Schwartz space. This
-construction uses the arithmetic inputs above, including self-dual Haar measure.
-The normalized rays extend to bounded Schwartz–Bruhat families over compact
+At archimedean places both line integrals converge absolutely on test
+sections. A bound from the determinant equation gives integrable decay in the
+line coordinate and arbitrary polynomial decay in the parameter. The latter
+is uniform on compact subsets of the output chart. Dominated convergence
+gives joint continuity, and the outer integral also converges absolutely.
+
+At every place the normalized ray identity gives the leading term on a
+transformed test section by evaluating a one-dimensional Fourier integral at
+zero. The leading term of a test section vanishes. Linearity and uniqueness of
+limits give the leading-term map on the entire Schwartz space. Its two
+archimedean charts are continuous. At every place the charts glue, and their
+power-dilation law follows by reparametrizing the ray limit. The leading term
+commutes with the two shear generators. Its kernel is invariant under every
+element of the local cover, and the cover acts on the space of leading terms.
+
+The all-place construction of the Fourier endomorphism remains admitted. At
+tame finite places `tame_schwartz_inversion` constructs the Fourier
+automorphism independently. At finite places the normalized rays extend to bounded Schwartz–Bruhat families over compact
 sets of chart vectors. A compact annulus meets every power ray, so uniform
 bounds there give compact support in the plane and equality with the leading
 term near the origin.
@@ -195,8 +208,12 @@ constant times |a|^(−2−κ), uniformly for all ideles a. Applying this to
 Schwartz sections uses local growth. At finite places Lean derives it from
 the ray extensions and compact support, with constant one for the basic
 vector. At real and complex places the bound follows for test functions
-from their defining rapid decay. The bound for their transforms remains
-admitted in `arch_transform_growth`.
+from their defining rapid decay. For transformed test sections, the power-ray
+identity and a compact set of representatives for the dominant-coordinate
+cones reduce (4.2) to rapid decay of the ordinary Fourier integrals of the
+Radon slices. Their joint continuity and uniform boundedness at all
+frequencies are proved. The remaining high-frequency estimate is
+`arch_radon_hat_decay`. The full derivative bounds of Lemma 4.2(iii) are open.
 
 The global vanishing statement of Proposition B.6 remains admitted in
 `thetaDifference_vanishing`. Given this input, Lean constructs the boundary
@@ -204,8 +221,8 @@ functional. Modifying a single finite factor gives a functional that descends
 through the adelic leading-term map (Lemma B.10). Reindexing the theta sum
 under the square of Fourier transformation yields the boundary identity.
 The same local modification determines the boundary functional uniquely.
-These arguments also depend on earlier results about the local Fourier and
-leading-term maps and the basic vectors. For the current list of direct
+These arguments also depend on earlier results about local Fourier inversion
+and the almost-everywhere invariance of the basic vectors. For the current list of direct
 proof obligations, run `rg -n '\bsorry\b' MetaplecticSummation`.
 
 ## Reading the Gauss-sum formulas

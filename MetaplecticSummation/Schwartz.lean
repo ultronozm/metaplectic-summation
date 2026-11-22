@@ -1,15 +1,10 @@
-import MetaplecticSummation.FiniteLeading
+import MetaplecticSummation.ArchimedeanLeading
 
 noncomputable section
 namespace MetaplecticPoisson.Datum
 open NumberField IsDedekindDomain Filter
 open scoped Topology
 variable {F : Type} [Field F] [NumberField F] {n : ℕ} [NeZero n] (d : Datum F n)
-
-theorem exists_leading_arch (w : InfinitePlace F) :
-    let v : Place F := .inl w
-    ∃ b : d.schwartz v →ₗ[ℂ] Charts (LocalField F v), ∀ f : d.schwartz v,
-      IsLeadingTerm n (modulus F v) f (b f) := by sorry
 
 theorem exists_leading (v : Place F) :
     ∃ b : d.schwartz v →ₗ[ℂ] Charts (LocalField F v), ∀ f : d.schwartz v,
@@ -40,5 +35,20 @@ theorem leading_finiteTest_transform (p : HeightOneSpectrum (𝓞 F)) {f : Chart
   letI : NontriviallyNormedField (LocalField F (.inr p)) := FinitePlace.nontriviallyNormedCompletion p
   letI : NeBot (comap (fun u : (LocalField F (.inr p))ˣ => u.val) (𝓝 0)) := units_neBot_at_zero
   exact (d.leading_spec _ _).unique (d.finiteTest_transform_leading p hf)
+
+/-- At an infinite place the leading term vanishes on test sections. -/
+theorem leading_archTest_eq_zero (w : InfinitePlace F) (f : d.schwartz (.inl w)) (hf : f.val ∈ d.testSet (.inl w)) :
+    d.leading (.inl w) f = 0 := by
+  letI := arch_units_neBot w
+  exact (d.leading_spec _ _).unique (d.arch_test_zero_leading w hf)
+
+/-- On an archimedean transformed test section the leading term is the
+normalized, absolutely convergent Radon integral at frequency zero. -/
+theorem leading_archTest_transform (w : InfinitePlace F) {f : Charts (LocalField F (.inl w))}
+    (hf : f ∈ d.testSet (.inl w)) :
+    d.leading (.inl w) ⟨d.integralTransform (.inl w) f,Submodule.subset_span (Or.inr ⟨f,hf,rfl⟩)⟩ =
+      d.radonLeading (.inl w) f := by
+  letI := arch_units_neBot w
+  exact (d.leading_spec _ _).unique (d.arch_test_transform_leading w hf)
 
 end MetaplecticPoisson.Datum

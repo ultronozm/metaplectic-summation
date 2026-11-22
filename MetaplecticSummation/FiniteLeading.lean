@@ -151,19 +151,18 @@ theorem finiteTest_transform_leading (p : HeightOneSpectrum (𝓞 F)) {f : Chart
   · intro a b
     simpa using hy.integrable_weight dx (continuous_const (y := (1:ℂ))) (a,b)
 
-theorem exists_leading_finite (p : HeightOneSpectrum (𝓞 F)) :
-    let v : Place F := .inr p
-    ∃ b : d.schwartz v →ₗ[ℂ] Charts (LocalField F v), ∀ f : d.schwartz v,
-      IsLeadingTerm n (modulus F v) f (b f) := by
-  let v : Place F := .inr p
-  letI : NontriviallyNormedField (LocalField F v) := FinitePlace.nontriviallyNormedCompletion p
-  letI : NeBot (comap (fun u : (LocalField F v)ˣ => u.val) (𝓝 0)) := units_neBot_at_zero
+/-- Normalized limits on the two types of generator determine a linear leading-term
+map on the Schwartz space. -/
+theorem exists_leading_of_generators (v : Place F) [NeBot (comap (fun u : (LocalField F v)ˣ => u.val) (𝓝 0))]
+    (ht : ∀ {f}, f ∈ d.testSet v → IsLeadingTerm n (modulus F v) f 0)
+    (hF : ∀ {f}, f ∈ d.testSet v → IsLeadingTerm n (modulus F v) (d.integralTransform v f) (d.radonLeading v f)) :
+    ∃ b : d.schwartz v →ₗ[ℂ] Charts (LocalField F v), ∀ f : d.schwartz v, IsLeadingTerm n (modulus F v) f (b f) := by
   have hex (Φ : d.schwartz v) : ∃ g, IsLeadingTerm n (modulus F v) Φ.val g := by
     refine Submodule.span_induction (p := fun f _ => ∃ g, IsLeadingTerm n (modulus F v) f g)
       ?_ ?_ ?_ ?_ Φ.property
     · rintro f (hf | ⟨g,hg,rfl⟩)
-      · exact ⟨0,finiteTest_zero_leading n (NeZero.ne n) _ (show finiteTest f from hf.2)⟩
-      · exact ⟨_,d.finiteTest_transform_leading p hg⟩
+      · exact ⟨0,ht hf⟩
+      · exact ⟨_,hF hg⟩
     · exact ⟨0,IsLeadingTerm.zero⟩
     · rintro f g _ _ ⟨a,ha⟩ ⟨b,hb⟩
       exact ⟨a+b,ha.add hb⟩
@@ -173,6 +172,16 @@ theorem exists_leading_finite (p : HeightOneSpectrum (𝓞 F)) :
   exact ⟨{ toFun := b
            map_add' := fun x y => (hb (x+y)).unique ((hb x).add (hb y))
            map_smul' := fun c x => (hb (c • x)).unique ((hb x).smul c) }, hb⟩
+
+theorem exists_leading_finite (p : HeightOneSpectrum (𝓞 F)) :
+    let v : Place F := .inr p
+    ∃ b : d.schwartz v →ₗ[ℂ] Charts (LocalField F v), ∀ f : d.schwartz v,
+      IsLeadingTerm n (modulus F v) f (b f) := by
+  let v : Place F := .inr p
+  letI : NontriviallyNormedField (LocalField F v) := FinitePlace.nontriviallyNormedCompletion p
+  letI : NeBot (comap (fun u : (LocalField F v)ˣ => u.val) (𝓝 0)) := units_neBot_at_zero
+  exact d.exists_leading_of_generators v (fun {f} hf => finiteTest_zero_leading n (NeZero.ne n) _ hf.2)
+    (d.finiteTest_transform_leading p)
 
 end Datum
 end MetaplecticPoisson

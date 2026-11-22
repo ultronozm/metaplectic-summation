@@ -33,7 +33,7 @@ private theorem finite_test_on_line (p : HeightOneSpectrum (𝓞 F)) (Φ : d.sch
   let B := Metric.closedBall z (‖z‖/2)
   let S := det ⁻¹' B
   have hB : IsClopen B := IsUltrametricDist.isClopen_closedBall z (half_pos (norm_pos_iff.mpr hz)).ne'
-  have hS : IsClopen S := hB.preimage (by unfold det; fun_prop)
+  have hS : IsClopen S := hB.preimage ((continuous_fst.mul_const b).sub (continuous_snd.const_mul a) : Continuous det)
   have hzB : z ∈ B := Metric.mem_closedBall_self (half_pos (norm_pos_iff.mpr hz)).le
   have h₀ : (0 : K × K) ∉ S := by
     change ¬ dist ((0 : K)*b-a*0) z ≤ ‖z‖/2
