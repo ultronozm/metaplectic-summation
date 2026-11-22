@@ -177,15 +177,6 @@ theorem finite_jacquet_decay (Φ : d.schwartz vp) {A : ℝ} (hA : 0 ≤ A) :
   apply (norm_integral_le_integral_norm _).trans
   simpa only [norm_mul,d.character.norm_localValue,mul_one] using H a
 
-omit [NeZero n] in
-private theorem finite_integrable_min_rpow {e : ℝ} (he : 0 < e) :
-    Integrable (fun x : Kvˣ => min (‖x.val‖^e) (‖x.val‖^(-e))) (d.lineMeasure vp) := by
-  letI : NontriviallyNormedField (p.adicCompletion F) := FinitePlace.nontriviallyNormedCompletion p
-  letI : ProperSpace Kv := .of_nontriviallyNormedField_of_weaklyLocallyCompactSpace (p.adicCompletion F)
-  letI : SecondCountableTopology Kvˣ := Units.isEmbedding_val₀.secondCountableTopology
-  obtain ⟨c,hc,hc'⟩ := NormedField.exists_norm_lt_one (p.adicCompletion F)
-  exact integrable_units_min_rpow (d.lineMeasure vp) (Units.mk0 c (norm_pos_iff.mp hc)) hc' he
-
 /-- Absolute integrability of every finite Jacquet weight for d×c. -/
 theorem integrable_finite_jacquet (Φ : d.schwartz vp) :
     Integrable (d.jacquet vp Φ) (d.lineMeasure vp) := by

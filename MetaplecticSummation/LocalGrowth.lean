@@ -150,6 +150,27 @@ theorem finite_vertical_growth (p : Prime F) (Φ : d.schwartz (.inr p)) :
     exact (mul_le_mul_of_nonneg_left (Real.rpow_le_rpow (norm_nonneg _) h (growthExponent_nonneg n))
       (norm_nonneg _)).trans ((hB b a.val h).trans (le_max_right ..))
 
+/-- The corresponding slice estimate in the horizontal direction, including
+the vertical axis where the X-chart is unavailable. -/
+theorem finite_horizontal_growth (p : Prime F) (Φ : d.schwartz (.inr p)) :
+    ∃ C : ℝ, 0 ≤ C ∧ ∀ (x : LocalField F (.inr p)) (b : (LocalField F (.inr p))ˣ),
+      ‖Φ.val.2 x b‖ * ‖b.val‖^(growthExponent n) ≤ C := by
+  let K := p.adicCompletion F
+  letI : NontriviallyNormedField K := FinitePlace.nontriviallyNormedCompletion p
+  letI : ProperSpace K := .of_nontriviallyNormedField_of_weaklyLocallyCompactSpace _
+  obtain ⟨A,h₀,hA⟩ := d.finite_vertical_growth p Φ
+  obtain ⟨B,_,hB⟩ := cone_growth (K := K) Prod.swap continuous_swap (fun _ _ => rfl)
+    (d.finite_schwartz_rayExtensions p Φ).2
+  refine ⟨max A B,h₀.trans (le_max_left ..),?_⟩
+  intro x b
+  rcases le_total ‖x‖ ‖b.val‖ with h | h
+  · exact (hB b x h).trans (le_max_right ..)
+  · let a := Units.mk0 x (norm_pos_iff.mp ((norm_pos_iff.mpr b.ne_zero).trans_le h))
+    have hx := hA a b.val
+    rw [d.schwartz_glues _ Φ a b,norm_mul,d.norm_symbol,one_mul] at hx
+    exact (mul_le_mul_of_nonneg_left (Real.rpow_le_rpow (norm_nonneg _) h (growthExponent_nonneg n))
+      (norm_nonneg _)).trans (hx.trans (le_max_left ..))
+
 /-- At each finite place every Schwartz section satisfies the finite part of
 (B.1), with one constant controlling the support and the size. -/
 theorem finite_local_growth (p : Prime F) (f : d.schwartz (.inr p)) :

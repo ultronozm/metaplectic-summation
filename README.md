@@ -39,6 +39,7 @@ products and rational evaluations all depend on these inputs.
 | [FourierDifferences](MetaplecticSummation/FourierDifferences.lean), [ArchimedeanFourierDecay](MetaplecticSummation/ArchimedeanFourierDecay.lean) | Fourier multipliers for translations and differences, integral decay estimates from real derivatives, and uniform Fourier decay for bounded Schwartz families |
 | [FiniteTransform](MetaplecticSummation/FiniteTransform.lean) | Absolute convergence of the outer transform integral on finite-place test sections and local constancy of both charts of every finite-place Schwartz section |
 | [FiniteSchwartzLines](MetaplecticSummation/FiniteSchwartzLines.lean) | Absolute convergence of both line integrals on the full Schwartz space at every finite place for nonzero line parameters |
+| [FiniteRadonContinuity](MetaplecticSummation/FiniteRadonContinuity.lean) | Absolute convergence and joint continuity for all finite-place Schwartz sections on both charts, including the fiber of determinant zero |
 | [TransformLinearity](MetaplecticSummation/TransformLinearity.lean) | Scalar linearity of the chart integrals and additivity at finite places under absolute convergence |
 | [RayFourier](MetaplecticSummation/RayFourier.lean) | The normalized transform on each power ray as a one-dimensional Fourier integral, at every place |
 | [FiniteLeading](MetaplecticSummation/FiniteLeading.lean) | Construction of the leading-term map on the full finite-place Schwartz space and its formula at frequency zero |
@@ -110,6 +111,7 @@ products and rational evaluations all depend on these inputs.
 | [PowerJacobian](MetaplecticSummation/PowerJacobian.lean) | Bijection of sufficiently small balls under the power map, with radius scaled by the norm of its derivative |
 | [PowerArea](MetaplecticSummation/PowerArea.lean) | Integrated change of variables for the power map on locally constant compactly supported functions vanishing at zero, at every finite place |
 | [FiniteMarginal](MetaplecticSummation/FiniteMarginal.lean) | Reverse marginal Fourier identity and the square of the defining integral transform on tame test sections |
+| [TransformedMarginals](MetaplecticSummation/TransformedMarginals.lean) | The density of a transformed test section at every place, and both marginal kernels and the reverse Fourier identity on the full tame Schwartz space |
 | [DiagonalTransform](MetaplecticSummation/DiagonalTransform.lean) | Covariance of both defining chart integrals under the diagonal lifts at every place |
 | [SchwartzStability](MetaplecticSummation/SchwartzStability.lean) | Absolute convergence of the outer integral, the Fourier automorphism of the full tame Schwartz space, and its square |
 | [BasicMarginals](MetaplecticSummation/BasicMarginals.lean) | The basic axis density at almost all places, its ordinary Fourier transform for an unramified character, and the basic marginal at a unit |
@@ -142,8 +144,8 @@ This project's proof of Steinberg uses the arithmetic characterization directly.
 Hensel lifting treats principal units at tame places. At the remaining finite
 places weak approximation and reciprocity isolate the desired symbol.
 `Datum.radon_glues` uses these results with the normalized Haar measures.
-At every finite place the inner line integrals converge absolutely on all
-test sections and, for nonzero line parameter, on the full Schwartz space.
+At every finite place the inner line integrals converge absolutely on the full
+Schwartz space and vary continuously in both the chart vector and the line parameter.
 At tame places the outer integrals converge absolutely for every Schwartz
 section at every output vector.
 
@@ -184,7 +186,8 @@ The marginal-to-axis identity is proved at all places from chart gluing and
 the one-dimensional power-ray formula. At a finite place the axis density is
 Schwartz–Bruhat for every Schwartz section. For a pure tensor at almost every
 finite place it is the indicator of the local integers on the whole field.
-The reverse marginal identity remains admitted. In its proof Lean establishes
+The general all-place marginal theorem remains admitted. Lean proves the
+reverse identity on the full tame Schwartz space. The finite-place proof establishes
 absolute convergence of the multiplicative difference integral for finite-place
 tests and its vanishing when the Hilbert character is nontrivial. For an n-th
 power parameter the cocycle splits the integral into contributions from its
@@ -211,6 +214,19 @@ formula gives bijectivity. This proves Theorem 7.1(i) on the entire tame
 Schwartz space using two admitted project results, the normalized Hilbert
 symbol family and the self-dual measure. The argument applies at a wild
 place under the same radical condition.
+
+For a transformed test section the density is an explicit scalar multiple
+of the ordinary Fourier transform of the original section’s axis line integral,
+including at zero. This proves Schwartz–Bruhat regularity of that density
+at every place. At tame places the square formula on test sections and ordinary
+Fourier inversion give the reverse marginal identity on transformed generators.
+Linearity gives the identity on the entire space. At every finite place the
+line kernel is continuous and compactly supported. Its ordinary Fourier
+transform is a scalar multiple of the density of the transformed section.
+Compact-test Plancherel and ordinary Fourier inversion therefore prove that
+the line kernel itself is Schwartz–Bruhat, including at zero. At tame places
+the constructed local transform supplies the transformed section. At wild
+places this last argument uses the assumed stability of the Schwartz space.
 
 Both shear operators preserve the local Schwartz space at every place. In
 the real and complex cases local changes of chart reduce the estimates for

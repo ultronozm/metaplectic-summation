@@ -80,4 +80,20 @@ theorem integrable_units_min_rpow {K : Type*} [NormedField K] [ProperSpace K]
     rw [show f x⁻¹ = ‖(x⁻¹).val‖^e from indicator_of_mem hx' (fun z : Kˣ => ‖z.val‖^e), Units.val_inv_eq_inv_val,norm_inv,
       Real.inv_rpow hx.le,Real.rpow_neg hx.le]
 
+namespace Datum
+open NumberField
+variable {F : Type} [Field F] [NumberField F] {n : ℕ} (d : Datum F n) (p : Prime F)
+local notation "vp" => (Sum.inr p : Place F)
+local notation "Kv" => LocalField F vp
+
+/-- Two-sided power decay is integrable on the units of a finite completion. -/
+theorem finite_integrable_min_rpow {e : ℝ} (he : 0 < e) :
+    Integrable (fun x : Kvˣ => min (‖x.val‖^e) (‖x.val‖^(-e))) (d.lineMeasure vp) := by
+  letI : NontriviallyNormedField (p.adicCompletion F) := FinitePlace.nontriviallyNormedCompletion p
+  letI : ProperSpace Kv := .of_nontriviallyNormedField_of_weaklyLocallyCompactSpace (p.adicCompletion F)
+  letI : SecondCountableTopology Kvˣ := Units.isEmbedding_val₀.secondCountableTopology
+  obtain ⟨c,hc,hc'⟩ := NormedField.exists_norm_lt_one (p.adicCompletion F)
+  exact integrable_units_min_rpow (d.lineMeasure vp) (Units.mk0 c (norm_pos_iff.mp hc)) hc' he
+
+end Datum
 end MetaplecticPoisson

@@ -18,6 +18,22 @@ private theorem eLpNorm_hat (f : C_c(K, ℂ)) : eLpNorm (d.hat v f) 2 dxᵥ = eL
     (by norm_num : (2 : ℝ≥0∞) ≠ ⊤), ENNReal.toReal_ofNat, ENNReal.rpow_ofNat]
   simpa only [hat, mul_comm] using! congrArg (fun a : ℝ≥0∞ => a ^ ((1:ℝ)/2)) hp
 
+/-- For the self-dual measure the Fourier integral distinguishes continuous
+compactly supported functions pointwise. -/
+theorem hat_injective_compact (f g : C_c(K, ℂ)) (h : d.hat v f = d.hat v g) : f = g := by
+  letI : (dxᵥ).IsAddHaarMeasure := (existsUnique_selfDual F d.character v).exists.choose_spec.1
+  have hz : d.hat v (f-g : C_c(K,ℂ)) = 0 := by
+    funext y
+    simp only [hat,CompactlySupportedContinuousMap.sub_apply,sub_mul,Pi.zero_apply]
+    rw [integral_sub (d.integrable_phase v f.integrable y) (d.integrable_phase v g.integrable y)]
+    exact sub_eq_zero.mpr (congrFun h y)
+  have he := (d.eLpNorm_hat v (f-g)).symm
+  rw [hz,eLpNorm_zero] at he
+  have ae := (eLpNorm_eq_zero_iff (f-g).continuous.aestronglyMeasurable (by norm_num : (2:ℝ≥0∞) ≠ 0)).mp he
+  have eqn := ((f-g).continuous.ae_eq_iff_eq (μ := dxᵥ) continuous_zero).mp ae
+  ext y
+  exact sub_eq_zero.mp (congrFun eqn y)
+
 private theorem compact_hat_memLp (f : C_c(K, ℂ)) : MemLp (d.hat v f) 2 dxᵥ := by
   letI : (dxᵥ).IsAddHaarMeasure := (existsUnique_selfDual F d.character v).exists.choose_spec.1
   exact ⟨(d.continuous_hat v f.integrable).aestronglyMeasurable,

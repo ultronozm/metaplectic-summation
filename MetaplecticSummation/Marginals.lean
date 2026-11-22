@@ -145,10 +145,11 @@ theorem axis_fourier (v : Place F) (Φ : d.schwartz v) (y u : (LocalField F v)ˣ
 
 /-- At frequency zero the Fourier transform of the vertical line integral gives
 the leading term of the transformed section on the axis. -/
-theorem axisLine_hat_zero (v : Place F) (Φ : d.schwartz v) (y : (LocalField F v)ˣ)
+theorem axisLine_hat_zero_of_charts (v : Place F) (Φ Ψ : d.schwartz v)
+    (hΨ : Ψ.val = d.integralTransform v Φ.val) (y : (LocalField F v)ˣ)
     (hi : Integrable (d.axisLine v Φ y) (selfDual F d.character v)) :
     (Real.sqrt (modulus F v (n : LocalField F v)) : ℂ)⁻¹ * d.hat v (d.axisLine v Φ y) 0 =
-      (d.leading v (d.fourier v Φ)).2 0 y := by
+      (d.leading v Ψ).2 0 y := by
   letI : NeBot (comap (fun u : (LocalField F v)ˣ => u.val) (𝓝 0)) := by
     cases v with
     | inl w =>
@@ -160,10 +161,16 @@ theorem axisLine_hat_zero (v : Place F) (Φ : d.schwartz v) (y : (LocalField F v
   have ht := ((d.continuous_hat v hi).tendsto 0).comp
     (tendsto_comap (f := fun u : (LocalField F v)ˣ => u.val))
   apply tendsto_nhds_unique (ht.const_mul _)
-  apply ((d.leading_spec v (d.fourier v Φ)).2 0 y).congr
+  apply ((d.leading_spec v Ψ).2 0 y).congr
   intro u
-  simpa only [axisLine,hat,Function.comp_apply,d.fourier_apply] using
+  simpa only [axisLine,hat,Function.comp_apply,hΨ] using
     (d.transform_pow_ray v Φ.val u).2 0 y
+
+theorem axisLine_hat_zero (v : Place F) (Φ : d.schwartz v) (y : (LocalField F v)ˣ)
+    (hi : Integrable (d.axisLine v Φ y) (selfDual F d.character v)) :
+    (Real.sqrt (modulus F v (n : LocalField F v)) : ℂ)⁻¹ * d.hat v (d.axisLine v Φ y) 0 =
+      (d.leading v (d.fourier v Φ)).2 0 y :=
+  d.axisLine_hat_zero_of_charts v Φ _ (d.fourier_apply v Φ) y hi
 
 theorem bruhat_finite_slice {P : Type*} [TopologicalSpace P] {p : HeightOneSpectrum (𝓞 F)}
     {g : P → LocalField F (.inr p) → ℂ} (hg : SmoothFiniteFamily g) (q : P) :
