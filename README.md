@@ -132,7 +132,11 @@ agrees almost everywhere with the L² Fourier transform for functions in
 L¹ ∩ L². Rescaling Euclidean volume by the inverse square root of its
 pushforward Haar factor gives Plancherel for the chosen character. Transport
 to the completion proves `exists_arch_selfDual`. The finite-place existence
-theorem `exists_finite_selfDual` remains admitted.
+theorem `exists_finite_selfDual` remains admitted. At finite places,
+[`exists_haar_finite_test_inversion`](MetaplecticSummation/FiniteFourierInversion.lean)
+constructs a Haar measure and proves pointwise Fourier inversion on locally
+constant compactly supported functions. Extending Plancherel to all continuous
+compactly supported tests remains open.
 
 At infinite places `arch_hat_hat_of_integrable` proves pointwise ordinary
 Fourier inversion for a continuous integrable function with integrable transform.

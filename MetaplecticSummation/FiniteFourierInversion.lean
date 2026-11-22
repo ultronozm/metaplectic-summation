@@ -1,5 +1,5 @@
 import MetaplecticSummation.Marginals
-import MetaplecticSummation.FourierOrthogonality
+import MetaplecticSummation.DualBallVolumes
 import Mathlib.MeasureTheory.Integral.Prod
 
 /-! One-dimensional Fourier inversion with the self-dual Haar measure at finite places. -/
@@ -80,23 +80,17 @@ private theorem integral_fourier_zero {K : Type*} [NontriviallyNormedField K] [I
     [ProperSpace K] [MeasurableSpace K] [BorelSpace K] (μ : Measure K) [μ.IsAddHaarMeasure] [SFinite μ]
     {ψ f : K → ℂ} (hc : Continuous ψ) (ha : ∀ x y, ψ (x+y) = ψ x * ψ y)
     (hnorm : ∀ z, ‖ψ z‖ = 1) (hn : ∃ z, ψ z ≠ 1)
-    (hP : ∀ g : K → ℂ, Continuous g → HasCompactSupport g →
-      (∫⁻ y, ‖∫ x, g x * ψ (x*y) ∂μ‖ₑ^2 ∂μ) = ∫⁻ x, ‖g x‖ₑ^2 ∂μ)
+    (hV : DualBallVolumes ψ μ)
     (hf : IsLocallyConstant f) (hk : HasCompactSupport f)
     (hhat : HasCompactSupport (fourierIntegral μ ψ f)) : (∫ u, fourierIntegral μ ψ f u ∂μ) = f 0 := by
   obtain ⟨z,hz⟩ := hn
   obtain ⟨r,hr,hrf⟩ := Metric.mem_nhds_iff.mp (hf.eventually_eq 0)
   obtain ⟨B,hB⟩ := hhat.exists_bound_of_continuousOn (f := id) continuous_id.continuousOn
-  let R := max 1 (max B (‖z‖/r))
-  have hR : 0 < R := zero_lt_one.trans_le (le_max_left _ _)
-  let U : AddSubgroup K :=
-    { carrier := closedBall 0 R
-      zero_mem' := by simp [hR.le]
-      add_mem' := by
-        intro a b ha hb
-        rw [mem_closedBall,dist_zero_right] at ha hb ⊢
-        exact (IsUltrametricDist.norm_add_le_max a b).trans (max_le ha hb)
-      neg_mem' := by intro a ha; simpa only [mem_closedBall,dist_zero_right,norm_neg] using ha }
+  obtain ⟨b,hb⟩ := NormedField.exists_lt_norm K (max 1 (max B (‖z‖/r)))
+  have hR : 0 < ‖b‖ := (zero_lt_one.trans_le (le_max_left ..)).trans hb
+  let a := Units.mk0 b (norm_pos_iff.mp hR)
+  let R := ‖b‖
+  let U := closedBallSubgroup (K := K) R hR.le
   let D := {t : K | ∀ y ∈ U, ψ (t*y) = 1}
   have hD : IsClosed D := by
     have he : D = ⋂ y ∈ (U : Set K), {t | ψ (t*y) = 1} := by ext t; simp [D]
@@ -104,7 +98,7 @@ private theorem integral_fourier_zero {K : Type*} [NontriviallyNormedField K] [I
     exact isClosed_biInter fun y _ => isClosed_eq (hc.comp (continuous_id.mul continuous_const)) continuous_const
   have hopen : IsClopen (U : Set K) := IsUltrametricDist.isClopen_closedBall 0 hR.ne'
   have hcomp : IsCompact (U : Set K) := isCompact_closedBall _ _
-  have vol := volume_mul_annihilator U D hD.measurableSet hopen hcomp μ ψ ha (fun _ => Iff.rfl) hP
+  have vol : μ.real U * μ.real D = 1 := hV a
   let g := (U : Set K).indicator (fun _ => (1 : ℂ))
   have htrans (u : K) : fourierIntegral μ ψ g u = D.indicator (fun _ => (μ.real U : ℂ)) u := by
     unfold fourierIntegral
@@ -118,7 +112,7 @@ private theorem integral_fourier_zero {K : Type*} [NontriviallyNormedField K] [I
       change z/t ∈ closedBall 0 R
       rw [mem_closedBall,dist_zero_right,norm_div]
       exact (div_le_div_of_nonneg_left (norm_nonneg _) hr hlarge).trans
-        ((le_max_right _ _).trans (le_max_right _ _))
+        (((le_max_right _ _).trans (le_max_right _ _)).trans hb.le)
     exact hz (by simpa only [mul_div_cancel₀ _ ht₀] using ht _ hzu)
   have hcut (u : K) : fourierIntegral μ ψ f u * g u = fourierIntegral μ ψ f u := by
     by_cases hu : u ∈ U
@@ -126,7 +120,7 @@ private theorem integral_fourier_zero {K : Type*} [NontriviallyNormedField K] [I
     · have ho : u ∉ tsupport (fourierIntegral μ ψ f) := fun h =>
         hu (show u ∈ closedBall 0 R by
           rw [mem_closedBall,dist_zero_right]
-          exact (hB u h).trans ((le_max_left _ _).trans (le_max_right _ _)))
+          exact (hB u h).trans (((le_max_left _ _).trans (le_max_right _ _)).trans hb.le))
       simp [image_eq_zero_of_notMem_tsupport ho]
   have he := fourierIntegral_swap μ hc hnorm hf.continuous (hopen.continuous_indicator continuous_const)
     (hf.continuous.integrable_of_hasCompactSupport hk)
@@ -205,8 +199,45 @@ theorem integral_hat_finite (p : HeightOneSpectrum (𝓞 F)) {f : LocalField F (
   have hP := (existsUnique_selfDual F d.character (.inr p)).exists.choose_spec
   letI : dx.IsAddHaarMeasure := hP.1
   exact integral_fourier_zero (K := p.adicCompletion F) dx (d.character.continuous_localValue (.inr p)) (d.character.localValue_add (.inr p))
-    (d.character.norm_localValue (.inr p)) (d.character.nontrivial_finiteValue p) hP.2 hf.1 hf.2
+    (d.character.norm_localValue (.inr p)) (d.character.nontrivial_finiteValue p)
+    (dualBallVolumes_of_plancherel dx (d.character.continuous_localValue (.inr p))
+      (d.character.localValue_add (.inr p)) hP.2) hf.1 hf.2
     (d.hat_finite_bruhat p hf).2
+
+private theorem fourier_square_of_integral_zero {K : Type*} [NormedField K] [MeasurableSpace K] [BorelSpace K]
+    (μ : Measure K) [μ.IsAddHaarMeasure] {ψ : K → ℂ} (ha : ∀ a b, ψ (a+b) = ψ a * ψ b)
+    (zero : ∀ f : K → ℂ, IsLocallyConstant f → HasCompactSupport f → (∫ u, fourierIntegral μ ψ f u ∂μ) = f 0)
+    {f : K → ℂ} (hf : IsLocallyConstant f) (hk : HasCompactSupport f) (x : K) :
+    fourierIntegral μ ψ (fourierIntegral μ ψ f) x = f (-x) := by
+  let g (t : K) := f (t + -x)
+  have hg : IsLocallyConstant g := hf.comp_continuous (continuous_id.add (continuous_const (y := -x)))
+  have hs := hk.comp_homeomorph (Homeomorph.addRight (-x))
+  have he (u : K) : fourierIntegral μ ψ g u = fourierIntegral μ ψ f u * ψ (x*u) := by
+    let h (t : K) := g t * ψ (u*t)
+    have ht := integral_add_right_eq_self (μ := μ) h x
+    have hs (t : K) : h (t+x) =
+        (f t * ψ (u*t)) * ψ (x*u) := by
+      simp only [h,g,add_neg_cancel_right,mul_add,ha,mul_assoc,mul_comm x u]
+    simp_rw [hs] at ht
+    rw [integral_mul_const] at ht
+    exact ht.symm
+  have h := zero g hg hs
+  simp_rw [he] at h
+  exact h.trans (congrArg f (zero_add _))
+
+/-- Construction of a Haar measure giving ordinary pointwise Fourier inversion on all
+Schwartz–Bruhat functions of a non-archimedean local field. -/
+theorem exists_haar_finite_test_inversion {K : Type*} [NontriviallyNormedField K] [IsUltrametricDist K]
+    [ProperSpace K] [MeasurableSpace K] [BorelSpace K] (ψ : AddChar K ℂ)
+    (hl : IsLocallyConstant ψ) (hu : ∀ z, ‖ψ z‖ = 1) (hn : ∃ z, ψ z ≠ 1) :
+    ∃ μ : Measure K, μ.IsAddHaarMeasure ∧ DualBallVolumes ψ μ ∧
+      ∀ f : K → ℂ, IsLocallyConstant f → HasCompactSupport f → ∀ x : K,
+        (∫ u, (∫ t, f t * ψ (u*t) ∂μ) * ψ (x*u) ∂μ) = f (-x) := by
+  obtain ⟨μ,hμ,hV⟩ := exists_haar_dual_ball_volumes ψ hl hn
+  letI : μ.IsAddHaarMeasure := hμ
+  refine ⟨μ,hμ,hV,fun f hf hk => fourier_square_of_integral_zero μ ψ.map_add_eq_mul (fun g hg hs => ?_) hf hk⟩
+  exact integral_fourier_zero μ hl.continuous ψ.map_add_eq_mul hu hn hV hg hs
+    (fourierIntegral_test μ hg hs hl ψ.map_add_eq_mul hn).2
 
 omit [NeZero n] in
 /-- With the positive additive phase, the square of the ordinary Fourier
@@ -214,25 +245,7 @@ transform on finite-place Schwartz–Bruhat functions is reflection. -/
 theorem hat_hat_finite (p : HeightOneSpectrum (𝓞 F)) {f : LocalField F (.inr p) → ℂ}
     (hf : Bruhat (.inr p) f) (x : LocalField F (.inr p)) :
     d.hat (.inr p) (d.hat (.inr p) f) x = f (-x) := by
-  let v : Place F := .inr p
-  let g (t : LocalField F v) := f (t + -x)
-  have hg : Bruhat v g := ⟨hf.1.comp_continuous (continuous_id.add continuous_const),
-    hf.2.comp_homeomorph (Homeomorph.addRight (-x))⟩
-  have he (u : LocalField F v) : d.hat v g u = d.hat v f u * d.character.localValue F v (x*u) := by
-    let h (t : LocalField F v) := g t * d.character.localValue F v (u*t)
-    let dx := selfDual F d.character v
-    letI : dx.IsAddHaarMeasure := (existsUnique_selfDual F d.character v).exists.choose_spec.1
-    have ht := integral_add_right_eq_self (μ := dx) h x
-    have hs (t : LocalField F v) : h (t+x) =
-        (f t * d.character.localValue F v (u*t)) * d.character.localValue F v (x*u) := by
-      simp only [h,g,add_neg_cancel_right,mul_add,d.character.localValue_add,mul_assoc,mul_comm x u]
-    simp_rw [hs] at ht
-    rw [integral_mul_const] at ht
-    exact ht.symm
-  have h := d.integral_hat_finite p hg
-  change (∫ u, d.hat v g u ∂(selfDual F d.character v)) = g 0 at h
-  simp_rw [he] at h
-  simp only [g,zero_add] at h
-  exact h
+  letI : (selfDual F d.character (.inr p)).IsAddHaarMeasure := (existsUnique_selfDual F d.character (.inr p)).exists.choose_spec.1
+  exact fourier_square_of_integral_zero _ (d.character.localValue_add _) (fun _ hg hs => d.integral_hat_finite p ⟨hg,hs⟩) hf.1 hf.2 x
 
 end MetaplecticPoisson.Datum
