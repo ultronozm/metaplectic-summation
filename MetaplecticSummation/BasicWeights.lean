@@ -10,44 +10,6 @@ open scoped Pointwise
 open Classical
 variable {F : Type} [Field F] [NumberField F] {n : ℕ} [NeZero n] (d : Datum F n)
 
-theorem basic_x_outside (p : Prime F) (ht : p.asIdeal.absNorm.Coprime n)
-    (x : (LocalField F (.inr p))ˣ) (y : LocalField F (.inr p)) (h : 1 < max ‖x.val‖ ‖y‖) :
-    (d.basic (.inr p)).val.1 x y = 0 := by
-  have hq : 1 ≤ (p.asIdeal.absNorm : ℝ) := by
-    exact_mod_cast (NumberField.HeightOneSpectrum.one_lt_absNorm p).le
-  have he (k : ℕ) : max ‖x.val‖ ‖y‖ ≠ ((p.asIdeal.absNorm : ℝ)^(n*k))⁻¹ :=
-    ne_of_gt ((inv_le_one_of_one_le₀ (one_le_pow₀ hq)).trans_lt h)
-  simp [basic, dif_pos ht, basicCharts, he]
-
-theorem jacquet_basic_nonintegral (p : Prime F) (ht : p.asIdeal.absNorm.Coprime n)
-    (c : (LocalField F (.inr p))ˣ) (hc : 1 < ‖c.val‖) :
-    d.jacquet (.inr p) (d.basic (.inr p)) c = 0 := by
-  unfold jacquet
-  simp only [d.basic_x_outside p ht c _ (hc.trans_le (le_max_left _ _)), zero_mul, integral_zero]
-
-theorem jacquet_basic_unit (p : Prime F) (ht : p.asIdeal.absNorm.Coprime n)
-    (hψ : ∀ x : LocalField F (.inr p), ‖x‖ ≤ 1 → d.character.localValue F (.inr p) x = 1)
-    (c : (LocalField F (.inr p))ˣ) (hc : ‖c.val‖ = 1) :
-    d.jacquet (.inr p) (d.basic (.inr p)) c =
-      ((selfDual F d.character (.inr p)).real {x | ‖x‖ ≤ 1} : ℂ) := by
-  let O := {x : LocalField F (.inr p) | ‖x‖ ≤ 1}
-  have hO : MeasurableSet O := (isClosed_le continuous_norm continuous_const).measurableSet
-  unfold jacquet
-  calc
-    _ = ∫ x, O.indicator (fun _ => (1:ℂ)) x ∂(selfDual F d.character (.inr p)) := by
-      apply integral_congr_ae
-      filter_upwards with x
-      by_cases hx : ‖x‖ ≤ 1
-      · have he := d.basic_xChart_unit p ht c.val x hc hx
-        simp only [xChart, c.ne_zero, ne_eq, not_false_eq_true, dif_pos] at he
-        have hval : (d.basic (.inr p)).val.1 c x = 1 := by
-          rwa [show Units.mk0 c.val c.ne_zero = c from Units.ext rfl] at he
-        rw [hval, hψ _ (by simpa only [norm_div, norm_neg, hc, div_one] using hx),
-          one_mul, indicator_of_mem (show x ∈ O from hx)]
-      · rw [d.basic_x_outside p ht c x ((lt_of_not_ge hx).trans_le (le_max_right _ _)),
-          zero_mul, indicator_of_notMem (show x ∉ O from hx)]
-    _ = _ := by simp [integral_indicator hO, Measure.real, O]
-
 theorem scaled_basic_unit {S : Finset (Place F)} (h : d.ClassicalSetting S) (b : NonzeroInteger S)
     (p : Prime F) (hp : Sum.inr p ∉ S) (c : (LocalField F (.inr p))ˣ) (hc : ‖c.val‖ = 1) :
     let db := d.scaled (fieldUnit b)

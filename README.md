@@ -311,6 +311,15 @@ proof obligations, run `rg -n '\bsorry\b' MetaplecticSummation`.
 
 `lineSummation` chooses one family of coefficients for all test weights at a
 fixed set of places. Its outer sums run over nonzero field elements.
+For any covering degree, the original summand has finite support on those
+elements. The local tests at S give bounded radii, the basic factors outside S
+vanish on nonintegral elements, and the rational box count applies.
+In degree one, the local dual of a test weight is evaluation at the reciprocal
+argument. The same identity holds for the basic Jacquet factor at every finite
+conductor. Reindexing the finite sum by inversion proves `line_degree_one`
+with zero main term independently of `lineSummation`. The project dependencies
+that still contain admissions are the normalized Hilbert symbols and the
+endomorphism defined by the local Fourier integral.
 `twistedGaussSummation` assumes the S-integers form a PID and sums over their
 nonzero **elements**. Only the inner divisor sum in `normalizedGauss` runs over
 associates. Multiplying the modulus by the n-th power of an S-unit preserves
