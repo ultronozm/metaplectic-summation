@@ -1,4 +1,5 @@
 import MetaplecticSummation.Poisson
+import MetaplecticSummation.RayFourier
 
 noncomputable section
 namespace MetaplecticPoisson
@@ -18,6 +19,40 @@ def lineIntegral (v : Place F) (f : Weight v) : ℂ := by
   classical
   exact ∫ x, if h : x ≠ 0 then f (Units.mk0 x h) / (modulus F v x : ℂ) else 0
     ∂(selfDual F d.character v)
+
+omit hn in
+theorem lineIntegral_const_mul (v : Place F) (z : ℂ) (f : Weight v) :
+    d.lineIntegral v (fun x => z * f x) = z * d.lineIntegral v f := by
+  classical
+  unfold lineIntegral
+  rw [← integral_const_mul]
+  apply integral_congr_ae
+  filter_upwards with x
+  split_ifs <;> ring
+
+omit hn in
+/-- Multiplicative Haar integration is invariant under translation by a unit. -/
+theorem lineIntegral_mul (v : Place F) (u : (LocalField F v)ˣ) (f : Weight v) :
+    d.lineIntegral v (fun x => f (u*x)) = d.lineIntegral v f := by
+  classical
+  let g (w : Weight v) (x : LocalField F v) : ℂ :=
+    if h : x ≠ 0 then w (Units.mk0 x h) / (modulus F v x : ℂ) else 0
+  let m : ℂ := modulus F v u.val
+  have hm : m ≠ 0 := Complex.ofReal_ne_zero.mpr (modulus_ne_zero v u)
+  have hmod (x : LocalField F v) : modulus F v (u.val*x) = modulus F v u.val * modulus F v x := by
+    cases v <;> simp [modulus,norm_mul,mul_pow]
+  have he (x : LocalField F v) : g f (u.val*x) = g (fun a => f (u*a)) x / m := by
+    by_cases hx : x = 0
+    · simp [g,hx]
+    · have hux := mul_ne_zero u.ne_zero hx
+      simp only [g,dif_pos hux,dif_pos hx,hmod,Complex.ofReal_mul]
+      rw [show Units.mk0 (u.val*x) hux = u * Units.mk0 x hx from Units.ext rfl]
+      ring
+  have h := d.integral_local_mul v u (g f)
+  dsimp only at h
+  simp_rw [he] at h
+  rw [integral_div] at h
+  exact (div_left_inj' hm).mp h
 
 def archSmooth {K L : Type} [Field K] [NormedField L] [NormedAlgebra ℝ L]
     (e : K ≃+* L) (W : Kˣ → ℂ) : Prop := by
@@ -50,12 +85,34 @@ theorem jacquet_test_lift (v : Place F) (W : Weight v) (h : TestWeight v W) :
 theorem jacquet_fourier_test (v : Place F) (Φ : d.schwartz v) (h : TestWeight v (d.jacquet v Φ)) :
     d.jacquet v (d.fourier v Φ) = d.dualWeight v (d.jacquet v Φ) := by sorry
 
-theorem root_fourier (v : Place F) (W : Weight v) (h : TestWeight v W)
+theorem root_fourier (v : Place F) (W : Weight v) (_h : TestWeight v W)
     (c lam : (LocalField F v)ˣ) :
     d.dualWeight v W (c * lam ^ n) =
       (Real.sqrt (modulus F v (n : LocalField F v)) : ℂ)⁻¹ * (modulus F v lam : ℂ) *
         ∫ t, d.kernelIntegral v W c t * d.character.localValue F v (t * lam)
-          ∂(selfDual F d.character v) := by sorry
+          ∂(selfDual F d.character v) := by
+  let ψ := d.character.localValue F v
+  let m : ℂ := modulus F v lam.val
+  have hm : m ≠ 0 := Complex.ofReal_ne_zero.mpr (modulus_ne_zero v lam)
+  have symb (x : (LocalField F v)ˣ) :
+      d.symbol v x (-(c*lam^n)) = d.symbol v x (-c) := by
+    change ((d.unitPairing v x (-(c*lam^n))).val) = _
+    rw [← neg_mul, map_mul, map_pow, d.unitPairing_pow, mul_one]
+    rfl
+  have kernel (t : LocalField F v) :
+      d.kernelIntegral v W (c*lam^n) (lam.val*t) = d.kernelIntegral v W c t := by
+    unfold kernelIntegral
+    congr 1
+    funext x
+    rw [symb, Units.val_mul, Units.val_pow_eq_pow_val, mul_pow]
+    congr 2
+    field_simp
+  have he := d.integral_local_mul v lam (fun t => ψ t * d.kernelIntegral v W (c*lam^n) t)
+  dsimp only at he
+  simp_rw [kernel,mul_comm lam.val _,mul_comm (ψ (_ * lam.val)) _] at he
+  unfold dualWeight
+  rw [← (eq_div_iff hm).mp he]
+  ring
 
 def GoodOutside (S : Finset (Place F)) : Prop :=
   S.Nonempty ∧ (∀ w, Sum.inl w ∈ S) ∧ ∀ p : HeightOneSpectrum (𝓞 F), Sum.inr p ∉ S →

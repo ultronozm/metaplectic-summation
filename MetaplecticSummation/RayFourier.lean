@@ -49,14 +49,14 @@ private theorem modulus_pow_mul (v : Place F) (u a : (LocalField F v)ˣ) :
   | inl w => simp [modulus, norm_mul, norm_pow, mul_pow, ← pow_mul, Nat.mul_comm n]
   | inr p => simp [modulus, norm_mul, norm_pow]
 
-private theorem modulus_ne_zero (v : Place F) (u : (LocalField F v)ˣ) : modulus F v u.val ≠ 0 := by
+theorem modulus_ne_zero (v : Place F) (u : (LocalField F v)ˣ) : modulus F v u.val ≠ 0 := by
   cases v <;> simp [modulus, u.ne_zero]
 
 omit [NeZero n] in
-/-- The one-dimensional substitution with the normalized modulus used in the paper. -/
-theorem integral_local_mul (v : Place F) (u : (LocalField F v)ˣ) (g : LocalField F v → ℂ) :
+/-- Pushforward of additive Haar measure by multiplication on the local field. -/
+theorem map_local_mul (v : Place F) (u : (LocalField F v)ˣ) :
     let dx := selfDual F d.character v
-    (∫ x, g (u.val*x) ∂dx) = (∫ x, g x ∂dx) / (modulus F v u.val : ℂ) := by
+    Measure.map (fun x => u.val*x) dx = (modulus F v u.val).toNNReal⁻¹ • dx := by
   letI : LocallyCompactSpace (LocalField F v) := by
     cases v with
     | inl w => exact inferInstanceAs (LocallyCompactSpace w.Completion)
@@ -76,9 +76,27 @@ theorem integral_local_mul (v : Place F) (u : (LocalField F v)ˣ) (g : LocalFiel
     cases v with
     | inl w => exact arch_modulus w u
     | inr p => exact (congrArg NNReal.toReal (FinitePlace.haarChar_eq_nnnorm p u)).symm
-  have he := integral_unit_mul_add dx u 0 g
-  simpa only [hm, add_zero, map_inv, NNReal.smul_def, NNReal.coe_inv, Complex.real_smul,
-    Complex.ofReal_inv, div_eq_inv_mul] using he
+  let e := MeasurableEquiv.smul (α := LocalField F v) u
+  change Measure.map e dx = _
+  have hmap : Measure.map e dx = DomMulAct.mk u⁻¹ • dx := by
+    change _ = Measure.map (fun x => (u⁻¹)⁻¹ • x) dx
+    rw [inv_inv]
+    rfl
+  rw [hmap, Measure.isAddLeftInvariant_eq_smul_of_regular (DomMulAct.mk u⁻¹ • dx) dx,
+    addHaarScalarFactor_smul_eq_distribHaarChar, map_inv, hm,Real.toNNReal_coe]
+
+omit [NeZero n] in
+/-- The one-dimensional substitution with the normalized modulus used in the paper. -/
+theorem integral_local_mul (v : Place F) (u : (LocalField F v)ˣ) (g : LocalField F v → ℂ) :
+    let dx := selfDual F d.character v
+    (∫ x, g (u.val*x) ∂dx) = (∫ x, g x ∂dx) / (modulus F v u.val : ℂ) := by
+  let e := MeasurableEquiv.smul (α := LocalField F v) u
+  have h := (integral_map_equiv (μ := selfDual F d.character v) e g).symm
+  change (∫ x, g (u.val*x) ∂_) = ∫ x, g x ∂Measure.map (fun x => u.val*x) _ at h
+  rw [d.map_local_mul v u,integral_smul_nnreal_measure] at h
+  have hm : 0 ≤ modulus F v u.val := by cases v <;> simp [modulus,pow_nonneg]
+  simpa only [NNReal.smul_def,NNReal.coe_inv,Real.coe_toNNReal _ hm,Complex.real_smul,
+    Complex.ofReal_inv,div_eq_inv_mul] using h
 
 /-- The power-ray formula of §4.3. Multiplying the transform along a power ray by the factor
 |u|^(n−1) gives an ordinary one-dimensional Fourier integral. -/

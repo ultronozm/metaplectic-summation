@@ -1,4 +1,5 @@
 import MetaplecticSummation.Gauss
+import MetaplecticSummation.Inversion
 import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 
 noncomputable section
@@ -16,17 +17,37 @@ theorem jacquet_transform_descends (v : Place F) (Φ Ψ : d.schwartz v)
 
 theorem jacquet_inversion (v : Place F) (Φ : d.schwartz v) (c : (LocalField F v)ˣ) :
     let e : (LocalField F v)ˣ := (-1) ^ (n+1)
-    d.jacquet v (d.fourier v (d.fourier v Φ)) c = d.symbol v (-c) e * d.jacquet v Φ (e*c) := by sorry
-
-theorem dual_dilation (v : Place F) (W : Weight v) (hw : TestWeight v W)
-    (X c : (LocalField F v)ˣ) :
-    d.dualWeight v (fun x => W (x/X)) c =
-      d.symbol v X (-c) * d.dualWeight v (fun x => W x / d.symbol v x X) (X*c) := by sorry
-
-theorem dual_scaled (v : Place F) (W : Weight v) (hw : TestWeight v W) (b : Fˣ)
-    (c : (LocalField F v)ˣ) :
-    (d.scaled b).dualWeight v W c =
-      d.dualWeight v (fun x => W x * d.symbol v x (atPlace v b)) (atPlace v b ^ (n-1) * c) := by sorry
+    d.jacquet v (d.fourier v (d.fourier v Φ)) c = d.symbol v (-c) e * d.jacquet v Φ (e*c) := by
+  let e : (LocalField F v)ˣ := (-1) ^ (n+1)
+  have he : e*e = 1 := by rw [← mul_pow]; simp
+  have hval : e.val*e.val = 1 := congrArg Units.val he
+  have hm : modulus F v e.val = 1 := by
+    cases v <;> simp [modulus,e,Units.val_pow_eq_pow_val]
+  have hs : d.symbol v c e * d.symbol v (-1) e = d.symbol v (-c) e := by
+    change ((d.unitPairing v c e).val) * ((d.unitPairing v (-1) e).val) = _
+    rw [show -c = c * (-1) by simp, ← d.coe_unitPairing, map_mul]
+    rfl
+  let f (y : LocalField F v) := Φ.val.1 (e*c) (y/e.val) * d.character.localValue F v (-y/c.val)
+  have ht := d.integral_local_mul v e f
+  dsimp only at ht
+  rw [hm,Complex.ofReal_one,div_one] at ht
+  have hphase (y : LocalField F v) : -(e.val*y)/c.val = -y/(e*c).val := by
+    rw [Units.val_mul]
+    field_simp
+    linear_combination -y * hval
+  have eval (y : LocalField F v) : f (e.val*y) = Φ.val.1 (e*c) y *
+      d.character.localValue F v (-y/(e*c).val) := by
+    simp only [f,hphase,mul_div_cancel_left₀ _ e.ne_zero]
+  simp_rw [eval] at ht
+  change d.jacquet v (d.fourier v (d.fourier v Φ)) c = d.symbol v (-c) e * d.jacquet v Φ (e*c)
+  unfold jacquet
+  rw [(d.schwartz_inversion v).2.1 Φ]
+  change (∫ y, (d.symbol v c e * d.symbol v (-1) e * Φ.val.1 (e*c) (y/e.val)) *
+    d.character.localValue F v (-y/c.val) ∂_) = _
+  rw [hs]
+  simp_rw [mul_assoc (d.symbol v (-c) e)]
+  rw [integral_const_mul]
+  exact congrArg (d.symbol v (-c) e * ·) ht.symm
 
 def mellin (v : Place F) (W ω : Weight v) (s : ℂ) :=
   d.lineIntegral v fun x => W x * ω x * (modulus F v x : ℂ) ^ s
@@ -50,32 +71,6 @@ theorem mellin_dual (v : Place F) (W : Weight v) (hw : TestWeight v W) (β : (Lo
       d.mellin v (d.dualWeight v W) (fun x => ω x) s =
         (Real.sqrt (modulus F v (n : LocalField F v)) : ℂ)⁻¹ * η (-1) * γ₁ * γ₂ *
           d.mellin v W (fun x => (ω x : ℂ)⁻¹) (-s) := by sorry
-
-def unitGauss (p : Prime F) (θ : Weight (.inr p : Place F)) (α : LocalField F (.inr p)) :=
-  d.lineIntegral (.inr p) fun x => if ‖(x : LocalField F (.inr p))‖ = 1 then
-    θ x * d.character.localValue F (.inr p) (α*x) else 0
-
-theorem twistedVector (p : Prime F) (hp : p.asIdeal.absNorm.Coprime n) (hψ : d.UnramifiedAt (.inr p))
-    (χ : UnitChar p) (hχ : Continuous χ) (e : ℕ) (he : 0 < e)
-    (cond : IsLeast {k | trivialAtLevel (χ^n) k} e) (c : (LocalField F (.inr p))ˣ) :
-    let q : ℝ := p.asIdeal.absNorm
-    let V := d.dualWeight (.inr p) (charWeight χ) c
-    (‖(c : LocalField F (.inr p))‖ ≠ q ^ ((n-1)*e) → V = 0) ∧
-    (‖(c : LocalField F (.inr p))‖ = q ^ ((n-1)*e) →
-      ‖V‖ = 1 ∧ ∀ t : (LocalField F (.inr p))ˣ, ‖(t : LocalField F (.inr p))‖ = q ^ e →
-        V = (q : ℂ)^e * d.unitGauss p (charWeight (χ ^ n)) t *
-          d.unitGauss p (fun x => conj (charWeight χ x) * d.symbol (.inr p) c x)
-            (-((t : LocalField F (.inr p)) ^ n) / c)) := by sorry
-
-theorem epsilon_gauss {S : Finset (Place F)} (h : d.ClassicalSetting S)
-    (f b : NonzeroInteger S) (T : Twist (n := n) S f) (hb : IsCoprime b.val f.val) :
-    d.epsilon T (fieldUnit b) = ∏ p : T.primes,
-      let v : Place F := .inr p.val
-      let f' := atPlace v (fieldUnit f)
-      (p.val.asIdeal.absNorm : ℂ) ^ T.exponent p *
-        d.unitGauss p.val (charWeight (T.character p ^ n)) ((f' : LocalField F v)⁻¹) *
-        d.unitGauss p.val (fun x => conj (charWeight (T.character p) x) * d.symbol v f' x)
-          (-(diagonal F v (fieldUnit b)) / f') := by sorry
 
 /-- Proposition 10.27, with valuations written as powers of the residue cardinality. -/
 theorem untwistedVector (p : Prime F) (hp : p.asIdeal.absNorm.Coprime n) (hψ : d.UnramifiedAt (.inr p))

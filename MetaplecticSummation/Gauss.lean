@@ -1,4 +1,4 @@
-import MetaplecticSummation.GaussProduct
+import MetaplecticSummation.TwistedSummation
 
 noncomputable section
 namespace MetaplecticPoisson.Datum
