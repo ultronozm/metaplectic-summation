@@ -1,128 +1,119 @@
-import MetaplecticSummation.SArithmetic
+import MetaplecticSummation.GaussProduct
 
 noncomputable section
 namespace MetaplecticPoisson.Datum
 open NumberField IsDedekindDomain MeasureTheory
+open Classical
 open scoped ComplexConjugate
 variable {F : Type} [Field F] [NumberField F] {n : ℕ} [hn : NeZero n] (d : Datum F n)
 
-def UnramifiedAt (v : Place F) : Prop :=
-  ∀ x : LocalField F v, (∀ y : LocalField F v, ‖y‖ ≤ 1 →
-    d.character.localValue F v (x * y) = 1) ↔ ‖x‖ ≤ 1
-
-structure ClassicalSetting (S : Finset (Place F)) : Prop where
-  good : d.GoodOutside S
-  unramified : ∀ p : Prime F, Sum.inr p ∉ S → d.UnramifiedAt (.inr p)
-  principal : IsPrincipalIdealRing (SIntegers S)
-
-def integralUnits (p : Prime F) : Subgroup (LocalField F (.inr p))ˣ where
-  carrier := {u | ‖(u : LocalField F (.inr p))‖ = 1}
-  one_mem' := norm_one
-  mul_mem' := by intro a b ha hb; change ‖(a : LocalField F (.inr p)) * b‖ = 1; rw [norm_mul, ha, hb, one_mul]
-  inv_mem' := by
-    intro a ha
-    change ‖((a⁻¹ : (LocalField F (.inr p))ˣ) : LocalField F (.inr p))‖ = 1
-    rw [Units.val_inv_eq_inv_val, norm_inv, ha, inv_one]
-
-abbrev UnitChar (p : Prime F) := integralUnits p →* Circle
-
-def charWeight {p : Prime F} (χ : UnitChar p) : Weight (.inr p : Place F) := by
-  classical exact fun x => if h : x ∈ integralUnits p then ((χ ⟨x,h⟩ : Circle) : ℂ) else 0
-
-/-- Level zero tests the full unit group. At positive level k this tests
-the principal units congruent to one modulo the kth power of the prime. -/
-def trivialAtLevel {p : Prime F} (χ : UnitChar p) (k : ℕ) : Prop :=
-  ∀ u : integralUnits p, (k = 0 ∨ ‖((u.val : LocalField F (.inr p)) - 1)‖ ≤
-    ((p.asIdeal.absNorm : ℝ) ^ k)⁻¹) → χ u = 1
-
-structure Twist (S : Finset (Place F)) (f : NonzeroInteger S) where
-  primes : Finset (Prime F)
-  outside : ∀ p ∈ primes, Sum.inr p ∉ S
-  character : (p : primes) → UnitChar p.val
-  continuous_char : ∀ p, Continuous (character p)
-  exponent : primes → ℕ
-  positive : ∀ p, 0 < exponent p
-  conductor : ∀ p, IsLeast {k | trivialAtLevel (character p ^ n) k} (exponent p)
-  generator : ∀ p : primes, ‖diagonal F (.inr p.val) (fieldUnit f)‖ =
-    ((p.val.asIdeal.absNorm : ℝ) ^ exponent p)⁻¹
-  unit_elsewhere : ∀ p : Prime F, Sum.inr p ∉ S → p ∉ primes →
-    ‖diagonal F (.inr p) (fieldUnit f)‖ = 1
-  empty_modulus : primes = ∅ → fieldUnit f = 1
-
-def twistValue {S : Finset (Place F)} {f : NonzeroInteger S} (T : Twist (n := n) S f) (c : Fˣ) :=
-  ∏ p : T.primes, charWeight (T.character p) (atPlace (.inr p.val) c)
-
-def epsilon {S : Finset (Place F)} {f : NonzeroInteger S} (T : Twist (n := n) S f) (b : Fˣ) :=
-  ∏ p : T.primes, d.dualWeight (.inr p.val) (charWeight (T.character p))
-    (atPlace _ (b * fieldUnit f ^ (n-1))⁻¹)
-
 omit hn in
-theorem exists_scaled (b : Fˣ) : ∃ ψ : Character F, ∀ x,
-    ψ.toChar x = d.character.toChar (algebraMap F (Adeles F) (b : F) * x) := by
-  let χ := d.character.toChar.mulShift (algebraMap F (Adeles F) (b : F))
-  refine ⟨⟨χ, d.character.continuous_toChar.comp (continuous_const.mul continuous_id), ?_, ?_⟩,
-    fun _ => rfl⟩
-  · obtain ⟨x, hx⟩ := d.character.nontrivial
-    refine ⟨algebraMap F (Adeles F) (↑b⁻¹ : F) * x, ?_⟩
-    simpa only [χ, AddChar.mulShift_apply, ← mul_assoc, ← map_mul, Units.mul_inv, map_one,
-      one_mul] using hx
-  · intro a
-    exact (congrArg d.character.toChar (map_mul _ (b : F) a).symm).trans
-      (d.character.trivial_diagonal _)
+theorem scaled_one : d.scaled 1 = d := by
+  have he : (d.scaled 1).character.toChar = d.character.toChar := by
+    apply AddChar.ext
+    intro x
+    simpa only [scaled,Units.val_one,map_one,one_mul] using (d.exists_scaled 1).choose_spec x
+  have extChar (a b : Character F) (h : a.toChar = b.toChar) : a = b := by
+    cases a
+    cases b
+    congr
+  have hc := extChar _ _ he
+  exact congrArg (fun ψ => {d with character := ψ}) hc
 
-def scaled (b : Fˣ) : Datum F n := { d with character := (d.exists_scaled b).choose }
+private theorem globalWeight_untwisted {S : Finset (Place F)} (h : d.ClassicalSetting S)
+    (W : Weights S) (dual : Bool) (c : Fˣ) :
+    d.globalWeight W dual c = (if dual then d.sDual W c else sWeight W c) *
+      (if hc : (c : F) ∈ SIntegers S then d.normalizedGauss S 1 ⟨_,hc⟩ else 0) := by
+  let b : NonzeroInteger S := ⟨1,one_ne_zero⟩
+  have hb : fieldUnit b = 1 := Units.ext rfl
+  have hbNorm : sNorm S (fieldUnit b : F) = 1 := sNorm_unit h.good.2.1 1
+  let w (v : S) := (if dual then d.dualWeight v.val (W v) else W v) (atPlace v.val c)
+  let inside (v : Place F) := if hv : v ∈ S then w ⟨v,hv⟩ else 1
+  let J (v : Place F) := d.jacquet v (d.basic v) (atPlace v c)
+  let outside (v : Place F) := if v ∈ S then 1 else J v
+  have fixed (v : Place F) (hv : v ∉ S) :
+      d.jacquet v (d.fourier v (d.basic v)) (atPlace v c) = J v := by
+    obtain v | p := v
+    · exact (hv (h.good.2.1 v)).elim
+    · have conductor (x : LocalField F (.inr p)) :
+          (∀ y : LocalField F (.inr p), ‖y‖ ≤ 1 → d.character.localValue F (.inr p) (x*y) = 1) ↔
+          ‖x * (1 : (LocalField F (.inr p))ˣ)‖ ≤ 1 := by simpa using h.unramified p hv x
+      simpa only [one_pow,one_mul,J] using
+        d.basic_dual p (h.good.2.2 p hv).1 1 (by simp) conductor (atPlace (.inr p) c)
+  have hI : Function.mulSupport inside ⊆ (S : Set (Place F)) :=
+    fun v h => by_contra fun hv => h (dif_neg hv)
+  have hO : Function.HasFiniteMulSupport outside := by
+    apply Filter.eventually_cofinite.mp
+    apply eventually_place_of_finite
+    have hu := d.eventually_scaled_basic_one h b c
+    rw [hb,d.scaled_one] at hu
+    exact hu
+  have splitProduct : d.globalWeight W dual c = (∏ᶠ v, inside v) * ∏ᶠ v, outside v := by
+    rw [← finprod_mul_distrib (S.finite_toSet.subset hI) hO]
+    unfold globalWeight
+    apply finprod_congr
+    intro v
+    by_cases hv : v ∈ S
+    · simp only [hv,dif_pos,inside,outside,w,if_true,mul_one]
+    · cases dual <;> simp [inside,outside,J,hv,fixed v hv]
+  have hi : (∏ᶠ v, inside v) = if dual then d.sDual W c else sWeight W c := by
+    rw [finprod_eq_prod_of_mulSupport_subset _ hI,← Finset.prod_attach S]
+    have hw (v : S) : inside v.val = w v := dif_pos v.property
+    simp_rw [hw]
+    cases dual <;> rfl
+  have ho : (∏ᶠ v, outside v) = ∏ᶠ v : {v : Place F // v ∉ S}, J v.val := by
+    rw [finprod_subtype_eq_finprod_cond (fun v : Place F => v ∉ S)]
+    apply finprod_congr
+    intro v
+    rw [finprod_eq_if]
+    by_cases hv : v ∈ S <;> simp [outside,hv]
+  have hp := d.product_basic h b c
+  dsimp only at hp
+  have db_eq : d.scaled (fieldUnit b) = d := hb ▸ d.scaled_one
+  rw [db_eq] at hp
+  simp only [hbNorm,Real.sqrt_one,Complex.ofReal_one,inv_one,one_mul] at hp
+  exact splitProduct.trans (congrArg₂ (· * ·) hi (ho.trans hp))
 
-def sWeight {S : Finset (Place F)} (W : Weights S) (c : Fˣ) :=
-  ∏ v : S, W v (atPlace v.val c)
+theorem fieldUnit_injective {S : Finset (Place F)} : Function.Injective (fieldUnit (S := S)) :=
+  fun _ _ he => Subtype.ext (Subtype.ext (congrArg Units.val he))
 
-def sDual {S : Finset (Place F)} (W : Weights S) (c : Fˣ) :=
-  ∏ v : S, d.dualWeight v.val (W v) (atPlace v.val c)
+private theorem globalWeight_integer {S : Finset (Place F)} (h : d.ClassicalSetting S)
+    (W : Weights S) (dual : Bool) (c : NonzeroInteger S) :
+    d.globalWeight W dual (fieldUnit c) =
+      (if dual then d.sDual W (fieldUnit c) else sWeight W (fieldUnit c)) *
+        d.normalizedGauss S 1 c.val := by
+  rw [d.globalWeight_untwisted h W dual (fieldUnit c),
+    dif_pos (show (fieldUnit c : F) ∈ SIntegers S from c.val.property)]
+  rfl
 
-omit hn in
-theorem scaled_localValue (b : Fˣ) (v : Place F) (x : LocalField F v) :
-    (d.scaled b).character.localValue F v x = d.character.localValue F v (diagonal F v b * x) := by
-  unfold Character.localValue
-  rw [show (d.scaled b).character.toChar (singleAdele F v x) = _ from
-    (d.exists_scaled b).choose_spec (singleAdele F v x)]
-  congr 2
-  classical
-  cases v with
-  | inl w =>
-    apply Prod.ext
-    · funext u
-      change algebraMap F u.Completion (b : F) * Pi.single w x u = Pi.single w (_ * x) u
-      by_cases h : u = w
-      · subst u; simp only [Pi.single_eq_same]; rfl
-      · simp only [Pi.single_eq_of_ne h, mul_zero]
-    · exact mul_zero _
-  | inr p =>
-    apply Prod.ext (mul_zero _)
-    exact (RestrictedProduct.mul_single _ p x (algebraMap F (Adeles F) (b : F)).2).symm
+/-- Both series of normalized Gauss sums in the untwisted S-integer identity
+converge absolutely for admissible test weights. -/
+theorem summable_untwistedGauss {S : Finset (Place F)} (h : d.ClassicalSetting S)
+    (W : Weights S) (hW : Admissible W) (dual : Bool) :
+    Summable (fun c : NonzeroInteger S =>
+      ‖(if dual then d.sDual W (fieldUnit c) else sWeight W (fieldUnit c)) *
+        d.normalizedGauss S 1 c.val‖) := by
+  have line := (d.lineSummation S h.good).exists.choose_spec W hW
+  have hs : Summable (fun c => ‖d.globalWeight W dual c‖) := by
+    cases dual
+    · exact line.1
+    · exact line.2.1
+  exact (hs.comp_injective (fieldUnit_injective (S := S))).congr
+    (fun c => congrArg norm (d.globalWeight_integer h W dual c))
 
-omit hn in
-/-- The annihilator of the integers for the scaled character is the
-inverse image of the original annihilator under multiplication by b. -/
-theorem scaled_conductor (b : Fˣ) (v : Place F) (h : d.UnramifiedAt v)
-    (x : LocalField F v) :
-    (∀ y : LocalField F v, ‖y‖ ≤ 1 → (d.scaled b).character.localValue F v (x*y) = 1) ↔
-      ‖x * diagonal F v b‖ ≤ 1 := by
-  simp only [d.scaled_localValue, ← mul_assoc]
-  simpa only [mul_comm x (diagonal F v b)] using h (diagonal F v b * x)
-
-omit hn in
-theorem scaled_good {S : Finset (Place F)} (h : d.ClassicalSetting S) (b : NonzeroInteger S) :
-    (d.scaled (fieldUnit b)).GoodOutside S := by
-  refine ⟨h.good.1, h.good.2.1, fun p hp => ⟨(h.good.2.2 p hp).1, fun x hx => ?_⟩⟩
-  rw [d.scaled_localValue]
-  apply (h.good.2.2 p hp).2
-  rw [norm_mul]
-  exact mul_le_one₀ (integer_norm_le_one b.val p hp) (norm_nonneg _) hx
-
-def mainTerm {S : Finset (Place F)} (h : d.ClassicalSetting S) (b : NonzeroInteger S)
-    (W : Weights S) : ℂ :=
-  let db := d.scaled (fieldUnit b)
-  let ρ := (db.lineSummation S (d.scaled_good h b)).exists.choose
-  (Real.sqrt (sNorm S (fieldUnit b)) : ℂ) * ∑ᶠ β, ρ β * db.moment W β
+private theorem tsum_globalWeight_untwisted {S : Finset (Place F)} (h : d.ClassicalSetting S)
+    (W : Weights S) (dual : Bool) :
+    (∑' c : Fˣ, d.globalWeight W dual c) =
+      ∑' c : NonzeroInteger S, (if dual then d.sDual W (fieldUnit c) else sWeight W (fieldUnit c)) *
+        d.normalizedGauss S 1 c.val := by
+  have hs : Function.support (d.globalWeight W dual) ⊆ Set.range (fieldUnit (S := S)) := by
+    intro x hx
+    by_cases hxS : (x : F) ∈ SIntegers S
+    · exact ⟨⟨⟨x,hxS⟩,fun hz => x.ne_zero (congrArg Subtype.val hz)⟩,Units.ext rfl⟩
+    · apply (hx _).elim
+      rw [d.globalWeight_untwisted h W dual x,dif_neg hxS,mul_zero]
+  rw [← fieldUnit_injective.tsum_eq hs]
+  exact tsum_congr (d.globalWeight_integer h W dual)
 
 /-- The untwisted S-integer formula preceding Theorem 10.34. -/
 theorem untwistedGaussSummation {S : Finset (Place F)} (h : d.ClassicalSetting S)
@@ -130,7 +121,10 @@ theorem untwistedGaussSummation {S : Finset (Place F)} (h : d.ClassicalSetting S
     let ρ := (d.lineSummation S h.good).exists.choose
     (∑' c : NonzeroInteger S, sWeight W (fieldUnit c) * d.normalizedGauss S 1 c.val) =
       (∑' c : NonzeroInteger S, d.sDual W (fieldUnit c) * d.normalizedGauss S 1 c.val) +
-        ∑ᶠ β, ρ β * d.moment W β := by sorry
+        ∑ᶠ β, ρ β * d.moment W β := by
+  have he := ((d.lineSummation S h.good).exists.choose_spec W hW).2.2
+  rw [d.tsum_globalWeight_untwisted h W false, d.tsum_globalWeight_untwisted h W true] at he
+  exact he
 
 /-- Theorem 10.34. The primes of the conductor determine whether the main term occurs. -/
 theorem twistedGaussSummation {S : Finset (Place F)} (h : d.ClassicalSetting S)

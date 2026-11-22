@@ -1,4 +1,4 @@
-import MetaplecticSummation.Gauss
+import MetaplecticSummation.Gauss.Setup
 
 /-! The unit and nonintegral shells in the local factors of the global Gauss sum. -/
 
@@ -212,5 +212,13 @@ theorem outsideBasic_unit {S : Finset (Place F)} (h : d.ClassicalSetting S)
   simp_rw [he]
   exact (Complex.ofRealHom.toMonoidHom.map_finprod hg).symm.trans
     (congrArg Complex.ofReal (outside_sqrt_norm S h.good.2.1 (fieldUnit b)))
+
+theorem basic_dual (p : Prime F) (hp : p.asIdeal.absNorm.Coprime n)
+    (b : (LocalField F (.inr p))ˣ) (hb : ‖(b : LocalField F (.inr p))‖ ≤ 1)
+    (conductor : ∀ x : LocalField F (.inr p), (∀ y : LocalField F (.inr p), ‖y‖ ≤ 1 →
+      d.character.localValue F (.inr p) (x*y) = 1) ↔ ‖x * b‖ ≤ 1)
+    (c : (LocalField F (.inr p))ˣ) :
+    d.jacquet (.inr p) (d.fourier (.inr p) (d.basic (.inr p))) c =
+      d.jacquet (.inr p) (d.basic (.inr p)) (b^n * c) := by sorry
 
 end MetaplecticPoisson.Datum

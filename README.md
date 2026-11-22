@@ -43,7 +43,8 @@ products and rational evaluations all depend on these inputs.
 | [Inversion](MetaplecticSummation/Inversion.lean) | The root kernel, the local cover acting on Schwartz functions, Fourier inversion, equivariance and Plancherel (Theorem 7.1) |
 | [Jacquet](MetaplecticSummation/Jacquet.lean) | Jacquet integrals, the explicit dual weight (Proposition 10.8), and adelic summation with its power-class main term (Theorem 10.16) |
 | [SArithmetic](MetaplecticSummation/SArithmetic.lean) | Finiteness of residue rings, power residue symbols, independence of Gauss sums from residue representatives, and the divisor sum over S-integers |
-| [Gauss](MetaplecticSummation/Gauss.lean) | Scaling the additive character, the twisted formula (Theorem 10.34), and quadratic duals (Corollary 10.40) |
+| [Gauss/Setup](MetaplecticSummation/Gauss/Setup.lean) | Classical arithmetic hypotheses, twists, scaling the additive character, and its conductor |
+| [Gauss](MetaplecticSummation/Gauss.lean) | Deduction of the untwisted S-integer identity from adelic line summation, the twisted formula (Theorem 10.34), and quadratic duals (Corollary 10.40) |
 | [BasicWeights](MetaplecticSummation/BasicWeights.lean) | The self-dual volume of the local integers from the conductor, the basic Jacquet weight at units and nonintegral arguments, and vanishing of the product outside S for nonintegral moduli |
 | [LocalGauss](MetaplecticSummation/LocalGauss.lean) | Local residue rings, constancy of the Gauss phase on a unit residue class, and the integral over the primitive shell |
 | [JacquetBasic](MetaplecticSummation/JacquetBasic.lean) | The Jacquet integral of the basic vector as a generating series of Gauss–Ramanujan sums for every nonzero local modulus |
@@ -129,6 +130,13 @@ The residue-ring isomorphism uses only standard Lean axioms. The proof of the
 ordinary Gauss-sum factorization depends on the admitted characterization of
 the Hilbert symbols. The basic Jacquet formulas additionally use the admitted
 self-dual measure theorem and membership of the basic vector in the Schwartz space.
+
+The untwisted S-integer summation formula follows in Lean from the adelic
+line formula, the identity for the transformed basic weight at an unramified
+place, and `product_basic`. The first two inputs still have admitted proofs.
+Both S-integer series converge absolutely by the summability in the adelic
+line formula. The nonintegral terms vanish, and the same power-class coefficients
+from the adelic formula occur in the S-integer formula.
 
 With empty twist set, `mainTerm` forms both the coefficients and the
 multiplicative measures using the scaled character. With nonempty twist set,

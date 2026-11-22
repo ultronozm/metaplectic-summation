@@ -187,4 +187,19 @@ theorem outsideBasic_integral (h : d.ClassicalSetting S) (b c : NonzeroInteger S
   rw [Fintype.prod_sum]
   exact Finset.sum_congr rfl (fun k _ => (d.monomial_term h b c π hπ k).symm)
 
+theorem product_basic {S : Finset (Place F)} (h : d.ClassicalSetting S) (b : NonzeroInteger S)
+    (c : Fˣ) :
+    let db := d.scaled (fieldUnit b)
+    (∏ᶠ v : {v : Place F // v ∉ S}, db.jacquet v.val (db.basic v.val) (atPlace v.val c)) =
+      if hc : (c : F) ∈ SIntegers S then
+        (Real.sqrt (sNorm S (fieldUnit b)) : ℂ)⁻¹ * d.normalizedGauss S b.val ⟨_,hc⟩ else 0 := by
+  dsimp only
+  rw [(d.scaled (fieldUnit b)).product_outside_eq_basic h.good.2.1]
+  split_ifs with hc
+  · let m : NonzeroInteger S := ⟨⟨(c : F),hc⟩,fun hz => c.ne_zero (congrArg Subtype.val hz)⟩
+    have he : fieldUnit m = c := Units.ext rfl
+    have hm := d.outsideBasic_integral h b m
+    rwa [he] at hm
+  · exact d.outsideBasic_zero_of_nonintegral h b c hc
+
 end MetaplecticPoisson.Datum
