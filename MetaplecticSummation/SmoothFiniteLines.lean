@@ -42,7 +42,7 @@ variable {K : Type} [NontriviallyNormedField K] {n : ℕ}
 
 def liftUnit (x : K) : Kˣ := if hx : x ≠ 0 then Units.mk0 x hx else 1
 
-private theorem liftUnit_val {x : K} (hx : x ≠ 0) : (liftUnit x).val = x := by simp [liftUnit, hx]
+theorem liftUnit_val {x : K} (hx : x ≠ 0) : (liftUnit x).val = x := by simp [liftUnit, hx]
 
 theorem liftUnit_continuousAt {x : K} (hx : x ≠ 0) : ContinuousAt liftUnit x := by
   apply Units.isEmbedding_val₀.tendsto_nhds_iff.mpr

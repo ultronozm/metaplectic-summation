@@ -121,10 +121,10 @@ private theorem lt_unit_iff (a : K) : ‖a‖ < 1 ↔ ‖a‖ ≤ q⁻¹ := by
     apply (inv_le_inv₀ (pow_pos (zero_lt_one.trans hq) _) (zero_lt_one.trans hq)).mpr
     simpa using (pow_le_pow_right₀ hq.le (Nat.succ_le_succ (Nat.zero_le j)))
 
-private def ballValue (r : ℝ) (y : K) : ℂ := if ‖y‖ ≤ r then 1 else 0
+def ballValue (r : ℝ) (y : K) : ℂ := if ‖y‖ ≤ r then 1 else 0
 
 omit [NeZero n] in
-private theorem ball_integrable (r : ℝ) : Integrable (ballValue p r) dx := by
+theorem ball_integrable (r : ℝ) : Integrable (ballValue p r) dx := by
   letI : ProperSpace K := by
     letI := FinitePlace.nontriviallyNormedCompletion p
     exact .of_nontriviallyNormedField_of_weaklyLocallyCompactSpace (p.adicCompletion F)

@@ -17,7 +17,8 @@ products and rational evaluations all depend on these inputs.
 | --- | --- |
 | [Arithmetic](MetaplecticSummation/Arithmetic.lean) | Completions, local characters, normalized modulus, self-dual measures and the Hilbert symbol |
 | [Core](MetaplecticSummation/Core.lean) | The two chart integrals in Definition 4.4, normalized ray limits and maps of restricted tensor products |
-| [Schwartz/Basic](MetaplecticSummation/Schwartz/Basic.lean) | Local test functions, the span of test functions and their transforms, and the good-place basic vector |
+| [Schwartz/Local](MetaplecticSummation/Schwartz/Local.lean) | Local test functions, their transforms, the Schwartz space they span, and the explicit basic charts |
+| [Schwartz/Basic](MetaplecticSummation/Schwartz/Basic.lean) | Choice of the reference vector for the restricted tensor product |
 | [Schwartz](MetaplecticSummation/Schwartz.lean) | The leading-term map and its values on both types of generator at finite places |
 | [SymbolOnLines](MetaplecticSummation/SymbolOnLines.lean) | Equality of the two integrands up to the chart multiplier on every line, from the Steinberg relation |
 | [LocalSymbols](MetaplecticSummation/LocalSymbols.lean) | Continuity and unitarity of the complex symbol from the stated arithmetic characterization |
@@ -40,6 +41,7 @@ products and rational evaluations all depend on these inputs.
 | [FiniteGerms](MetaplecticSummation/FiniteGerms.lean) | Local constancy and homogeneity of the leading term, compact support in the plane, agreement with the leading term near zero, and identification of its kernel with the test sections |
 | [AdelicCharacters](MetaplecticSummation/AdelicCharacters.lean) | Convergence of the sum of the single-place components of an adele and the product formula for its additive character |
 | [RationalEvaluation](MetaplecticSummation/RationalEvaluation.lean) | The product formula for the normalized modulus, adelic chart evaluations on the restricted tensor product, and agreement at rational points by Hilbert reciprocity |
+| [BoundaryDilation](MetaplecticSummation/BoundaryDilation.lean) | The local modification in Appendix B, preserving the leading term and killing the transformed leading term (B.8) |
 | [Poisson](MetaplecticSummation/Poisson.lean) | The adelic Fourier and leading-term maps, Theorem 9.1, Corollary 9.2 including its local vanishing criterion, and the degree-one boundary value |
 | [Shears](MetaplecticSummation/Shears.lean) | Proved chart gluing, additive composition and the two Radon and Fourier identities of Lemma 5.2 |
 | [RapidCharts](MetaplecticSummation/RapidCharts.lean) | Rapid derivative estimates under real-linear changes of variables and local changes of chart |
@@ -55,10 +57,14 @@ products and rational evaluations all depend on these inputs.
 | [Gauss](MetaplecticSummation/Gauss.lean) | Deduction of the untwisted S-integer identity from adelic line summation, the twisted formula (Theorem 10.34), and quadratic duals (Corollary 10.40) |
 | [ConductorMeasure](MetaplecticSummation/ConductorMeasure.lean) | Existence of finite conductor parameters, self-dual volumes, and Fourier integrals over the local integers |
 | [BasicShears](MetaplecticSummation/BasicShears.lean) | Gluing and integral shear invariance of the explicit basic vector, and determination of an invariant section by its vertical axis |
+| [PrimitiveLayer](MetaplecticSummation/PrimitiveLayer.lean) | Local constancy of the explicit basic charts, the primitive test section, and the shell recurrence (6.1) |
+| [Dilations](MetaplecticSummation/Dilations.lean) | Dilation of both Radon and Fourier integrals at every place and stability of the finite Schwartz space under power dilations |
 | [BasicShells](MetaplecticSummation/BasicShells.lean) | The basic-vector marginal on every nonzero vertical line (Lemma A.5) |
 | [BasicFixed](MetaplecticSummation/BasicFixed.lean) | Fourier invariance of the raw unramified basic vector (Proposition 6.3(i)) |
 | [TransformScaling](MetaplecticSummation/TransformScaling.lean) | The local integral transform under a change of the global additive character |
 | [BasicConductor](MetaplecticSummation/BasicConductor.lean) | The explicit transform of the basic vector at a tame finite place with a prescribed local conductor (Corollary 6.5) |
+| [LocalCharacterScaling](MetaplecticSummation/LocalCharacterScaling.lean) | Change of local conductor and self-dual measure under a global scalar |
+| [BasicMembership](MetaplecticSummation/BasicMembership.lean) | Membership of the explicit basic vector in the Schwartz space at every tame finite place (Proposition 6.3(ii)) |
 | [BasicWeights](MetaplecticSummation/BasicWeights.lean) | The basic Jacquet weight at units and nonintegral arguments, vanishing outside S for nonintegral moduli, and the transformed basic Jacquet weight at general conductor |
 | [LocalGauss](MetaplecticSummation/LocalGauss.lean) | Local residue rings, constancy of the Gauss phase on a unit residue class, and the integral over the primitive shell |
 | [JacquetBasic](MetaplecticSummation/JacquetBasic.lean) | The Jacquet integral of the basic vector as a generating series of Gauss–Ramanujan sums for every nonzero local modulus |
@@ -178,8 +184,14 @@ The global product calculations cancel the normalizing constants at rational arg
 and identify the leading-term contributions at zero. The unfolding identities
 at frequencies zero and one and the global constant-term identity remain admitted.
 
-The main theorem and the arithmetic and analytic inputs still have `sorry`
-proofs. Corollary 9.2 is deduced from Theorem 9.1 in Lean. To list the current
+In Theorem 9.1, Lean proves that two functionals satisfying the boundary
+identity agree. Applying (B.8) in one finite factor leaves the adelic leading
+term unchanged and makes the transformed leading term zero. Equality on these
+modified pure tensors and surjectivity of the adelic leading map give
+uniqueness. The proof uses the current all-place Fourier and leading-term maps
+and the almost-everywhere fixed-reference-vector assertion. Existence of the
+functional and absolute convergence of the
+rational-point series remain admitted. Corollary 9.2 follows from Theorem 9.1. To list the current
 proof obligations, run `rg -n '\bsorry\b' MetaplecticSummation`.
 
 
@@ -207,7 +219,7 @@ field element, including integral moduli divisible by repeated n-th powers.
 The residue-ring isomorphism uses only standard Lean axioms. The proof of the
 ordinary Gauss-sum factorization depends on the admitted characterization of
 the Hilbert symbols. The basic Jacquet formulas additionally use the admitted
-self-dual measure theorem and membership of the basic vector in the Schwartz space.
+self-dual measure theorem.
 
 At a tame finite place, the explicit charts for the basic vector satisfy gluing
 and invariance under integral shears. With unramified character the integral
@@ -215,8 +227,11 @@ over a vertical line is one when the valuation of its nonzero first coordinate
 is a nonnegative multiple of n, and zero otherwise. The Fourier integral on the axis then gives
 the original basic vector. Changing the character gives Corollary 6.5 for a
 local conductor parameter b. These calculations use the explicit charts
-before passing to the Schwartz space. Proposition 6.3(ii), membership of the
-basic vector in that space, remains admitted.
+before passing to the Schwartz space. For Proposition 6.3(ii), the primitive
+shell gives a test section. Subtracting a power dilation removes the interior
+shells. Applying the transform expresses the basic vector as a linear
+combination of a dilated test section and a transformed test section.
+Rescaling the character gives the result at every conductor.
 
 The untwisted S-integer summation formula follows in Lean from the adelic
 line formula, the identity for the transformed basic Jacquet weight, and

@@ -1,4 +1,4 @@
-import MetaplecticSummation.Schwartz.Basic
+import MetaplecticSummation.Schwartz.Local
 import Mathlib.Analysis.Calculus.ContDiff.Bounds
 
 /-! Rapid decay at the origin and at infinity under linear changes of variables. -/

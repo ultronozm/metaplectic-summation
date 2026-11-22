@@ -1,3 +1,4 @@
+import MetaplecticSummation.Gauss.Setup
 import MetaplecticSummation.BasicConductor
 
 /-! The unit and nonintegral shells in the local factors of the global Gauss sum. -/

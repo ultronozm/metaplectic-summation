@@ -10,55 +10,6 @@ open Classical
 variable {F : Type} [Field F] [NumberField F] {n : ℕ} [NeZero n] (d : Datum F n)
 
 omit [NeZero n] in
-/-- Replacing ψ(x) by ψ(bx) multiplies its self-dual measure by |b|^(1/2). -/
-theorem selfDual_scaled (v : Place F) (b : Fˣ) :
-    selfDual F (d.scaled b).character v =
-      NNReal.sqrt (modulus F v (diagonal F v b)).toNNReal • selfDual F d.character v := by
-  let μ := selfDual F d.character v
-  let u := atPlace v b
-  let M := (modulus F v u.val).toNNReal
-  let r := NNReal.sqrt M
-  have hm : 0 < modulus F v u.val := by cases v <;> simp [modulus,u,b.ne_zero,atPlace]
-  have hM : M ≠ 0 := (Real.toNNReal_pos.mpr hm).ne'
-  have hr : r ≠ 0 := by simpa [r] using hM
-  have hμ := (existsUnique_selfDual F d.character v).exists.choose_spec
-  letI : μ.IsAddHaarMeasure := hμ.1
-  apply (existsUnique_selfDual F (d.scaled b).character v).unique
-    (existsUnique_selfDual F (d.scaled b).character v).exists.choose_spec
-  refine ⟨Measure.IsAddHaarMeasure.nnreal_smul μ hr,?_⟩
-  intro f hf hfc
-  let hat (y : LocalField F v) := ∫ x, f x * d.character.localValue F v (x*y) ∂μ
-  have hhat (y : LocalField F v) :
-      (∫ x, f x * (d.scaled b).character.localValue F v (x*y) ∂(r • μ)) =
-        (r : ℂ) * hat (u.val*y) := by
-    rw [integral_smul_nnreal_measure,NNReal.smul_def,Complex.real_smul]
-    congr 1
-    apply integral_congr_ae
-    filter_upwards with x
-    rw [d.scaled_localValue]
-    change _ * d.character.localValue F v (u.val*(x*y)) = _
-    rw [mul_left_comm]
-  let g (y : LocalField F v) := ‖hat y‖ₑ^2
-  have hg : (∫⁻ y, g (u.val*y) ∂μ) = (M : ℝ≥0∞)⁻¹ * ∫⁻ y, g y ∂μ := by
-    have he := (lintegral_map_equiv (μ := μ) g (MeasurableEquiv.smul (α := LocalField F v) u)).symm
-    change (∫⁻ y, g (u.val*y) ∂μ) = ∫⁻ y, g y ∂Measure.map (fun x => u.val*x) μ at he
-    rw [d.map_local_mul v u,lintegral_smul_measure] at he
-    rw [← ENNReal.coe_inv hM]
-    exact he
-  have hen : ‖(r : ℂ)‖ₑ = (r : ℝ≥0∞) := by
-    change ((‖(r : ℂ)‖₊ : ℝ≥0) : ℝ≥0∞) = _
-    rw [Complex.nnnorm_real]
-    exact congrArg (fun x : ℝ≥0 => (x : ℝ≥0∞)) (Real.nnnorm_of_nonneg r.property)
-  change (∫⁻ y, ‖∫ x, f x * (d.scaled b).character.localValue F v (x*y) ∂(r • μ)‖ₑ^2 ∂(r • μ)) =
-    ∫⁻ x, ‖f x‖ₑ^2 ∂(r • μ)
-  simp_rw [hhat,enorm_mul,mul_pow,hen]
-  have hsq : (r : ℝ≥0∞)^2 = M := by exact_mod_cast NNReal.sq_sqrt M
-  rw [hsq,lintegral_smul_measure,lintegral_smul_measure,lintegral_const_mul' _ _ ENNReal.coe_ne_top]
-  change (r : ℝ≥0∞) * (M * ∫⁻ y, g (u.val*y) ∂μ) = _
-  rw [hg,← mul_assoc (M : ℝ≥0∞),ENNReal.mul_inv_cancel (by exact_mod_cast hM) ENNReal.coe_ne_top,one_mul]
-  exact congrArg (fun t : ℝ≥0∞ => (r : ℝ≥0∞) * t) (hμ.2 f hf hfc)
-
-omit [NeZero n] in
 theorem lineIntegral_scaled (v : Place F) (b : Fˣ) (W : Weight v) :
     (d.scaled b).lineIntegral v W =
       (NNReal.sqrt (modulus F v (diagonal F v b)).toNNReal : ℂ) * d.lineIntegral v W := by

@@ -62,7 +62,7 @@ private theorem basic_X_shear (hp : p.asIdeal.absNorm.Coprime n) (u : K) (hu : �
     simp only [basicCharts,h',if_neg h,dif_pos hw,dif_pos hy]
     exact congrArg (_ * ·) (congrArg Units.val hs)
 
-private theorem basic_swap (x : Kˣ) (y : K) : (d.basicCharts p).2 y x = (d.basicCharts p).1 x y := by
+theorem basic_swap (x : Kˣ) (y : K) : (d.basicCharts p).2 y x = (d.basicCharts p).1 x y := by
   simp only [basicCharts,max_comm ‖y‖ ‖x.val‖]
 
 /-- Gluing of the explicit basic vector, directly from its two chart formulas. -/

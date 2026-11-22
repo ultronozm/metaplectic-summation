@@ -10,7 +10,6 @@ open NumberField IsDedekindDomain MeasureTheory
 open scoped ComplexConjugate
 variable {F : Type} [Field F] [NumberField F] {n : ℕ} [hn : NeZero n] (d : Datum F n)
 
-abbrev Prime (F : Type) [Field F] [NumberField F] := HeightOneSpectrum (𝓞 F)
 abbrev SIntegers (S : Finset (Place F)) := ({p : Prime F | Sum.inr p ∈ S}.integer F)
 abbrev NonzeroInteger (S : Finset (Place F)) := {c : SIntegers S // c ≠ 0}
 

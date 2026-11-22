@@ -1,4 +1,5 @@
 import MetaplecticSummation.Schwartz
+import MetaplecticSummation.Schwartz.Basic
 import MetaplecticSummation.AdelicCharacters
 
 noncomputable section
@@ -188,8 +189,6 @@ theorem exists_evaluation :
     ∃ ev : d.Schwartz →ₗ[ℂ] (RationalPoint F → ℂ),
       ∀ f hf p, ev (d.pure f hf) p = ∏ᶠ v, d.localValue p v (f v) :=
   ⟨d.evaluation,d.evaluation_pure⟩
-
-abbrev atPlace (v : Place F) (x : Fˣ) : (LocalField F v)ˣ := Units.map (diagonal F v) x
 
 theorem symbol_reciprocity (x y : Fˣ) :
     (∀ᶠ v in cofinite, d.symbol v (atPlace v x) (atPlace v y) = 1) ∧

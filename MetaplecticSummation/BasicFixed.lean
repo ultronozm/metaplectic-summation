@@ -69,6 +69,35 @@ private theorem ratio_in_shell_iff (t y b : Kˣ) (hy : ‖y.val‖ = ‖b.val‖
     obtain ⟨j,hj⟩ := integral_norm_power p (t/b) (iff'.mpr h)
     exact ⟨j,congrArg (·^n) hj⟩
 
+private theorem basic_radon_axis (hp : p.asIdeal.absNorm.Coprime n) (hψ : d.UnramifiedAt v)
+    (y t : Kˣ) :
+    (radon n (d.symbol v) (modulus F v) dx (d.basicCharts p) t.val).2 0 y =
+      d.symbol v (-1) y / (‖y.val‖ : ℂ) * (if ∃ k, ‖(t^n/y).val‖ = R k then 1 else 0) := by
+  rw [d.radon_axis_unit v _ (d.basicCharts_glues p hp),d.basicCharts_marginal p hp hψ]
+  rfl
+
+/-- Absolute convergence of the outer Fourier integral on the basic vertical axis. -/
+theorem basic_axis_integrable (hp : p.asIdeal.absNorm.Coprime n) (hψ : d.UnramifiedAt v) (y : Kˣ) :
+    Integrable (fun t => ψ t * (radon n (d.symbol v) (modulus F v) dx (d.basicCharts p) t).2 0 y) dx := by
+  apply Integrable.bdd_mul (c := 1) _ (d.character.continuous_localValue v).aestronglyMeasurable
+    (Filter.Eventually.of_forall (fun t => (d.character.norm_localValue v t).le))
+  letI : NullSingletonClass (dx) := d.selfDual_nullSingleton v
+  by_cases hy : ∃ b : Kˣ, ‖y.val‖ = ‖b.val‖^n
+  · obtain ⟨b,hb⟩ := hy
+    apply ((d.ball_integrable p ‖b.val‖).const_mul (d.symbol v (-1) y / (‖y.val‖ : ℂ))).congr
+    filter_upwards [(dx).ae_ne 0] with t ht
+    exact ((d.basic_radon_axis p hp hψ y (Units.mk0 t ht)).trans
+      (congrArg (_ * ·) (if_congr (ratio_in_shell_iff p _ y b hb) rfl rfl))).symm
+  · obtain ⟨π,hπ⟩ : ∃ π : Kˣ, ‖π.val‖ = q⁻¹ := FinitePlace.exists_norm_uniformizer p
+    apply (integrable_zero K ℂ dx).congr
+    filter_upwards [(dx).ae_ne 0] with t ht
+    let T := Units.mk0 t ht
+    have hh : ¬ ∃ k, ‖(T^n/y).val‖ = R k := by
+      rintro ⟨k,hk⟩
+      exact hy ⟨T/π^k,(norm_ratio_shell p T y π hπ k).mp hk⟩
+    change (0 : ℂ) = (radon n (d.symbol v) (modulus F v) dx (d.basicCharts p) T.val).2 0 y
+    simpa only [if_neg hh,mul_zero] using (d.basic_radon_axis p hp hψ y T).symm
+
 /-- Proposition 6.3(i), the unramified fixed-vector formula for the defining integral,
 independent of any construction of the Fourier endomorphism or basic-vector membership. -/
 theorem basicCharts_fourier_fixed (hp : p.asIdeal.absNorm.Coprime n) (hψ : d.UnramifiedAt v) :
@@ -78,10 +107,7 @@ theorem basicCharts_fourier_fixed (hp : p.asIdeal.absNorm.Coprime n) (hψ : d.Un
   let f := d.basicCharts p
   let L (t : K) := (radon n (d.symbol v) (modulus F v) dx f t).2 0 y
   have hl (t : Kˣ) : L t.val = d.symbol v (-1) y / (‖y.val‖ : ℂ) *
-      (if ∃ k, ‖(t^n/y).val‖ = R k then 1 else 0) := by
-    rw [show L t.val = _ from d.radon_axis_unit v f (d.basicCharts_glues p hp) y t,
-      d.basicCharts_marginal p hp hψ]
-    rfl
+      (if ∃ k, ‖(t^n/y).val‖ = R k then 1 else 0) := d.basic_radon_axis p hp hψ y t
   have hn : ‖(n : K)‖ = 1 := FinitePlace.norm_degree_of_tame p hp
   letI : NullSingletonClass (dx) := d.selfDual_nullSingleton v
   change (↑(Real.sqrt ‖(n : K)‖) : ℂ)⁻¹ * (∫ t, ψ t * L t ∂dx) = _

@@ -1,4 +1,4 @@
-import MetaplecticSummation.CharacterScaling
+import MetaplecticSummation.LocalCharacterScaling
 
 /-! Change of additive character in the defining metaplectic integral. -/
 

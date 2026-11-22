@@ -1,4 +1,4 @@
-import MetaplecticSummation.Gauss.Setup
+import MetaplecticSummation.LocalCharacterScaling
 import MetaplecticSummation.FourierOrthogonality
 import MetaplecticSummation.FiniteRayFourier
 
