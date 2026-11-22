@@ -39,6 +39,16 @@ private theorem fourierIntegral_swap {K : Type*} [NormedField K] [MeasurableSpac
       rw [mul_comm x t]
       ring
 
+/-- Fourier transformation may be moved to the other factor of the bilinear integral. -/
+theorem hat_pair_swap {F : Type} [Field F] [NumberField F] {n : ℕ} (d : Datum F n) (v : Place F)
+    [SecondCountableTopology (LocalField F v)] [SFinite (selfDual F d.character v)]
+    {f g : LocalField F v → ℂ} (hf : Continuous f) (hg : Continuous g)
+    (hfi : Integrable f (selfDual F d.character v)) (hgi : Integrable g (selfDual F d.character v)) :
+    (∫ x, d.hat v f x * g x ∂selfDual F d.character v) =
+      ∫ x, f x * d.hat v g x ∂selfDual F d.character v :=
+  fourierIntegral_swap _ (d.character.continuous_localValue v) (d.character.norm_localValue v) hf hg hfi hgi
+
+
 private theorem fourierIntegral_test {K : Type*} [NormedField K] [ProperSpace K]
     [MeasurableSpace K] [BorelSpace K] (μ : Measure K) [μ.IsAddHaarMeasure] {ψ f : K → ℂ}
     (hc : IsLocallyConstant f) (hk : HasCompactSupport f) (hl : IsLocallyConstant ψ)

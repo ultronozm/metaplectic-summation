@@ -1,5 +1,6 @@
 import MetaplecticSummation.FiniteGerms
 import MetaplecticSummation.FiniteInversion
+import MetaplecticSummation.ArchimedeanInversion
 
 noncomputable section
 namespace MetaplecticPoisson.Datum
@@ -14,7 +15,8 @@ def mass (Φ : d.schwartz v) : ℝ≥0∞ :=
 /-- Ordinary Fourier inversion at frequency one for the chosen archimedean
 character and its self-dual measure. -/
 theorem hat_hat_arch_one (w : InfinitePlace F) (f : LocalField F (.inl w) → ℂ)
-    (hf : Bruhat (.inl w) f) : d.hat (.inl w) (d.hat (.inl w) f) 1 = f (-1) := by sorry
+    (hf : Bruhat (.inl w) f) : d.hat (.inl w) (d.hat (.inl w) f) 1 = f (-1) :=
+  congrFun (d.arch_hat_hat w f hf) 1
 
 theorem schwartz_fourier_square (Φ : d.schwartz v) :
     (d.fourier v (d.fourier v Φ)).val = d.torusCharts v ((-1) ^ (n+1)) Φ.val := by

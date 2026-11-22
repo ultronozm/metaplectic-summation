@@ -39,6 +39,13 @@ private theorem bounded_schwartz_family_iff {P E : Type} [NormedAddCommGroup E] 
       (pow_le_pow_left₀ (norm_nonneg y) (by linarith : ‖y‖ ≤ 1 + ‖y‖) N) (norm_nonneg _)).trans
       (H q hq y)
 
+/-- A single Schwartz function gives a constant bounded family in field coordinates. -/
+theorem SchwartzSliceFamily.const {K L : Type} [NormedField K] [NormedField L] [NormedAlgebra ℝ L]
+    (e : K ≃+* L) {f : K → ℂ} (g : SchwartzMap L ℂ) (h : ∀ x, f x = g (e x)) :
+    SchwartzSliceFamily e (fun (_ : Unit) => f) := by
+  refine ⟨fun _ => g, fun _ => h, fun T _ => (bounded_schwartz_family_iff _ _).mp ?_⟩
+  exact (Bornology.isVonNBounded_singleton (𝕜 := ℝ) (x := g)).subset (fun y ⟨_,_,hy⟩ => hy.symm)
+
 /-- Pulling a bounded family back along a positive power preserves uniform Schwartz estimates. -/
 theorem SchwartzSliceFamily.comp_pow {P K L : Type} [TopologicalSpace P] [NormedField K]
     [NormedField L] [NormedAlgebra ℝ L] {e : K ≃+* L} {R : P → K → ℂ}

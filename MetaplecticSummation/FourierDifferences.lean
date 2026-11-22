@@ -87,7 +87,7 @@ local notation "K" => LocalField F v
 local notation "dxᵥ" => selfDual F d.character v
 
 omit [NeZero n] in
-private theorem integrable_phase {g : K → ℂ} (hg : Integrable g dxᵥ) (u : K) :
+theorem integrable_phase {g : K → ℂ} (hg : Integrable g dxᵥ) (u : K) :
     Integrable (fun t => g t * d.character.localValue F v (u*t)) dxᵥ := by
   apply hg.norm.mono' (hg.aestronglyMeasurable.mul (((d.character.continuous_localValue v).comp
     (continuous_const.mul continuous_id)).aestronglyMeasurable))
