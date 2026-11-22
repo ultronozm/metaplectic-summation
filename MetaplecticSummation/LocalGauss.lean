@@ -32,22 +32,6 @@ variable (p : Prime F)
 local notation "K" => p.adicCompletion F
 local notation "O" => p.adicCompletionIntegers F
 
-theorem mem_localIntegers_iff (x : K) : x ∈ O ↔ ‖x‖ ≤ 1 :=
-  (IsDedekindDomain.HeightOneSpectrum.mem_adicCompletionIntegers (𝓞 F) F p).trans
-    Valued.toNormedField.norm_le_one_iff.symm
-
-theorem localInteger_isUnit_iff (a : O) : IsUnit a ↔ ‖(a : K)‖ = 1 := by
-  constructor
-  · rintro ⟨u,rfl⟩
-    have h : (u.val : K) * (u⁻¹.val : K) = 1 := congrArg Subtype.val u.val_inv
-    have hprod : ‖(u.val : K)‖ * ‖(u⁻¹.val : K)‖ = 1 := by rw [← norm_mul,h,norm_one]
-    apply le_antisymm ((mem_localIntegers_iff p _).mp u.val.property)
-    exact hprod ▸ mul_le_of_le_one_right (norm_nonneg _) ((mem_localIntegers_iff p _).mp u⁻¹.val.property)
-  · intro h
-    have hn : (a : K) ≠ 0 := norm_ne_zero_iff.mp (h ▸ one_ne_zero)
-    let b : O := ⟨(a : K)⁻¹,(mem_localIntegers_iff p _).mpr (by rw [norm_inv,h,inv_one])⟩
-    exact ⟨⟨a,b,Subtype.ext (mul_inv_cancel₀ hn),Subtype.ext (inv_mul_cancel₀ hn)⟩,rfl⟩
-
 private theorem span_iff_div_mem (c x : O) (hc : (c : K) ≠ 0) :
     x ∈ Ideal.span {c} ↔ (x : K) / c ∈ O := by
   rw [Ideal.mem_span_singleton]

@@ -12,7 +12,7 @@ variable {K : Type} [NormedField K] {f : Charts K}
 def chartNorm (f : Charts K) (p : K × K) : ℝ :=
   if p.1 = 0 then ‖yChart f p‖ else ‖xChart f p‖
 
-private theorem chartNorm_eq_y {h : Kˣ → Kˣ → ℂ} (hu : ∀ x y, ‖h x y‖ = 1)
+theorem chartNorm_eq_y {h : Kˣ → Kˣ → ℂ} (hu : ∀ x y, ‖h x y‖ = 1)
     (hf : Glues h f) (x : K) (y : Kˣ) : chartNorm f (x, y) = ‖f.2 x y‖ := by
   by_cases hx : x = 0
   · simp [chartNorm, hx, yChart, y.ne_zero]

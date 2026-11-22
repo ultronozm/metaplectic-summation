@@ -69,6 +69,10 @@ products and rational evaluations all depend on these inputs.
 | [MultiplicativeMeasure](MetaplecticSummation/MultiplicativeMeasure.lean) | Multiplicative Haar measure on the units, invariance under inversion, and the substitution t = a/u at every completion |
 | [LinearFactor](MetaplecticSummation/LinearFactor.lean) | Absolute convergence and evaluation of the tested linear factor in Appendix A and the resulting sum over distinct roots at every finite place |
 | [TestedMarginal](MetaplecticSummation/TestedMarginal.lean) | The scaled marginal, the change to the Y chart, and the finite-place pairing against a test frequency with its first exchange of integrals |
+| [MarginalConvergence](MetaplecticSummation/MarginalConvergence.lean) | Joint absolute convergence of the subtracted integral and the tested reverse marginal identity for finite-place test sections |
+| [TamePowers](MetaplecticSummation/TamePowers.lean) | Identification of the radical of the normalized tame Hilbert pairing with the subgroup of n-th powers |
+| [MarginalRootFormula](MetaplecticSummation/MarginalRootFormula.lean) | The pointwise sum over roots in Appendix A for finite-place test sections, conditional on Hilbert nondegeneracy at wild places |
+| [PowerJacobian](MetaplecticSummation/PowerJacobian.lean) | Bijection of sufficiently small balls under the power map, with radius scaled by the norm of its derivative |
 | [BasicMarginals](MetaplecticSummation/BasicMarginals.lean) | The basic axis density at almost all places, its ordinary Fourier transform for an unramified character, and the basic marginal at a unit |
 | [FourierCoefficients](MetaplecticSummation/FourierCoefficients.lean) | Rational products of the marginal kernels, unfolding at frequencies zero and one, Poisson on power classes and the constant-term identity |
 
@@ -124,13 +128,18 @@ distinct roots. At every finite place the linear-factor integral is absolutely
 convergent and evaluates to the axis value times the multiplicative Fourier
 integral of the test. The reciprocal change of variables uses the measure
 obtained by weighting additive self-dual measure by the inverse modulus.
-The first exchange of integrals in the tested marginal follows from compact
-support after rescaling the chart coordinate. Passing from this tested
-identity to the integral of the multiplicative differences still requires a
-joint convergence argument in the chart, frequency, and scaling variables. The square formula uses the reverse marginal
-identity and the existence of shear operators. The test-function case of the
-reverse identity is needed before using inversion to extend it to the full
-Schwartz space, as in Appendix A. The global
+At every finite place, for test sections, subtracting the axis value gives
+joint absolute convergence and justifies the exchange of the three integrals.
+At tame places the normalized Hilbert pairing detects every non-power.
+Localizing the frequency test therefore gives the pointwise sum over the
+roots of −sy in Appendix A. The same argument works at wild places once
+the radical of the Hilbert pairing is identified with the n-th powers there.
+On a sufficiently small ball around a nonzero root a, the power map is
+bijective onto a ball with radius scaled by |n a^(n−1)|. To obtain the
+ordinary Fourier integral one still needs the integrated change of variables.
+The reverse identity on test sections enters the square formula, after which
+inversion extends the reverse identity to the full Schwartz space.
+The global
 product calculations cancel the normalizing constants at rational arguments
 and identify the leading-term contributions at zero. The unfolding identities
 at frequencies zero and one and the global constant-term identity remain admitted.

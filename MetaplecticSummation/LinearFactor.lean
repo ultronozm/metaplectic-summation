@@ -18,7 +18,7 @@ private instance finiteProper (p : HeightOneSpectrum (𝓞 F)) : ProperSpace (Lo
 omit [NeZero n] in
 /-- The tail of |u|⁻¹ is integrable for multiplicative Haar measure.
 Inversion changes the tail to an additive ball of finite volume. -/
-private theorem integrable_inv_tail (p : HeightOneSpectrum (𝓞 F)) (R : ℝ) :
+theorem integrable_inv_tail (p : HeightOneSpectrum (𝓞 F)) (R : ℝ) :
     let v : Place F := .inr p
     Integrable (fun u : (LocalField F v)ˣ => if ‖u.val⁻¹‖ ≤ R then ‖u.val‖⁻¹ else 0) (d.lineMeasure v) := by
   let v : Place F := .inr p
