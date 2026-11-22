@@ -313,8 +313,12 @@ with denominator f. For the original adelic sum, splitting the product over S,
 the conductor primes and the remaining places gives the stated sum over
 nonzero S-integers, including the square-root normalization for the scaled
 character. On the dual side the reindexed basic factor outside S and the
-conductor primes contributes one Hilbert symbol. Assembling the dual product
-and its sum is still required for Theorem 10.34.
+conductor primes contributes one Hilbert symbol. For an integral argument
+with nonzero twist, their product is the residue symbol with that argument
+as denominator. Reindexing the dual sum and cancelling the common square-root
+factor proves Theorem 10.34 from the adelic line formula and the local
+twisted-vector evaluation. Both S-integer series converge absolutely. The
+empty conductor retains the scaled main term.
 
 The quadratic-dual corollary and its sextic specialization now follow in Lean
 from Theorem 10.34. For an odd covering degree, the quadratic twist has

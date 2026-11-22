@@ -152,6 +152,96 @@ theorem untwistedGaussSummation {S : Finset (Place F)} (h : d.ClassicalSetting S
   rw [d.tsum_globalWeight_untwisted h W false, d.tsum_globalWeight_untwisted h W true] at he
   exact he
 
+/-- The dual adelic sum after division of the index by the frequency and
+conductor powers and restriction to nonzero S-integers. -/
+theorem tsum_twistedGauss_dual {S : Finset (Place F)} (h : d.ClassicalSetting S)
+    {f : NonzeroInteger S} (b : NonzeroInteger S) (T : Twist (n := n) S f)
+    (coprime : IsCoprime b.val f.val) (W : Weights S) (hW : Admissible W) :
+    (∑' c : Fˣ, (d.scaled (fieldUnit b)).globalWeight (T.weights W) true c) =
+      (Real.sqrt (sNorm S (fieldUnit b)) : ℂ)⁻¹ * (d.epsilon T (fieldUnit b) * ∑' c : NonzeroInteger S,
+        d.sDual (fun v x => W v x * d.symbol v.val x (atPlace _ (fieldUnit b)))
+          (fieldUnit c / (fieldUnit b * fieldUnit f^(n-1))) *
+        conj (twistValue T (fieldUnit c)) * d.residue S (fieldUnit c) (fieldUnit f) *
+        d.residue S (fieldUnit f) (fieldUnit c) * d.normalizedGauss S b.val c.val) := by
+  let g := (d.scaled (fieldUnit b)).globalWeight (T.weights W) true
+  let e := Equiv.divRight (fieldUnit b^n * fieldUnit f^(n-1))
+  have hs : Function.support (fun c => g (e c)) ⊆ Set.range (fieldUnit (S := S)) := by
+    intro c hc
+    by_cases hi : (c : F) ∈ SIntegers S
+    · exact ⟨⟨⟨c,hi⟩,fun hz => c.ne_zero (congrArg Subtype.val hz)⟩,Units.ext rfl⟩
+    · apply (hc _).elim
+      exact (d.twistedGauss_dual_factor h b T coprime W hW c).trans (by simp [hi])
+  change (∑' c, g c) = _
+  rw [← e.tsum_eq g, ← fieldUnit_injective.tsum_eq hs, ← tsum_mul_left, ← tsum_mul_left]
+  apply tsum_congr
+  intro c
+  have he := d.twistedGauss_dual_factor h b T coprime W hW (fieldUnit c)
+  rw [dif_pos (show (fieldUnit c : F) ∈ SIntegers S from c.val.property)] at he
+  apply he.trans
+  ring_nf
+  rfl
+
+private theorem globalWeight_empty_twist {S : Finset (Place F)} {f : NonzeroInteger S}
+    (T : Twist (n := n) S f) (empty : T.primes = ∅) (W : Weights S) (dual : Bool) (c : Fˣ) :
+    d.globalWeight (T.weights W) dual c = d.globalWeight W dual c := by
+  unfold globalWeight
+  apply finprod_congr
+  intro v
+  have he : T.places = S := by simp [Twist.places,empty]
+  by_cases hv : v ∈ S
+  · have ht : v ∈ T.places := he.symm ▸ hv
+    have hw : T.weights W ⟨v,ht⟩ = W ⟨v,hv⟩ := by
+      cases v with
+      | inl w => rfl
+      | inr p => exact dif_pos hv
+    simp only [hv,ht,dif_pos,hw]
+  · rw [dif_neg (show v ∉ T.places from he.symm ▸ hv), dif_neg hv]
+
+omit hn in
+theorem sNorm_pos {S : Finset (Place F)} (b : Fˣ) : 0 < sNorm S (b : F) := by
+  apply Finset.prod_pos
+  intro v _
+  apply lt_of_le_of_ne _ (modulus_ne_zero v (atPlace v b)).symm
+  cases v <;> simp [modulus]
+
+/-- Absolute convergence of the two S-integer series in the twisted formula. -/
+theorem summable_twistedGauss {S : Finset (Place F)} (h : d.ClassicalSetting S)
+    {f : NonzeroInteger S} (b : NonzeroInteger S) (T : Twist (n := n) S f)
+    (coprime : IsCoprime b.val f.val) (W : Weights S) (hW : Admissible W) :
+    Summable (fun c : NonzeroInteger S => ‖sWeight W (fieldUnit c) * twistValue T (fieldUnit c) *
+      d.normalizedGauss S b.val c.val‖) ∧
+    Summable (fun c : NonzeroInteger S => ‖d.sDual (fun v x => W v x * d.symbol v.val x (atPlace _ (fieldUnit b)))
+        (fieldUnit c / (fieldUnit b * fieldUnit f ^ (n-1))) *
+      conj (twistValue T (fieldUnit c)) * d.residue S (fieldUnit c) (fieldUnit f) *
+      d.residue S (fieldUnit f) (fieldUnit c) * d.normalizedGauss S b.val c.val‖) := by
+  let m : ℂ := (Real.sqrt (sNorm S (fieldUnit b)) : ℂ)⁻¹
+  have hm : ‖m‖ ≠ 0 :=
+    norm_ne_zero_iff.mpr (inv_ne_zero (Complex.ofReal_ne_zero.mpr (Real.sqrt_pos.mpr (sNorm_pos _)).ne'))
+  let db := d.scaled (fieldUnit b)
+  have line := (db.lineSummation T.places (T.good_places (d.scaled_good h b))).exists.choose_spec
+    (T.weights W) (T.admissible_weights W hW)
+  constructor
+  · apply (summable_mul_left_iff hm).mp
+    apply (line.1.comp_injective (fieldUnit_injective (S := S))).congr
+    intro c
+    dsimp only [Function.comp_def,db]
+    rw [d.twistedGauss_original_factor h b T coprime W (fieldUnit c),
+      dif_pos (show (fieldUnit c : F) ∈ SIntegers S from c.val.property), ← norm_mul]
+    apply congrArg norm
+    change _ * (m * d.normalizedGauss S b.val c.val) = _
+    ring
+  · let e := Equiv.divRight (fieldUnit b^n * fieldUnit f^(n-1))
+    have he := d.epsilon_norm h f b T coprime
+    apply (summable_mul_left_iff hm).mp
+    apply (line.2.1.comp_injective (e.injective.comp (fieldUnit_injective (S := S)))).congr
+    intro c
+    have hc := d.twistedGauss_dual_factor h b T coprime W hW (fieldUnit c)
+    rw [dif_pos (show (fieldUnit c : F) ∈ SIntegers S from c.val.property)] at hc
+    apply (congrArg norm hc).trans
+    simp only [norm_mul,he,one_mul,m]
+    ring_nf
+    rfl
+
 /-- Theorem 10.34. The primes of the conductor determine whether the main term occurs. -/
 theorem twistedGaussSummation {S : Finset (Place F)} (h : d.ClassicalSetting S)
     (f b : NonzeroInteger S) (T : Twist (n := n) S f) (coprime : IsCoprime b.val f.val)
@@ -164,7 +254,26 @@ theorem twistedGaussSummation {S : Finset (Place F)} (h : d.ClassicalSetting S)
         (fieldUnit c / (fieldUnit b * fieldUnit f ^ (n-1))) *
       conj (twistValue T (fieldUnit c)) * d.residue S (fieldUnit c) (fieldUnit f) *
       d.residue S (fieldUnit f) (fieldUnit c) * d.normalizedGauss S b.val c.val) +
-      (if T.primes.card = 0 then d.mainTerm h b W else 0) := by sorry
+      (if T.primes.card = 0 then d.mainTerm h b W else 0) := by
+  refine ⟨d.epsilon_norm h f b T coprime,?_⟩
+  let db := d.scaled (fieldUnit b)
+  let m : ℂ := Real.sqrt (sNorm S (fieldUnit b))
+  have hm : m ≠ 0 := Complex.ofReal_ne_zero.mpr (Real.sqrt_pos.mpr (sNorm_pos _)).ne'
+  have leftSum := d.tsum_twistedGauss_original h b T coprime W
+  have rightSum := d.tsum_twistedGauss_dual h b T coprime W hW
+  by_cases empty : T.primes = ∅
+  · have line := ((db.lineSummation S (d.scaled_good h b)).exists.choose_spec W hW).2.2
+    have equivWeight (dual : Bool) :
+        db.globalWeight (T.weights W) dual = db.globalWeight W dual :=
+      funext fun c => db.globalWeight_empty_twist T empty W dual c
+    rw [← equivWeight false,← equivWeight true,leftSum,rightSum] at line
+    simp only [empty,Finset.card_empty,if_true,mainTerm]
+    have he := congrArg (m * ·) line
+    simpa only [mul_add,← mul_assoc,mul_inv_cancel₀ hm,one_mul,m,db] using he
+  · obtain ⟨_,_,line⟩ := d.twisted_lineSummation h b T (Finset.nonempty_iff_ne_empty.mpr empty) W hW
+    rw [leftSum,rightSum] at line
+    rw [if_neg (fun he => empty (Finset.card_eq_zero.mp he)),add_zero]
+    exact mul_left_cancel₀ (inv_ne_zero hm) line
 
 /-- Every embedding sends the two square roots of unity to the same signs. -/
 def quadraticDatum : Datum F 2 := by

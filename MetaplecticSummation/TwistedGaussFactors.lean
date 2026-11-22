@@ -127,4 +127,132 @@ theorem twistedGauss_dual_basic (h : d.ClassicalSetting S) (b : NonzeroInteger S
   have he := (hj.trans ht).trans (congrArg (· * db.jacquet v (db.basic v) X) symb)
   simpa only [B,P,X,v,db,atPlace,map_div,map_mul,map_pow] using he
 
+private def outsideSymbol (T : Twist (n := n) S f) (c : Fˣ) (v : Place F) :=
+  if v ∈ T.places then 1 else d.symbol v (atPlace v c) (atPlace v (fieldUnit f))
+
+private theorem outsideSymbol_product (h : d.ClassicalSetting S) (T : Twist (n := n) S f)
+    (c : NonzeroInteger S) (ht : twistValue T (fieldUnit c) ≠ 0) :
+    (∏ᶠ v, d.outsideSymbol T (fieldUnit c) v) = d.residue S (fieldUnit f) (fieldUnit c) := by
+  let P := (modulusPrimes c).image (Sum.inr : Prime F → Place F)
+  have hs : Function.mulSupport (d.outsideSymbol T (fieldUnit c)) ⊆ (P : Set _) := by
+    rintro (w | p) hx
+    · exact (hx (if_pos ((T.infinite_mem_places w).mpr (h.good.2.1 w)))).elim
+    · have hp : Sum.inr p ∉ T.places := fun hi => hx (if_pos hi)
+      have hout := not_or.mp (fun he => hp ((T.finite_mem_places p).mpr he))
+      apply Finset.mem_image_of_mem
+      apply (mem_modulusPrimes c p).mpr
+      refine ⟨hout.1, lt_of_le_of_ne (integer_norm_le_one c.val p hout.1) ?_⟩
+      intro hu
+      apply hx
+      rw [outsideSymbol,if_neg hp]
+      exact congrArg Units.val (d.unitPairing_tame_units p (h.good.2.2 p hout.1).1
+        (atPlace _ (fieldUnit c)) (atPlace _ (fieldUnit f)) hu (T.unit_elsewhere p hout.1 hout.2))
+  rw [finprod_eq_prod_of_mulSupport_subset _ hs,d.residue_on_modulus_primes]
+  unfold P
+  rw [Finset.prod_image (fun _ _ _ _ he => Sum.inr.inj he)]
+  apply Finset.prod_congr rfl
+  intro p hp
+  obtain ⟨hS,hc⟩ := (mem_modulusPrimes c p).mp hp
+  have hT : p ∉ T.primes := by
+    intro hpT
+    apply ht
+    apply Finset.prod_eq_zero (Finset.mem_univ (⟨p,hpT⟩ : T.primes))
+    exact dif_neg (show atPlace (.inr p) (fieldUnit c) ∉ integralUnits p from hc.ne)
+  rw [outsideSymbol, if_neg (fun he => ((T.finite_mem_places p).mp he).elim hS hT),
+    if_pos (T.unit_elsewhere p hS hT)]
+
+private theorem dual_scaled_shift (b : NonzeroInteger S) (W : Weights S) (hW : Admissible W)
+    (c : Fˣ) (v : S) :
+    (d.scaled (fieldUnit b)).dualWeight v.val (W v)
+      (atPlace _ (c/(fieldUnit b^n*fieldUnit f^(n-1)))) =
+    d.dualWeight v.val (fun x => W v x * d.symbol v.val x (atPlace _ (fieldUnit b)))
+      (atPlace _ (c/(fieldUnit b*fieldUnit f^(n-1)))) := by
+  rw [d.dual_scaled _ _ (hW v)]
+  congr 1
+  simp only [atPlace,map_div,map_pow,map_mul]
+  have hn (B : (LocalField F v.val)ˣ) : B^(n-1)*B = B^n := by
+    rw [← pow_succ,Nat.sub_add_cancel (NeZero.pos n)]
+  rw [← hn, mul_assoc, ← mul_div_assoc, mul_div_mul_left_eq_div]
+
+/-- The reindexed dual summand, including the zero terms at nonintegral
+arguments and at arguments sharing a prime with the conductor. -/
+theorem twistedGauss_dual_factor (h : d.ClassicalSetting S) (b : NonzeroInteger S)
+    (T : Twist (n := n) S f) (coprime : IsCoprime b.val f.val) (W : Weights S)
+    (hW : Admissible W) (c : Fˣ) :
+    (d.scaled (fieldUnit b)).globalWeight (T.weights W) true
+      (c/(fieldUnit b^n * fieldUnit f^(n-1))) =
+    d.sDual (fun v x => W v x * d.symbol v.val x (atPlace _ (fieldUnit b)))
+        (c/(fieldUnit b * fieldUnit f^(n-1))) *
+      (d.epsilon T (fieldUnit b) * (starRingEnd ℂ) (twistValue T c) * d.residue S c (fieldUnit f)) *
+      (d.residue S (fieldUnit f) c *
+        (if hc : (c : F) ∈ SIntegers S then
+          (Real.sqrt (sNorm S (fieldUnit b)) : ℂ)⁻¹ * d.normalizedGauss S b.val ⟨_,hc⟩ else 0)) := by
+  let db := d.scaled (fieldUnit b)
+  let X := c/(fieldUnit b^n * fieldUnit f^(n-1))
+  let s (v : S) := d.dualWeight v.val (fun x => W v x * d.symbol v.val x (atPlace _ (fieldUnit b)))
+    (atPlace _ (c/(fieldUnit b * fieldUnit f^(n-1))))
+  let t (p : T.primes) := db.dualWeight (.inr p.val) (charWeight (T.character p)) (atPlace _ X)
+  let J (v : Place F) := db.jacquet v (db.basic v) (atPlace v c)
+  let base (v : Place F) := if v ∈ S then 1 else J v
+  let H := d.outsideSymbol T c
+  have hb : Function.HasFiniteMulSupport base :=
+    Filter.eventually_cofinite.mp (eventually_place_of_finite (d.eventually_scaled_basic_one h b c))
+  have hh : Function.HasFiniteMulSupport H := by
+    apply Filter.eventually_cofinite.mp
+    filter_upwards [(d.symbol_reciprocity c (fieldUnit f)).1] with v hv
+    simp [H,outsideSymbol,hv]
+  have hprod : db.globalWeight (T.weights W) true X =
+      (∏ v, s v) * (∏ p, t p) * ∏ᶠ v, H v * base v := by
+    unfold globalWeight
+    apply split_twist_product T s t (fun v => H v * base v) _ (Function.HasFiniteMulSupport.mul hh hb)
+    · rintro ⟨w | p,hv⟩
+      · have he := (T.infinite_mem_places w).mpr hv
+        simpa only [he,dif_pos,if_true,Twist.weights,H,outsideSymbol,base,hv,one_mul,mul_one,s,X,db] using
+          d.dual_scaled_shift (f := f) b W hW c ⟨.inl w,hv⟩
+      · have he := (T.finite_mem_places p).mpr (Or.inl hv)
+        simpa only [he,dif_pos,if_true,Twist.weights,H,outsideSymbol,base,hv,one_mul,mul_one,s,X,db] using
+          d.dual_scaled_shift (f := f) b W hW c ⟨.inr p,hv⟩
+    · intro p
+      have hv := T.outside _ p.property
+      have he := (T.finite_mem_places p.val).mpr (Or.inr p.property)
+      simp only [he,dif_pos,if_true,T.weights_at_prime,H,outsideSymbol,one_mul,base,if_neg hv]
+      change t p = t p * J (.inr p.val)
+      by_cases hu : ‖(atPlace (.inr p.val) c).val‖ = 1
+      · have hB := T.norm_frequency coprime p
+        change ‖diagonal F (.inr p.val) (b.val : F)‖ = 1 at hB
+        have hj := d.scaled_basic_unit h b p.val hv (atPlace (.inr p.val) c) hu
+        have hJ : J (.inr p.val) = 1 := by simpa only [hB,Real.sqrt_one,Complex.ofReal_one] using hj
+        rw [hJ,mul_one]
+      · have hnu : atPlace (.inr p.val) c ∉ integralUnits p.val := hu
+        have hz := d.dual_conductor_factor h f b T coprime p (atPlace (.inr p.val) c)
+        have ht : t p = 0 := by
+          simpa only [t,db,X,atPlace,map_div,map_mul,map_pow,charWeight,dif_neg hnu,map_zero,mul_zero,zero_mul] using hz
+        simp [ht]
+    · rintro (w | p) hv
+      · exact (hv ((T.infinite_mem_places w).mpr (h.good.2.1 w))).elim
+      · have hS : Sum.inr p ∉ S := fun hi => hv ((T.finite_mem_places p).mpr (Or.inl hi))
+        simpa only [dif_neg hv,if_neg hv,if_true,base,if_neg hS,H,outsideSymbol,J,X,db] using d.twistedGauss_dual_basic h b T p hv c
+  have hbase : (∏ᶠ v, base v) = ∏ᶠ v : {v : Place F // v ∉ S}, J v.val := by
+    rw [finprod_subtype_eq_finprod_cond (fun v : Place F => v ∉ S)]
+    apply finprod_congr
+    intro v
+    rw [finprod_eq_if]
+    by_cases hv : v ∈ S <;> simp [base,hv]
+  have ht := d.conductor_product h b T coprime c
+  change (∏ p, t p) = _ at ht
+  change db.globalWeight (T.weights W) true X = (∏ v, s v) * _ * _
+  rw [hprod,ht,finprod_mul_distrib hh hb,hbase]
+  have hj := d.product_basic h b c
+  change (∏ᶠ v : {v : Place F // v ∉ S}, J v.val) = _ at hj
+  rw [hj]
+  by_cases hi : (c : F) ∈ SIntegers S
+  · by_cases hz : twistValue T c = 0
+    · simp [hz]
+    · let a : NonzeroInteger S := ⟨⟨c,hi⟩,fun e => c.ne_zero (congrArg Subtype.val e)⟩
+      have ha : fieldUnit a = c := Units.ext rfl
+      have hp := d.outsideSymbol_product h T a (ha ▸ hz)
+      rw [ha] at hp
+      rw [show (∏ᶠ v, H v) = _ from hp]
+  · simp [hi]
+
 end MetaplecticPoisson.Datum
