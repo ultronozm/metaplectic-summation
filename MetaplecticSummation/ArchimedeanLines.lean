@@ -83,6 +83,14 @@ theorem arch_modulus (w : InfinitePlace F) (u : w.Completionˣ) :
     rw [h, InfinitePlace.mult_isComplex ⟨w, hw'⟩]
     simp
 
+abbrev archNontriviallyNormedCompletion (w : InfinitePlace F) : NontriviallyNormedField (LocalField F (.inl w)) :=
+    { (inferInstance : NormedField (LocalField F (.inl w))) with
+      non_trivial := ⟨2, by
+        change 1 < ‖(2 : w.Completion)‖
+        rw [← (InfinitePlace.Completion.isometry_extensionEmbedding w).norm_map_of_map_zero
+          (map_zero _) (2 : w.Completion), map_ofNat]
+        norm_num⟩ }
+
 /-- Lemma 4.2(ii) with the paper's symbol and measures at every infinite place. -/
 theorem arch_radon_glues (w : InfinitePlace F) {f : Charts (LocalField F (.inl w))}
     (hf : Glues (d.symbol (.inl w)) f) (t : LocalField F (.inl w)) :
@@ -93,13 +101,7 @@ theorem arch_radon_glues (w : InfinitePlace F) {f : Charts (LocalField F (.inl w
   letI : dx.IsAddHaarMeasure := (existsUnique_selfDual F d.character (.inl w)).exists.choose_spec.1
   letI : SecondCountableTopology (LocalField F (.inl w)) :=
     (InfinitePlace.Completion.isometry_extensionEmbedding w).isEmbedding.secondCountableTopology
-  letI : NontriviallyNormedField (LocalField F (.inl w)) :=
-    { (inferInstance : NormedField (LocalField F (.inl w))) with
-      non_trivial := ⟨2, by
-        change 1 < ‖(2 : w.Completion)‖
-        rw [← (InfinitePlace.Completion.isometry_extensionEmbedding w).norm_map_of_map_zero
-          (map_zero _) (2 : w.Completion), map_ofNat]
-        norm_num⟩ }
+  letI := archNontriviallyNormedCompletion w
   exact (d.lineSymbol (.inl w) (d.arch_steinberg w)).radon_glues dx (NeZero.ne n) _
     (arch_modulus w) hf t
 

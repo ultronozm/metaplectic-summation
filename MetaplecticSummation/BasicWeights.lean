@@ -47,6 +47,37 @@ theorem jacquet_basic_unit (p : Prime F) (ht : p.asIdeal.absNorm.Coprime n)
           zero_mul, indicator_of_notMem (show x ∉ O from hx)]
     _ = _ := by simp [integral_indicator hO, Measure.real, O]
 
+/-- The ordinary Fourier integral of a subring indicator is its volume times
+the indicator of its annihilator. -/
+theorem hat_subring_indicator {K : Type*} [NormedField K] [MeasurableSpace K] [BorelSpace K]
+    (O : Subring K) (D : Set K) (hO : MeasurableSet (O : Set K))
+    (μ : Measure K) [μ.IsAddHaarMeasure] (ψ : K → ℂ) (ha : ∀ x y, ψ (x+y) = ψ x * ψ y)
+    (hperp : ∀ x : K, (∀ y ∈ O, ψ (x*y) = 1) ↔ x ∈ D) (y : K) :
+    (∫ x, (O : Set K).indicator (fun _ => (1 : ℂ)) x * ψ (x*y) ∂μ) =
+      D.indicator (fun _ => (μ.real (O : Set K) : ℂ)) y := by
+  let g := (O : Set K).indicator (fun _ => (1 : ℂ))
+  change (∫ x, g x * ψ (x*y) ∂μ) = _
+  by_cases hy : y ∈ D
+  · rw [indicator_of_mem hy]
+    have he (x : K) : g x * ψ (x*y) = g x := by
+      by_cases hx : x ∈ O
+      · rw [mul_comm x y, (hperp y).mpr hy x hx, mul_one]
+      · simp [g,hx]
+    simp only [he, g, integral_indicator hO, integral_const, Measure.restrict_apply_univ,
+      Complex.real_smul, mul_one, Measure.real]
+  · obtain ⟨t, ht, hχ⟩ : ∃ t ∈ O, ψ (y*t) ≠ 1 := by
+      by_contra! he
+      exact hy ((hperp y).mp he)
+    let f (x : K) := g x * ψ (x*y)
+    have htrans (x : K) : f (x+t) = f x * ψ (y*t) := by
+      have hmem : x + t ∈ O ↔ x ∈ O := O.toAddSubgroup.add_mem_cancel_right ht
+      simp only [f, g, indicator, SetLike.mem_coe, hmem, add_mul, ha, mul_assoc, mul_comm t y]
+    have hi := integral_add_right_eq_self (μ := μ) f t
+    simp_rw [htrans] at hi
+    rw [integral_mul_const] at hi
+    rw [indicator_of_notMem hy]
+    exact by_contra fun h => hχ ((mul_eq_left₀ h).mp hi)
+
 /-- Plancherel on the characteristic function of an additive compact open
 subring makes the product of its volume and its annihilator’s volume one. -/
 private theorem volume_mul_annihilator {K : Type*} [NormedField K] [MeasurableSpace K]
@@ -61,27 +92,8 @@ private theorem volume_mul_annihilator {K : Type*} [NormedField K] [MeasurableSp
   let V := μ.real (O : Set K)
   have hV : 0 < V := ENNReal.toReal_pos
     (hO.isOpen.measure_pos μ ⟨0,O.zero_mem⟩).ne' hK.measure_ne_top
-  have hhat (y : K) : (∫ x, g x * ψ (x*y) ∂μ) = D.indicator (fun _ => (V : ℂ)) y := by
-    by_cases hy : y ∈ D
-    · rw [indicator_of_mem hy]
-      have he (x : K) : g x * ψ (x*y) = g x := by
-        by_cases hx : x ∈ O
-        · rw [mul_comm x y, (hperp y).mpr hy x hx, mul_one]
-        · simp [g,hx]
-      simp only [he, g, integral_indicator hO.isOpen.measurableSet, integral_const, Measure.restrict_apply_univ,
-        Complex.real_smul, mul_one, V, Measure.real]
-    · obtain ⟨t, ht, hχ⟩ : ∃ t ∈ O, ψ (y*t) ≠ 1 := by
-        by_contra! he
-        exact hy ((hperp y).mp he)
-      let f (x : K) := g x * ψ (x*y)
-      have htrans (x : K) : f (x+t) = f x * ψ (y*t) := by
-        have hmem : x + t ∈ O ↔ x ∈ O := O.toAddSubgroup.add_mem_cancel_right ht
-        simp only [f, g, indicator, SetLike.mem_coe, hmem, add_mul, ha, mul_assoc, mul_comm t y]
-      have hi := integral_add_right_eq_self (μ := μ) f t
-      simp_rw [htrans] at hi
-      rw [integral_mul_const] at hi
-      rw [indicator_of_notMem hy]
-      exact by_contra fun h => hχ ((mul_eq_left₀ h).mp hi)
+  have hhat (y : K) : (∫ x, g x * ψ (x*y) ∂μ) = D.indicator (fun _ => (V : ℂ)) y :=
+    hat_subring_indicator O D hO.isOpen.measurableSet μ ψ ha hperp y
   have hp := hP g (hO.continuous_indicator continuous_const)
     (HasCompactSupport.intro hK fun _ h => indicator_of_notMem h _)
   have hind (A : Set K) (r : ℂ) (x : K) : ‖A.indicator (fun _ => r) x‖ₑ ^ 2 =

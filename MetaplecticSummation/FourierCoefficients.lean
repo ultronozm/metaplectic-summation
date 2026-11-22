@@ -1,6 +1,5 @@
-import MetaplecticSummation.Jacquet
 import MetaplecticSummation.AdeleLattice
-import Mathlib.Analysis.Distribution.SchwartzSpace.Basic
+import MetaplecticSummation.MarginalDifference
 
 noncomputable section
 namespace MetaplecticPoisson.Datum
@@ -9,35 +8,126 @@ open scoped Topology
 open Classical
 variable {F : Type} [Field F] [NumberField F] {n : ℕ} [NeZero n] (d : Datum F n)
 
-def marginal (v : Place F) (Φ : d.schwartz v) (c : (LocalField F v)ˣ) :=
-  ∫ y, Φ.val.1 c y ∂(selfDual F d.character v)
+/-- Finitely supported normalizing factors whose product over the places is one. -/
+private def normalizations (F : Type) [Field F] [NumberField F] : Submonoid (Place F → ℂ) where
+  carrier := {g | (∀ᶠ v in cofinite, g v = 1) ∧ ∏ᶠ v, g v = 1}
+  one_mem' := by simp
+  mul_mem' := by
+    rintro a b ⟨ha,pa⟩ ⟨hb,pb⟩
+    refine ⟨?_,(finprod_mul_distrib (eventually_cofinite.mp ha) (eventually_cofinite.mp hb)).trans ?_⟩
+    · filter_upwards [ha,hb] with v h₁ h₂
+      simp [h₁,h₂]
+    · rw [pa,pb,mul_one]
 
-def axis (v : Place F) (Φ : d.schwartz v) (y : (LocalField F v)ˣ) := Φ.val.2 0 y
+private theorem normalization_map {g : Place F → ℂ} (hg : g ∈ normalizations F) (e : ℂ →* ℂ) :
+    (fun v => e (g v)) ∈ normalizations F := by
+  obtain ⟨hf,hp⟩ := hg
+  refine ⟨hf.mono (fun _ hv => (congrArg e hv).trans e.map_one),?_⟩
+  rw [← e.map_finprod (eventually_cofinite.mp hf),hp,e.map_one]
 
-def Bruhat (v : Place F) (g : LocalField F v → ℂ) : Prop := by
-  classical
-  cases v with
-  | inr p => exact IsLocallyConstant g ∧ HasCompactSupport g
-  | inl w =>
-    by_cases h : w.IsReal
-    · exact ∃ f : SchwartzMap ℝ ℂ, ∀ x, g x = f (InfinitePlace.Completion.ringEquivRealOfIsReal h x)
-    · exact ∃ f : SchwartzMap ℂ ℂ, ∀ x, g x = f (InfinitePlace.Completion.ringEquivComplexOfIsComplex
-        (InfinitePlace.not_isReal_iff_isComplex.mp h) x)
+private theorem modulus_normalization (x : Fˣ) :
+    (fun v => (modulus F v (atPlace v x) : ℂ)) ∈ normalizations F := by
+  let m (v : Place F) := modulus F v (diagonal F v x.val)
+  have hf : ∀ᶠ v in cofinite, m v = 1 :=
+    eventually_place_of_finite (P := fun v => m v = 1) (eventually_diagonal_norm_one x.ne_zero)
+  refine ⟨hf.mono (fun v hv => (congrArg Complex.ofReal hv).trans Complex.ofReal_one),?_⟩
+  change (∏ᶠ v, Complex.ofRealHom.toMonoidHom (m v)) = 1
+  rw [← MonoidHom.map_finprod _ (eventually_cofinite.mp hf),
+    show finprod m = 1 from diagonal_modulus_product x.ne_zero,map_one]
 
-def hat (v : Place F) (g : LocalField F v → ℂ) (u : LocalField F v) :=
-  ∫ t, g t * d.character.localValue F v (u*t) ∂(selfDual F d.character v)
+private theorem fourier_normalization :
+    (fun v : Place F => (Real.sqrt (modulus F v (n : LocalField F v)) : ℂ)⁻¹) ∈ normalizations F := by
+  refine ⟨eventually_place_of_finite ?_,transform_normalization_product⟩
+  filter_upwards [eventually_diagonal_norm_one (F := F) (Nat.cast_ne_zero.mpr (NeZero.ne n))] with p hp
+  rw [map_natCast] at hp
+  simp [modulus,hp]
 
-/-- The two marginal identities of Appendix A, on the full Schwartz space. -/
-theorem marginal_fourier (v : Place F) (Φ : d.schwartz v) (x y : (LocalField F v)ˣ) :
-    let N : ℂ := modulus F v (n : LocalField F v)
-    let k : ℂ := (Real.sqrt (modulus F v (n : LocalField F v)))⁻¹
-    ∃ ν σ : LocalField F v → ℂ, Bruhat v ν ∧ Bruhat v σ ∧
-      (∀ u : (LocalField F v)ˣ,
-        ν u = d.symbol v (-1) y / (modulus F v y : ℂ) * d.marginal v Φ (u^n/y) ∧
-        σ u = N / (modulus F v x : ℂ) * (modulus F v u : ℂ)^(n-1) * d.axis v Φ (-(u^n)/x)) ∧
-      (∀ u : (LocalField F v)ˣ,
-        d.axis v (d.fourier v Φ) (u^n*y) = k * (modulus F v u : ℂ)^(1-(n : ℤ)) * d.hat v ν u ∧
-        d.marginal v (d.fourier v Φ) (u^n*x) = k * d.hat v σ u) := by sorry
+private theorem remove_normalization {g : Place F → ℂ} (hg : g ∈ normalizations F) (f : Place F → ℂ) :
+    (∏ᶠ v, g v * f v) = ∏ᶠ v, f v := by
+  obtain ⟨h₁,hp⟩ := hg
+  by_cases hf : Function.HasFiniteMulSupport f
+  · rw [finprod_mul_distrib (eventually_cofinite.mp h₁) hf,hp,one_mul]
+  · rw [finprod_of_not_hasFiniteMulSupport hf,finprod_of_not_hasFiniteMulSupport]
+    intro he
+    apply hf
+    apply eventually_cofinite.mp
+    filter_upwards [h₁,eventually_cofinite.mpr he] with v h₁ hv
+    simpa only [h₁,one_mul] using hv
+
+private theorem axisLine_normalization (y : Fˣ) :
+    (fun v => d.symbol v (-1) (atPlace v y) / (modulus F v (atPlace v y) : ℂ)) ∈ normalizations F := by
+  simp_rw [div_eq_mul_inv]
+  apply (normalizations F).mul_mem _ (normalization_map (modulus_normalization y) invMonoidHom)
+  change (∀ᶠ v in cofinite, d.symbol v (-1) (atPlace v y) = 1) ∧
+    ∏ᶠ v, d.symbol v (-1) (atPlace v y) = 1
+  simpa only [atPlace,Units.map_neg,map_one] using d.symbol_reciprocity (-1) y
+
+/-- The product of the vertical line kernels at a nonzero rational parameter. -/
+theorem axisLine_product (Φ : ∀ v, d.schwartz v) (y t : Fˣ) :
+    (∏ᶠ v, d.axisLine v (Φ v) (atPlace v y) (atPlace v t)) =
+      ∏ᶠ v, d.marginal v (Φ v) (atPlace v (t^n/y)) := by
+  simp_rw [d.axisLine_unit,atPlace,map_div,map_pow]
+  exact remove_normalization (d.axisLine_normalization y) _
+
+/-- At zero the remaining factors are the Hilbert-symbol-weighted axis integrals
+that enter the power-class Poisson sum. -/
+theorem axisLine_zero_product (Φ : ∀ v, d.schwartz v) (y : Fˣ) :
+    (∏ᶠ v, d.axisLine v (Φ v) (atPlace v y) 0) =
+      ∏ᶠ v, ∫ z, if hz : z ≠ 0 then d.symbol v (Units.mk0 z hz) (atPlace v y) *
+        d.axis v (Φ v) (Units.mk0 z hz) else 0 ∂(selfDual F d.character v) := by
+  simp_rw [d.axisLine_zero]
+  exact remove_normalization (d.axisLine_normalization y) _
+
+/-- The local densities at zero give exactly the global leading-term axis value. -/
+theorem axisDensity_zero_product (Φ : ∀ v, d.schwartz v) (x : Fˣ) :
+    (∏ᶠ v, d.axisDensity v (Φ v) (atPlace v x) 0) =
+      ∏ᶠ v, (d.leading v (Φ v)).2 0 (atPlace v (-1/x)) := by
+  let N := Units.mk0 (n : F) (Nat.cast_ne_zero.mpr (NeZero.ne n))
+  have hn (v : Place F) : (atPlace v N).val = (n : LocalField F v) := map_natCast (diagonal F v) n
+  have h (v : Place F) : atPlace v (-1/x) = -1 / atPlace v x := by simp [atPlace]
+  simp_rw [d.axisDensity_zero,h,← hn,div_eq_mul_inv (modulus F _ _ : ℂ)]
+  exact remove_normalization ((normalizations F).mul_mem (modulus_normalization N)
+    (normalization_map (modulus_normalization x) invMonoidHom)) _
+
+/-- At nonzero rational parameters the product of densities is an axis value. -/
+theorem axisDensity_product (Φ : ∀ v, d.schwartz v) (x t : Fˣ) :
+    (∏ᶠ v, d.axisDensity v (Φ v) (atPlace v x) (atPlace v t)) =
+      ∏ᶠ v, d.axis v (Φ v) (atPlace v (-(t^n)/x)) := by
+  let N := Units.mk0 (n : F) (Nat.cast_ne_zero.mpr (NeZero.ne n))
+  have hn (v : Place F) : (atPlace v N).val = (n : LocalField F v) := map_natCast (diagonal F v) n
+  have h (v : Place F) : atPlace v (-(t^n)/x) = -(atPlace v t)^n / atPlace v x := by simp [atPlace]
+  simp_rw [d.axisDensity_unit,h,← hn,div_eq_mul_inv (modulus F _ _ : ℂ)]
+  exact remove_normalization ((normalizations F).mul_mem ((normalizations F).mul_mem (modulus_normalization N)
+    (normalization_map (modulus_normalization x) invMonoidHom))
+    (normalization_map (modulus_normalization t) (powMonoidHom (n-1)))) _
+
+/-- On the transformed side the product of the ordinary local Fourier integrals
+is the axis value of the transformed tensor. -/
+theorem axisLine_hat_product (Φ : ∀ v, d.schwartz v) (y u : Fˣ) :
+    (∏ᶠ v, d.hat v (d.axisLine v (Φ v) (atPlace v y)) (atPlace v u)) =
+      ∏ᶠ v, d.axis v (d.fourier v (Φ v)) (atPlace v (u^n*y)) := by
+  have h (v : Place F) : atPlace v (u^n*y) = (atPlace v u)^n * atPlace v y := by simp [atPlace]
+  simp_rw [h,d.axis_fourier]
+  exact (remove_normalization ((normalizations F).mul_mem fourier_normalization
+    (normalization_map (modulus_normalization u) (zpowGroupHom (1-(n : ℤ))))) _).symm
+
+/-- The frequency-zero factors yield the axis value of the adelic leading term. -/
+theorem axisLine_hat_zero_product (Φ : ∀ v, d.schwartz v) (y : Fˣ)
+    (hi : ∀ v, Integrable (d.axisLine v (Φ v) (atPlace v y)) (selfDual F d.character v)) :
+    (∏ᶠ v, d.hat v (d.axisLine v (Φ v) (atPlace v y)) 0) =
+      ∏ᶠ v, (d.leading v (d.fourier v (Φ v))).2 0 (atPlace v y) := by
+  simp_rw [← d.axisLine_hat_zero _ _ _ (hi _)]
+  exact (remove_normalization fourier_normalization _).symm
+
+/-- The reverse local identity gives the product of the Fourier transforms of
+the densities at a rational frequency. -/
+theorem axisDensity_hat_product (Φ : ∀ v, d.schwartz v) (x u : Fˣ) :
+    (∏ᶠ v, d.hat v (d.axisDensity v (Φ v) (atPlace v x)) (atPlace v u)) =
+      ∏ᶠ v, d.marginal v (d.fourier v (Φ v)) (atPlace v (u^n*x)) := by
+  have he (v : Place F) := (d.schwartz_marginal_kernels v (Φ v) (atPlace v x) 1).2.2 (atPlace v u)
+  have h (v : Place F) : atPlace v (u^n*x) = (atPlace v u)^n * atPlace v x := by simp [atPlace]
+  simp_rw [h,he]
+  exact (remove_normalization fourier_normalization _).symm
 
 abbrev AdeleQuotient (F : Type) [Field F] [NumberField F] :=
   AdeleLattice.Quotient F

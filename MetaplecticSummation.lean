@@ -1,5 +1,6 @@
 import MetaplecticSummation.Inversion
 import MetaplecticSummation.LocalWeights
+import MetaplecticSummation.BasicMarginals
 import MetaplecticSummation.FourierCoefficients
 import MetaplecticSummation.FiniteLines
 import MetaplecticSummation.WildSymbols

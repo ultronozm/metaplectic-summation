@@ -96,6 +96,25 @@ def radonLeading (v : Place F) (f : Charts (LocalField F v)) : Charts (LocalFiel
   let c : ℂ := (Real.sqrt (modulus F v (n : LocalField F v)))⁻¹
   (fun a b => c * ∫ t, (R t).1 a b ∂dx, fun a b => c * ∫ t, (R t).2 a b ∂dx)
 
+def hat (v : Place F) (g : LocalField F v → ℂ) (u : LocalField F v) :=
+  ∫ t, g t * d.character.localValue F v (u*t) ∂(selfDual F d.character v)
+
+omit [NeZero n] in
+theorem continuous_hat (v : Place F) {g : LocalField F v → ℂ}
+    (hg : Integrable g (selfDual F d.character v)) : Continuous (d.hat v g) := by
+  unfold hat
+  apply continuous_of_dominated (bound := fun t => ‖g t‖)
+  · intro z
+    exact hg.aestronglyMeasurable.mul (((d.character.continuous_localValue v).comp
+      (continuous_const.mul continuous_id)).aestronglyMeasurable)
+  · intro z
+    filter_upwards with t
+    simp
+  · exact hg.norm
+  · filter_upwards with t
+    exact continuous_const.mul ((d.character.continuous_localValue v).comp
+      (continuous_id.mul continuous_const))
+
 /-- Evaluation at zero of the one-dimensional Fourier integral on each ray. -/
 theorem isLeadingTerm_integralTransform (v : Place F) (f : Charts (LocalField F v))
     (hi : let dx := selfDual F d.character v
@@ -109,20 +128,9 @@ theorem isLeadingTerm_integralTransform (v : Place F) (f : Charts (LocalField F 
   have ht {g : LocalField F v → ℂ} (hg : Integrable g dx) :
       Tendsto (fun u : (LocalField F v)ˣ => c * ∫ t, g t * ψ (u.val*t) ∂dx)
         (comap Units.val (𝓝 0)) (𝓝 (c * ∫ t, g t ∂dx)) := by
-    have hc : Continuous (fun z : LocalField F v => ∫ t, g t * ψ (z*t) ∂dx) := by
-      apply continuous_of_dominated (bound := fun t => ‖g t‖)
-      · intro z
-        exact hg.aestronglyMeasurable.mul (((d.character.continuous_localValue v).comp
-          (continuous_const.mul continuous_id)).aestronglyMeasurable)
-      · intro z
-        filter_upwards with t
-        simp [ψ]
-      · exact hg.norm
-      · filter_upwards with t
-        exact continuous_const.mul ((d.character.continuous_localValue v).comp
-          (continuous_id.mul continuous_const))
+    have hc := d.continuous_hat v hg
     have he := (hc.tendsto 0).comp (tendsto_comap (f := fun u : (LocalField F v)ˣ => u.val))
-    simpa only [Function.comp_apply, zero_mul, ψ, Character.localValue_zero, mul_one] using he.const_mul c
+    simpa only [hat, Function.comp_apply, zero_mul, ψ, Character.localValue_zero, mul_one] using he.const_mul c
   constructor
   · intro a b
     exact (ht (hi.1 a b)).congr (fun u => ((d.transform_pow_ray v f u).1 a b).symm)

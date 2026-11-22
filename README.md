@@ -59,7 +59,10 @@ products and rational evaluations all depend on these inputs.
 | [TwistedSummation](MetaplecticSummation/TwistedSummation.lean) | Adelic line summation at S ∪ T, vanishing of the main term for nonempty T, and the product of transformed weights at the conductor primes |
 | [LocalWeights](MetaplecticSummation/LocalWeights.lean) | Jacquet inversion from Schwartz inversion, Mellin factors, and the intertwining operator on leading terms |
 | [AdeleLattice](MetaplecticSummation/AdeleLattice.lean) | Discreteness of the diagonal field, an additive fundamental domain in the adeles, and compactness of the Hausdorff quotient |
-| [FourierCoefficients](MetaplecticSummation/FourierCoefficients.lean) | Unfolding at frequencies zero and one, the two local marginal identities, Poisson on power classes and the constant-term identity |
+| [Marginals](MetaplecticSummation/Marginals.lean) | The marginal-to-axis Fourier identity, the two zero-parameter formulas, and Schwartz–Bruhat regularity of the finite-place axis density |
+| [MarginalDifference](MetaplecticSummation/MarginalDifference.lean) | The cocycle for the multiplicative difference integral in Appendix A, finite-place integrability, and cancellation for a nontrivial Hilbert character |
+| [BasicMarginals](MetaplecticSummation/BasicMarginals.lean) | The basic axis density at almost all places, its ordinary Fourier transform for an unramified character, and the basic marginal at a unit |
+| [FourierCoefficients](MetaplecticSummation/FourierCoefficients.lean) | Rational products of the marginal kernels, unfolding at frequencies zero and one, Poisson on power classes and the constant-term identity |
 
 ## Conventions and proof status
 
@@ -101,7 +104,16 @@ makes the two chart products agree when both coordinates are nonzero.
 The Fourier coefficient uses the unique Haar probability measure on the compact
 additive quotient. Translation by a principal adele permutes the rational points
 in the theta series, so its character-weighted integrand descends to the quotient.
-The unfolding identities at frequencies zero and one remain admitted.
+The marginal-to-axis identity is proved at all places from chart gluing and
+the one-dimensional power-ray formula. At a finite place the axis density is
+Schwartz–Bruhat for every Schwartz section. For a pure tensor at almost every
+finite place it is the indicator of the local integers on the whole field.
+The reverse marginal identity remains admitted. In its proof Lean establishes
+absolute convergence of the multiplicative difference integral for finite-place
+tests and its vanishing when the Hilbert character is nontrivial. The global
+product calculations cancel the normalizing constants at rational arguments
+and identify the leading-term contributions at zero. The unfolding identities
+at frequencies zero and one and the global constant-term identity remain admitted.
 
 The main theorem and the arithmetic and analytic inputs still have `sorry`
 proofs. Corollary 9.2 is deduced from Theorem 9.1 in Lean. To list the current
