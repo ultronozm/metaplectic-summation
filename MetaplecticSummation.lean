@@ -1,6 +1,6 @@
 import MetaplecticSummation.Inversion
 import MetaplecticSummation.UnitTransformBounds
-import MetaplecticSummation.Jacquet.Kernel
+import MetaplecticSummation.Jacquet.Lines
 import MetaplecticSummation.LocalWeights
 import MetaplecticSummation.BasicMarginals
 import MetaplecticSummation.FourierCoefficients

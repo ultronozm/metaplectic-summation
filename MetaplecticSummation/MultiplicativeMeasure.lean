@@ -67,12 +67,12 @@ theorem integral_lineMeasure (v : Place F) (f : Weight v) :
   simp [g,u.ne_zero,ENNReal.toReal_ofReal (inv_nonneg.mpr (hn u)),Complex.real_smul,div_eq_inv_mul]
 
 
-private instance completionLocallyCompact (v : Place F) : LocallyCompactSpace (LocalField F v) := by
+instance completionLocallyCompact (v : Place F) : LocallyCompactSpace (LocalField F v) := by
   cases v with
   | inl w => exact inferInstanceAs (LocallyCompactSpace w.Completion)
   | inr p => exact inferInstanceAs (LocallyCompactSpace (p.adicCompletion F))
 
-private instance completionSecondCountable (v : Place F) : SecondCountableTopology (LocalField F v) := by
+instance completionSecondCountable (v : Place F) : SecondCountableTopology (LocalField F v) := by
   cases v with
   | inl w => exact (InfinitePlace.Completion.isometry_extensionEmbedding w).isEmbedding.secondCountableTopology
   | inr p =>

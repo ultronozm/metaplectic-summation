@@ -1,6 +1,7 @@
 import MetaplecticSummation.UnramifiedGauss
 import MetaplecticSummation.Gauss
 import MetaplecticSummation.Inversion
+import MetaplecticSummation.Jacquet.Convergence
 import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 
 noncomputable section
@@ -12,9 +13,39 @@ variable {F : Type} [Field F] [NumberField F] {n : ℕ} [NeZero n] (d : Datum F 
 
 def jacquetSpace (v : Place F) := Set.range (d.jacquet v)
 
+open scoped ContDiff in
+theorem testWeight_zero (v : Place F) : TestWeight v (0 : Weight v) := by
+  refine ⟨HasCompactSupport.intro isCompact_empty (fun _ _ => rfl),?_⟩
+  cases v with
+  | inr p => exact IsLocallyConstant.const 0
+  | inl w =>
+    have smooth {L : Type} [NormedField L] [NormedAlgebra ℝ L] (e : w.Completion ≃+* L) :
+        archSmooth e (0 : Weight (.inl w)) := by
+      change ContDiffOn ℝ ∞ (fun x : L => if _h : e.symm x ≠ 0 then (0 : ℂ) else 0) {0}ᶜ
+      simpa only [dite_eq_ite,ite_self] using
+        (contDiffOn_const : ContDiffOn ℝ ∞ (fun _ : L => (0 : ℂ)) {0}ᶜ)
+    dsimp only [TestWeight]
+    split <;> exact smooth _
+
+theorem dualWeight_zero (v : Place F) : d.dualWeight v (0 : Weight v) = 0 := by
+  funext x
+  simp [dualWeight,kernelIntegral,lineIntegral]
+
 theorem jacquet_transform_descends (v : Place F) (Φ Ψ : d.schwartz v)
     (h : d.jacquet v Φ = d.jacquet v Ψ) :
-    d.jacquet v (d.fourier v Φ) = d.jacquet v (d.fourier v Ψ) := by sorry
+    d.jacquet v (d.fourier v Φ) = d.jacquet v (d.fourier v Ψ) := by
+  have hz : d.jacquet v (Φ-Ψ) = 0 := by rw [d.jacquet_sub,h,sub_self]
+  have hd := d.jacquet_fourier_test v (Φ-Ψ) (hz ▸ testWeight_zero v)
+  rw [map_sub,d.jacquet_sub,hz,d.dualWeight_zero] at hd
+  exact sub_eq_zero.mp hd
+
+/-- The induced transform W ↦ Wᵛ on the full image of the Jacquet integral. -/
+def jacquetSpaceTransform (v : Place F) (W : d.jacquetSpace v) : d.jacquetSpace v :=
+  ⟨_,Set.mem_range_self (d.fourier v W.property.choose)⟩
+
+theorem jacquetSpaceTransform_apply (v : Place F) (Φ : d.schwartz v) :
+    (d.jacquetSpaceTransform v ⟨d.jacquet v Φ,Set.mem_range_self Φ⟩).val = d.jacquet v (d.fourier v Φ) :=
+  d.jacquet_transform_descends v _ _ (Set.mem_range_self (f := d.jacquet v) Φ).choose_spec
 
 theorem jacquet_inversion (v : Place F) (Φ : d.schwartz v) (c : (LocalField F v)ˣ) :
     let e : (LocalField F v)ˣ := (-1) ^ (n+1)
@@ -49,6 +80,30 @@ theorem jacquet_inversion (v : Place F) (Φ : d.schwartz v) (c : (LocalField F v
   simp_rw [mul_assoc (d.symbol v (-c) e)]
   rw [integral_const_mul]
   exact congrArg (d.symbol v (-c) e * ·) ht.symm
+
+theorem jacquetSpaceTransform_square (v : Place F) (W : d.jacquetSpace v) (c : (LocalField F v)ˣ) :
+    let e : (LocalField F v)ˣ := (-1)^(n+1)
+    (d.jacquetSpaceTransform v (d.jacquetSpaceTransform v W)).val c = d.symbol v (-c) e * W.val (e*c) := by
+  obtain ⟨W,Φ,rfl⟩ := W
+  have ht : d.jacquetSpaceTransform v ⟨_,Set.mem_range_self Φ⟩ = ⟨_,Set.mem_range_self (d.fourier v Φ)⟩ :=
+    Subtype.ext (d.jacquetSpaceTransform_apply v Φ)
+  rw [ht,d.jacquetSpaceTransform_apply]
+  exact d.jacquet_inversion v Φ c
+
+theorem jacquetSpaceTransform_bijective (v : Place F) : Function.Bijective (d.jacquetSpaceTransform v) := by
+  constructor
+  · intro W V h
+    let e : (LocalField F v)ˣ := (-1)^(n+1)
+    apply Subtype.ext
+    funext x
+    let c := e⁻¹*x
+    have he := congrArg (fun G => (d.jacquetSpaceTransform v G).val c) h
+    rw [d.jacquetSpaceTransform_square,d.jacquetSpaceTransform_square] at he
+    have eqn := mul_left_cancel₀ (d.unitPairing v (-c) e).ne_zero he
+    simpa only [c,← mul_assoc,mul_inv_cancel,one_mul,e] using eqn
+  · rintro ⟨W,Φ,rfl⟩
+    obtain ⟨Ψ,rfl⟩ := (d.fourier_bijective_of_square v (d.schwartz_fourier_square v)).surjective Φ
+    exact ⟨⟨_,Set.mem_range_self Ψ⟩,Subtype.ext (d.jacquetSpaceTransform_apply v Ψ)⟩
 
 def mellin (v : Place F) (W ω : Weight v) (s : ℂ) :=
   d.lineIntegral v fun x => W x * ω x * (modulus F v x : ℂ) ^ s

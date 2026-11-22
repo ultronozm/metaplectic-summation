@@ -65,6 +65,7 @@ products and rational evaluations all depend on these inputs.
 | [Inversion](MetaplecticSummation/Inversion.lean) | Theorem 7.1 assembled from the local marginal identities, ordinary inversion, and metaplectic Plancherel. Metaplectic Plancherel and the root-kernel integral formula are admitted |
 | [Jacquet](MetaplecticSummation/Jacquet.lean) | Jacquet integrals, the explicit dual weight (Proposition 10.8), and adelic summation with its power-class main term (Theorem 10.16) |
 | [Jacquet/Kernel](MetaplecticSummation/Jacquet/Kernel.lean), [ArchimedeanFourierSchwartz](MetaplecticSummation/ArchimedeanFourierSchwartz.lean) | Schwartz–Bruhat regularity of the kernel in Proposition 10.8 and absolute convergence of its Fourier integral at every frequency |
+| [Jacquet/Convergence](MetaplecticSummation/Jacquet/Convergence.lean), [Jacquet/Lines](MetaplecticSummation/Jacquet/Lines.lean) | Absolute convergence, continuity, unipotent equivariance, and the fixed-parameter Radon identity for integrable X-charts |
 | [SArithmetic](MetaplecticSummation/SArithmetic.lean) | Finiteness of residue rings, power residue symbols, independence of Gauss sums from residue representatives, and the divisor sum over S-integers |
 | [Gauss/Setup](MetaplecticSummation/Gauss/Setup.lean) | Classical arithmetic hypotheses, twists, scaling the additive character, and its conductor |
 | [Gauss](MetaplecticSummation/Gauss.lean) | Deduction of the untwisted S-integer identity from adelic line summation, the twisted formula (Theorem 10.34), and quadratic duals (Corollary 10.40) |
@@ -308,6 +309,20 @@ X-chart, and the Hilbert-symbol transition preserves smoothness and rapid
 decay on the Y-chart. The same β works for all W. The power average of the
 lift is given on the X-chart by the weighted moment of W over xFᵥˣⁿ.
 If every such moment vanishes, the average vanishes on both charts.
+
+For every local Schwartz section Φ, the vertical integral defining JΦ
+converges absolutely and varies continuously on the units. It is locally
+constant at finite places. The normalized shear difference preserves both
+JΦ and J(ℱΦ) under iteration. For an X-chart integrable with respect to
+d×x dy, the fixed-parameter Radon identity follows by Fubini, with the
+L¹ norm of the X-chart bounding all transverse integrals. The Jacquet lift
+of a compact test weight satisfies this integrability condition.
+
+The pointwise identification of J(ℱΦ) with the explicit dual weight in
+Proposition 10.8 remains admitted in `jacquet_fourier_test`. Applied to
+a difference with zero Jacquet integral, it gives descent to the full
+Jacquet image. The local square formula then gives inversion and bijectivity
+on that image.
 
 The untwisted S-integer summation formula follows in Lean from the adelic
 line formula, the identity for the transformed basic Jacquet weight, and

@@ -44,12 +44,11 @@ theorem jacquetLift_support (W : Weight v) (hW : HasCompactSupport W) (β : K �
     · by_cases hx : z.1 = 0 <;> simp [xChart,jacquetLift,hx,van]
     · by_cases hx : z.1 = 0 <;> by_cases hy : z.2 = 0 <;> simp [yChart,jacquetLift,hx,hy,van]
 
-theorem jacquetLift_evaluation (W : Weight v) (β : K → ℂ)
+theorem jacquet_jacquetLift (W : Weight v) (β : K → ℂ)
     (hβ : (∫ x, β x * d.character.localValue F v (-x) ∂selfDual F d.character v) = 1)
     (ht : d.jacquetLift v W β ∈ d.testSet v) :
-    ∃ Φ : d.schwartz v, Φ.val ∈ d.testSet v ∧ d.jacquet v Φ = W := by
-  let Φ : d.schwartz v := ⟨_,Submodule.subset_span (Or.inl ht)⟩
-  refine ⟨Φ,ht,funext fun c => ?_⟩
+    d.jacquet v ⟨_,Submodule.subset_span (Or.inl ht)⟩ = W := by
+  funext c
   let m : ℂ := modulus F v c.val
   have hm : m ≠ 0 := Complex.ofReal_ne_zero.mpr (modulus_ne_zero v c)
   let g (y : K) := jacquetLiftX v W β c y * d.character.localValue F v (-y/c.val)
@@ -61,6 +60,12 @@ theorem jacquetLift_evaluation (W : Weight v) (β : K → ℂ)
   rw [integral_const_mul,hβ,mul_one] at h
   change (∫ y, g y ∂selfDual F d.character v) = W c
   exact (eq_div_iff hm).mp h |>.symm.trans (by field_simp)
+
+theorem jacquetLift_evaluation (W : Weight v) (β : K → ℂ)
+    (hβ : (∫ x, β x * d.character.localValue F v (-x) ∂selfDual F d.character v) = 1)
+    (ht : d.jacquetLift v W β ∈ d.testSet v) :
+    ∃ Φ : d.schwartz v, Φ.val ∈ d.testSet v ∧ d.jacquet v Φ = W := by
+  exact ⟨⟨_,Submodule.subset_span (Or.inl ht)⟩,ht,d.jacquet_jacquetLift v W β hβ ht⟩
 
 /-- A single normalized auxiliary works for every compact test weight at the place. -/
 def IsJacquetLiftAuxiliary (β : K → ℂ) : Prop :=
