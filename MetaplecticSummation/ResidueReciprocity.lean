@@ -17,7 +17,7 @@ theorem residue_pow_degree {S : Finset (Place F)} (c : Fˣ) (h : NonzeroInteger 
     intro p hp
     rw [if_pos (hu p hp)]
     exact congrArg Units.val (d.unitPairing_pow (.inr p) (atPlace _ (fieldUnit h)) (atPlace _ c))
-  · push_neg at hu
+  · push Not at hu
     obtain ⟨p,hp,hu⟩ := hu
     rw [Finset.prod_eq_zero hp (if_neg hu),zero_pow (NeZero.ne n)]
 

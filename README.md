@@ -309,8 +309,12 @@ gives the absolutely convergent adelic identity from the admitted line formula.
 The epsilon norm and its Gauss-sum expression follow from the admitted local
 twisted-vector evaluation. After reindexing, the product at the conductor
 primes gives ε, the conjugate twisting character and the residue symbol
-with denominator f. Theorem 10.34 still requires matching the remaining local
-factors and the two adelic sums with the stated S-integer expressions.
+with denominator f. For the original adelic sum, splitting the product over S,
+the conductor primes and the remaining places gives the stated sum over
+nonzero S-integers, including the square-root normalization for the scaled
+character. On the dual side the reindexed basic factor outside S and the
+conductor primes contributes one Hilbert symbol. Assembling the dual product
+and its sum is still required for Theorem 10.34.
 
 The quadratic-dual corollary and its sextic specialization now follow in Lean
 from Theorem 10.34. For an odd covering degree, the quadratic twist has

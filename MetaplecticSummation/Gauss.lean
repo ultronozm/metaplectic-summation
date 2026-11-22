@@ -1,4 +1,4 @@
-import MetaplecticSummation.TwistedSummation
+import MetaplecticSummation.TwistedGaussFactors
 import MetaplecticSummation.SexticResidue
 import MetaplecticSummation.QuadraticTwist
 
@@ -78,6 +78,30 @@ private theorem globalWeight_untwisted {S : Finset (Place F)} (h : d.ClassicalSe
 
 theorem fieldUnit_injective {S : Finset (Place F)} : Function.Injective (fieldUnit (S := S)) :=
   fun _ _ he => Subtype.ext (Subtype.ext (congrArg Units.val he))
+
+/-- Restrict the original adelic sum to the nonzero S-integers and recover the
+normalizing factor for the scaled additive character. -/
+theorem tsum_twistedGauss_original {S : Finset (Place F)} (h : d.ClassicalSetting S)
+    {f : NonzeroInteger S} (b : NonzeroInteger S) (T : Twist (n := n) S f)
+    (coprime : IsCoprime b.val f.val) (W : Weights S) :
+    (∑' c : Fˣ, (d.scaled (fieldUnit b)).globalWeight (T.weights W) false c) =
+      (Real.sqrt (sNorm S (fieldUnit b)) : ℂ)⁻¹ * ∑' c : NonzeroInteger S,
+        sWeight W (fieldUnit c) * twistValue T (fieldUnit c) * d.normalizedGauss S b.val c.val := by
+  let g := (d.scaled (fieldUnit b)).globalWeight (T.weights W) false
+  have hs : Function.support g ⊆ Set.range (fieldUnit (S := S)) := by
+    intro c hc
+    by_cases hi : (c : F) ∈ SIntegers S
+    · exact ⟨⟨⟨c,hi⟩,fun hz => c.ne_zero (congrArg Subtype.val hz)⟩,Units.ext rfl⟩
+    · apply (hc _).elim
+      simp only [g,d.twistedGauss_original_factor h b T coprime W c,dif_neg hi,mul_zero]
+  rw [← fieldUnit_injective.tsum_eq hs, ← tsum_mul_left]
+  apply tsum_congr
+  intro c
+  dsimp only [g]
+  rw [d.twistedGauss_original_factor h b T coprime W (fieldUnit c),
+    dif_pos (show (fieldUnit c : F) ∈ SIntegers S from c.val.property)]
+  ring_nf
+  rfl
 
 private theorem globalWeight_integer {S : Finset (Place F)} (h : d.ClassicalSetting S)
     (W : Weights S) (dual : Bool) (c : NonzeroInteger S) :
