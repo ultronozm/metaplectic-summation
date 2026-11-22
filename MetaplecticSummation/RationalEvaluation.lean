@@ -101,7 +101,7 @@ theorem basic_yChart_unit (w : HeightOneSpectrum (𝓞 F)) (ht : w.asIdeal.absNo
   rw [basic,dif_pos ht]
   simpa [yChart,basicCharts,hy₀,hx,hy] using basic_weight_one (n := n) w
 
-private theorem eventually_tame :
+theorem eventually_tame :
     ∀ᶠ w : HeightOneSpectrum (𝓞 F) in cofinite, w.asIdeal.absNorm.Coprime n :=
   (FinitePlace.finite_places_over_degree (K := F) n).eventually_cofinite_notMem.mono
     (fun w hw => FinitePlace.tame_of_degree_not_mem n w hw)

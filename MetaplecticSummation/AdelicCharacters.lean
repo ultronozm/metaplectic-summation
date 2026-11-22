@@ -1,4 +1,5 @@
 import MetaplecticSummation.LocalCharacters
+import Mathlib.Analysis.SpecialFunctions.Complex.Circle
 
 noncomputable section
 namespace MetaplecticPoisson.Datum
@@ -80,5 +81,43 @@ theorem hasProd_localValue (ψ : Character F) (x : Adeles F) :
       simp only [Finset.sum_insert hv, Finset.prod_insert hv, AddChar.map_add_eq_mul,
         Circle.coe_mul, ih, Character.localValue]
   exact ht.congr he
+
+/-- A continuous adelic character is trivial on the entire local integer ring
+at all but finitely many finite places. -/
+theorem eventually_trivial_on_integers (ψ : Character F) :
+    ∀ᶠ p : HeightOneSpectrum (𝓞 F) in cofinite, ∀ x : LocalField F (.inr p), ‖x‖ ≤ 1 →
+      ψ.localValue F (.inr p) x = 1 := by
+  let χ (p : HeightOneSpectrum (𝓞 F)) : AddChar (p.adicCompletionIntegers F) Circle :=
+    { toFun := fun x => ψ.toChar (singleAdele F (.inr p) x.val)
+      map_zero_eq_one' := (congrArg ψ.toChar (singleAdele_zero (F := F) (.inr p))).trans ψ.toChar.map_zero_eq_one
+      map_add_eq_mul' := fun x y => by
+        change ψ.toChar (singleAdele F (.inr p) (x.val+y.val)) = _
+        exact (congrArg ψ.toChar (singleAdele_add (F := F) (.inr p) x.val y.val)).trans (ψ.toChar.map_add_eq_mul _ _) }
+  let U := Circle.centeredArc (Real.pi / 2)
+  have hU : U ∈ 𝓝 (1 : Circle) := (Circle.isOpen_centeredArc _).mem_nhds
+    ⟨0, by simpa using half_pos Real.pi_pos, Circle.exp_zero⟩
+  have eventuallyArc (z : (p : HeightOneSpectrum (𝓞 F)) → p.adicCompletionIntegers F) :
+      ∀ᶠ p in cofinite, χ p (z p) ∈ U := by
+    let a : Adeles F := (0, ⟨fun p => (z p).val, .of_forall (fun p => (z p).property)⟩)
+    have hin : Tendsto (Sum.inr : HeightOneSpectrum (𝓞 F) → Place F) cofinite cofinite :=
+      Function.Injective.tendsto_cofinite Sum.inr_injective
+    have ht := (hasSum_singleAdele a).summable.tendsto_cofinite_zero.comp hin
+    have hc := (ψ.continuous_toChar.tendsto 0).comp ht
+    rw [AddChar.map_zero_eq_one] at hc
+    exact hc hU
+  let bad (p : HeightOneSpectrum (𝓞 F)) := ∃ x, χ p x ∉ U
+  let z (p : HeightOneSpectrum (𝓞 F)) := if h : bad p then h.choose else 0
+  filter_upwards [eventuallyArc z] with p hp
+  have hall (x : p.adicCompletionIntegers F) : χ p x ∈ U := by
+    by_contra hx
+    have h : bad p := ⟨x,hx⟩
+    exact h.choose_spec (by simpa only [z, dif_pos h] using hp)
+  intro x hx
+  have mem (u : p.adicCompletion F) (hu : ‖u‖ ≤ 1) : u ∈ p.adicCompletionIntegers F :=
+    Valued.toNormedField.norm_le_one_iff.mp hu
+  let a : p.adicCompletionIntegers F := ⟨x, mem x hx⟩
+  have hχ : χ p a = 1 := Circle.eq_one_of_forall_pow_mem_centeredArc_pi_div_two
+    (fun k _ => by rw [← AddChar.map_nsmul_eq_pow]; exact hall (k • a))
+  exact congrArg (fun t : Circle => (t : ℂ)) hχ
 
 end MetaplecticPoisson.Datum

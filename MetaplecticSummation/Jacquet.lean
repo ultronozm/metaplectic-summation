@@ -119,6 +119,20 @@ def GoodOutside (S : Finset (Place F)) : Prop :=
     p.asIdeal.absNorm.Coprime n ∧ ∀ x : LocalField F (.inr p), ‖x‖ ≤ 1 →
       d.character.localValue F (.inr p) x = 1
 
+/-- The hypotheses of the global line formula hold away from a finite set of places. -/
+theorem exists_goodOutside : ∃ S : Finset (Place F), d.GoodOutside S := by
+  classical
+  let good (p : HeightOneSpectrum (𝓞 F)) := p.asIdeal.absNorm.Coprime n ∧
+    ∀ x : LocalField F (.inr p), ‖x‖ ≤ 1 → d.character.localValue F (.inr p) x = 1
+  have hgood : ∀ᶠ p in Filter.cofinite, good p :=
+    (eventually_tame (F := F) (n := n)).and (eventually_trivial_on_integers d.character)
+  have hbad : {p | ¬ good p}.Finite := hgood
+  let S : Finset (Place F) := Finset.univ.image Sum.inl ∪ hbad.toFinset.image Sum.inr
+  have arch (w : InfinitePlace F) : Sum.inl w ∈ S := Finset.mem_union_left _ (Finset.mem_image_of_mem _ (Finset.mem_univ w))
+  refine ⟨S, ⟨_, arch (Classical.arbitrary _)⟩, arch, fun p hp => ?_⟩
+  by_contra h
+  exact hp (Finset.mem_union_right _ (Finset.mem_image_of_mem _ (hbad.mem_toFinset.mpr h)))
+
 abbrev Weights (S : Finset (Place F)) := (v : S) → Weight v.val
 abbrev Admissible {S : Finset (Place F)} (W : Weights S) := ∀ v, TestWeight v.val (W v)
 abbrev PowerClass (n : ℕ) (v : Place F) := (LocalField F v)ˣ ⧸ (powMonoidHom n :

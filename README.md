@@ -61,7 +61,8 @@ products and rational evaluations all depend on these inputs.
 | [FourierOrthogonality](MetaplecticSummation/FourierOrthogonality.lean) | Fourier transform of additive subgroup indicators and the volume of the annihilator of a compact open subgroup |
 | [FiniteFourierInversion](MetaplecticSummation/FiniteFourierInversion.lean) | Ordinary Fourier inversion on finite completions with the chosen self-dual measure, and the affine pairing from Appendix A |
 | [FiniteInversion](MetaplecticSummation/FiniteInversion.lean) | Composition of diagonal lifts, the metaplectic square formula from marginal and ordinary Fourier inversion, and bijectivity from the square |
-| [Inversion](MetaplecticSummation/Inversion.lean) | Theorem 7.1 assembled from these results, archimedean ordinary inversion, and metaplectic Plancherel. The latter two inputs and the root-kernel integral formula are admitted |
+| [LocalParseval](MetaplecticSummation/LocalParseval.lean), [ArchimedeanInversion](MetaplecticSummation/ArchimedeanInversion.lean) | Polarization of the self-dual normalization and pointwise ordinary Fourier inversion for the chosen character at every infinite place |
+| [Inversion](MetaplecticSummation/Inversion.lean) | Theorem 7.1 assembled from the local marginal identities, ordinary inversion, and metaplectic Plancherel. Metaplectic Plancherel and the root-kernel integral formula are admitted |
 | [Jacquet](MetaplecticSummation/Jacquet.lean) | Jacquet integrals, the explicit dual weight (Proposition 10.8), and adelic summation with its power-class main term (Theorem 10.16) |
 | [SArithmetic](MetaplecticSummation/SArithmetic.lean) | Finiteness of residue rings, power residue symbols, independence of Gauss sums from residue representatives, and the divisor sum over S-integers |
 | [Gauss/Setup](MetaplecticSummation/Gauss/Setup.lean) | Classical arithmetic hypotheses, twists, scaling the additive character, and its conductor |
@@ -108,6 +109,18 @@ products and rational evaluations all depend on these inputs.
 | [FourierCoefficients](MetaplecticSummation/FourierCoefficients.lean) | Rational products of the marginal kernels, unfolding at frequencies zero and one, Poisson on power classes and the constant-term identity |
 
 ## Conventions and proof status
+
+At every place the self-dual Haar measure is unique if it exists. Multiplying
+Haar measure by a positive scalar multiplies the squared norm of the transform
+by its cube and the squared norm of the input by the scalar itself. A nonzero
+compactly supported test forces the scalar to equal one. Existence remains
+admitted in `exists_selfDual`.
+
+At infinite places `arch_hat_hat_of_integrable` proves pointwise ordinary
+Fourier inversion for a continuous integrable function with integrable transform.
+Polarization gives Parseval on compactly supported tests. Fubini moves the
+transform between the two factors, and smooth compactly supported tests
+separate continuous functions in real and complex coordinates.
 
 At a finite place of norm q prime to n, the symbol of a uniformizer and a unit u
 reduces to u^((q−1)/n). Bimultiplicativity, continuity and global reciprocity,
@@ -226,6 +239,11 @@ along the affine line gives an integrable majorant at every derivative order.
 Pullback by τ ↦ τⁿ preserves bounded sets of Schwartz functions. Together these
 prove the slice assertion of Lemma 4.2(iii). Its additional assertions about
 joint smoothness and derivatives in the output vector remain open at infinite places.
+
+Triviality of an adelic character on the local integer ring holds outside
+a finite set. This gives a set satisfying `GoodOutside` for the line formula.
+Proving that the annihilator of the local integer ring equals that ring at
+almost every place is a stronger conductor statement.
 
 The global vanishing statement of Proposition B.6 remains admitted in
 `thetaDifference_vanishing`. Given this input, Lean constructs the boundary
