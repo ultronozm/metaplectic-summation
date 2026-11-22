@@ -1,4 +1,5 @@
-import MetaplecticSummation.BasicWeights
+import MetaplecticSummation.GaussRamanujan
+import MetaplecticSummation.BasicProduct
 import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 
 noncomputable section
@@ -84,32 +85,6 @@ theorem product_basic {S : Finset (Place F)} (h : d.ClassicalSetting S) (b : Non
       if hc : (c : F) ∈ SIntegers S then
         (Real.sqrt (sNorm S (fieldUnit b)) : ℂ)⁻¹ * d.normalizedGauss S b.val ⟨_,hc⟩ else 0 := by
   sorry
-
-private def residueTerm (p : Prime F) (c : (LocalField F (.inr p))ˣ)
-    (a : LocalField F (.inr p)) : ℂ := by
-  classical
-  exact if ha : a ≠ 0 then d.symbol (.inr p) c (Units.mk0 a ha) *
-    d.character.localValue F (.inr p) (-a / (c : LocalField F (.inr p))) else 0
-
-/-- The local Gauss–Ramanujan sum of §10.3 with the negative additive phase. -/
-def localGauss (p : Prime F) (c : (LocalField F (.inr p))ˣ) : ℂ := by
-  classical
-  let O := p.adicCompletionIntegers F
-  exact if ‖(c : LocalField F (.inr p))‖ = 1 then 1 else
-    if hc : (c : LocalField F (.inr p)) ∈ O then
-      let c₀ : O := ⟨_,hc⟩
-      ∑ᶠ u : (O ⧸ Ideal.span {c₀})ˣ,
-        let a : O := Quotient.out (u : O ⧸ Ideal.span {c₀})
-        d.residueTerm p c a.val
-    else 0
-
-theorem jacquet_basic (p : Prime F) (hp : p.asIdeal.absNorm.Coprime n)
-    (hψ : ∀ x : LocalField F (.inr p), ‖x‖ ≤ 1 → d.character.localValue F (.inr p) x = 1)
-    (π c : (LocalField F (.inr p))ˣ) (hπ : ‖(π : LocalField F (.inr p))‖ = (p.asIdeal.absNorm : ℝ)⁻¹) :
-    let v : Place F := .inr p
-    let vol := (selfDual F d.character v).real {x | ‖x‖ ≤ 1}
-    d.jacquet v (d.basic v) c = (vol : ℂ) * (modulus F v c : ℂ) *
-      ∑' k : ℕ, (p.asIdeal.absNorm : ℂ)^((n-1)*k) * d.localGauss p (c / π^(n*k)) := by sorry
 
 theorem basic_dual (p : Prime F) (hp : p.asIdeal.absNorm.Coprime n)
     (b : (LocalField F (.inr p))ˣ) (hb : ‖(b : LocalField F (.inr p))‖ ≤ 1)

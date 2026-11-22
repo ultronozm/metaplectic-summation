@@ -138,7 +138,7 @@ private theorem norm_one_iff_of_close {K : Type*} [NormedField K] [IsUltrametric
     rw [hd, max_lt_iff] at h
     exact iff_of_false h.1.ne h.2.ne
 
-private theorem tame_symbol_congr (p : Prime F) (hp : p.asIdeal.absNorm.Coprime n)
+theorem tame_symbol_congr (p : Prime F) (hp : p.asIdeal.absNorm.Coprime n)
     (c a b : (p.adicCompletion F)ˣ) (hb : ‖b.val‖ = 1) (hab : ‖a.val - b.val‖ < 1) :
     d.symbol (.inr p) c a = d.symbol (.inr p) c b := by
   let H : (p.adicCompletion F)ˣ →* ℂˣ := d.unitPairing (.inr p) c

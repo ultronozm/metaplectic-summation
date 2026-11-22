@@ -202,6 +202,12 @@ private theorem norm_uniformizer {π : v.adicCompletionIntegers K} (hπ : Irredu
   change (↑((v.asIdeal.absNorm : ℝ≥0) ^ (-1 : ℤ)) : ℝ) = _
   simp
 
+theorem exists_norm_uniformizer :
+    ∃ π : (v.adicCompletion K)ˣ, ‖π.val‖ = (v.asIdeal.absNorm : ℝ)⁻¹ := by
+  obtain ⟨π, hπ⟩ := IsDiscreteValuationRing.exists_irreducible (v.adicCompletionIntegers K)
+  have hn : (π : v.adicCompletion K) ≠ 0 := fun h => hπ.ne_zero (Subtype.ext h)
+  exact ⟨Units.mk0 _ hn, congrArg NNReal.toReal (norm_uniformizer v hπ)⟩
+
 private theorem uniformizer_smul_integers {π : v.adicCompletionIntegers K} (hπ : Irreducible π)
     (h₀ : (π : v.adicCompletion K) ≠ 0) :
     Units.mk0 (π : v.adicCompletion K) h₀ • (v.adicCompletionIntegers K : Set (v.adicCompletion K)) =

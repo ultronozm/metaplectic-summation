@@ -45,6 +45,12 @@ products and rational evaluations all depend on these inputs.
 | [SArithmetic](MetaplecticSummation/SArithmetic.lean) | Finiteness of residue rings, power residue symbols, independence of Gauss sums from residue representatives, and the divisor sum over S-integers |
 | [Gauss](MetaplecticSummation/Gauss.lean) | Scaling the additive character, the twisted formula (Theorem 10.34), and quadratic duals (Corollary 10.40) |
 | [BasicWeights](MetaplecticSummation/BasicWeights.lean) | The self-dual volume of the local integers from the conductor, the basic Jacquet weight at units and nonintegral arguments, and vanishing of the product outside S for nonintegral moduli |
+| [LocalGauss](MetaplecticSummation/LocalGauss.lean) | Local residue rings, constancy of the Gauss phase on a unit residue class, and the integral over the primitive shell |
+| [JacquetBasic](MetaplecticSummation/JacquetBasic.lean) | The Jacquet integral of the basic vector as a generating series of Gauss–Ramanujan sums for every nonzero local modulus |
+| [GaussRamanujan](MetaplecticSummation/GaussRamanujan.lean) | Covariance of the local Gauss sum and basic Jacquet function under multiplication by a unit |
+| [ResidueCRT](MetaplecticSummation/ResidueCRT.lean) | Chinese remainder isomorphism for the S-integer residue ring, including the unit modulus, and decomposition of the additive phase |
+| [GaussFactorization](MetaplecticSummation/GaussFactorization.lean) | The global Gauss sum as the product of the local Gauss sums for the scaled character |
+| [BasicProduct](MetaplecticSummation/BasicProduct.lean) | The product of basic Jacquet functions as a finite product of local series, and its evaluation for locally n-th-power-free moduli |
 | [LocalWeights](MetaplecticSummation/LocalWeights.lean) | Mellin factors, transforms of basic and character weights, the Gauss-sum expression for ε, and the intertwining operator on leading terms |
 | [AdeleLattice](MetaplecticSummation/AdeleLattice.lean) | Discreteness of the diagonal field, an additive fundamental domain in the adeles, and compactness of the Hausdorff quotient |
 | [FourierCoefficients](MetaplecticSummation/FourierCoefficients.lean) | Unfolding at frequencies zero and one, the two local marginal identities, Poisson on power classes and the constant-term identity |
@@ -109,8 +115,20 @@ character is unramified, Plancherel on the indicator of the integers gives
 volume |b|ᵥ^(1/2) for the measure self-dual with respect to the scaled
 character. Consequently the product of basic Jacquet factors outside S
 vanishes on nonintegral arguments and equals |b|ₛ^(−1/2) on S-units. The
-identification with normalized Gauss sums for general nonunit moduli remains
-open. With empty twist set, `mainTerm` forms both the coefficients and the
+local generating series is proved for every nonzero modulus, as is the
+Chinese remainder factorization of the ordinary global Gauss sum. For an
+integral modulus, the product outside S reduces to the local series at the
+primes dividing the modulus. When every valuation outside S is less than n,
+only the constant terms contribute and Lean proves the normalized global
+formula. For higher valuations, the identification with the global sum over
+power divisors remains open in Lean.
+
+The residue-ring isomorphism uses only standard Lean axioms. The proof of the
+ordinary Gauss-sum factorization depends on the admitted characterization of
+the Hilbert symbols. The basic Jacquet formulas additionally use the admitted
+self-dual measure theorem and membership of the basic vector in the Schwartz space.
+
+With empty twist set, `mainTerm` forms both the coefficients and the
 multiplicative measures using the scaled character. With nonempty twist set,
 the dual sum retains both residue symbols.
 
