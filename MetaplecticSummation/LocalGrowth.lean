@@ -130,6 +130,26 @@ private theorem norm_localValue_dominant (z : RationalPoint F) (v : Place F) (f 
         d.schwartz_glues v f a b,norm_mul,d.norm_symbol,one_mul]
     · simp only [localValue,if_neg hx,yChart,diagonalPoint,dif_pos hy,show Units.mk0 _ hy = b from Units.ext hb.symm]
 
+/-- Uniform growth in an arbitrary vertical slice of the finite X-chart. -/
+theorem finite_vertical_growth (p : Prime F) (Φ : d.schwartz (.inr p)) :
+    ∃ C : ℝ, 0 ≤ C ∧ ∀ (a : (LocalField F (.inr p))ˣ) (y : LocalField F (.inr p)),
+      ‖Φ.val.1 a y‖ * ‖a.val‖^(growthExponent n) ≤ C := by
+  let K := p.adicCompletion F
+  letI : NontriviallyNormedField K := FinitePlace.nontriviallyNormedCompletion p
+  letI : ProperSpace K := .of_nontriviallyNormedField_of_weaklyLocallyCompactSpace _
+  obtain ⟨ex,ey⟩ := d.finite_schwartz_rayExtensions p Φ
+  obtain ⟨A,h₀,hA⟩ := cone_growth (K := K) id continuous_id (fun _ _ => rfl) ex
+  obtain ⟨B,_,hB⟩ := cone_growth (K := K) Prod.swap continuous_swap (fun _ _ => rfl) ey
+  refine ⟨max A B,h₀.trans (le_max_left ..),?_⟩
+  intro a y
+  rcases le_total ‖y‖ ‖a.val‖ with h | h
+  · exact (hA a y h).trans (le_max_left ..)
+  · let b := Units.mk0 y (norm_pos_iff.mp ((norm_pos_iff.mpr a.ne_zero).trans_le h))
+    change ‖Φ.val.1 a b.val‖ * _ ≤ _
+    rw [d.schwartz_glues _ Φ a b,norm_mul,d.norm_symbol,one_mul]
+    exact (mul_le_mul_of_nonneg_left (Real.rpow_le_rpow (norm_nonneg _) h (growthExponent_nonneg n))
+      (norm_nonneg _)).trans ((hB b a.val h).trans (le_max_right ..))
+
 /-- At each finite place every Schwartz section satisfies the finite part of
 (B.1), with one constant controlling the support and the size. -/
 theorem finite_local_growth (p : Prime F) (f : d.schwartz (.inr p)) :

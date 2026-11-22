@@ -65,6 +65,7 @@ products and rational evaluations all depend on these inputs.
 | [Inversion](MetaplecticSummation/Inversion.lean) | Theorem 7.1 assembled from the local marginal identities, ordinary inversion, and metaplectic Plancherel. Metaplectic Plancherel and the root-kernel integral formula are admitted |
 | [Jacquet](MetaplecticSummation/Jacquet.lean) | Jacquet integrals, the explicit dual weight (Proposition 10.8), and adelic summation with its power-class main term (Theorem 10.16) |
 | [Jacquet/Kernel](MetaplecticSummation/Jacquet/Kernel.lean), [ArchimedeanFourierSchwartz](MetaplecticSummation/ArchimedeanFourierSchwartz.lean) | Schwartz–Bruhat regularity of the kernel in Proposition 10.8 and absolute convergence of its Fourier integral at every frequency |
+| [Jacquet/FiniteShear](MetaplecticSummation/Jacquet/FiniteShear.lean), [Jacquet/WeightIntegrability](MetaplecticSummation/Jacquet/WeightIntegrability.lean) | The finite-place shear estimate, decay and absolute integrability of Jacquet weights, and the Radon identity on a shear representative |
 | [Jacquet/Convergence](MetaplecticSummation/Jacquet/Convergence.lean), [Jacquet/Lines](MetaplecticSummation/Jacquet/Lines.lean) | Absolute convergence, continuity, unipotent equivariance, and the fixed-parameter Radon identity for integrable X-charts |
 | [SArithmetic](MetaplecticSummation/SArithmetic.lean) | Finiteness of residue rings, power residue symbols, independence of Gauss sums from residue representatives, and the divisor sum over S-integers |
 | [Gauss/Setup](MetaplecticSummation/Gauss/Setup.lean) | Classical arithmetic hypotheses, twists, scaling the additive character, and its conductor |
@@ -316,7 +317,13 @@ constant at finite places. The normalized shear difference preserves both
 JΦ and J(ℱΦ) under iteration. For an X-chart integrable with respect to
 d×x dy, the fixed-parameter Radon identity follows by Fubini, with the
 L¹ norm of the X-chart bounding all transverse integrals. The Jacquet lift
-of a compact test weight satisfies this integrability condition.
+of a compact test weight satisfies this integrability condition. At finite
+places, the third normalized difference provides such a representative for
+every Schwartz section. Its vertical slice has L¹ norm bounded by a constant
+times min(|c|ᵥ^(1/n), |c|ᵥ^(-A)) for each A ≥ 0. The normalized ray
+extensions give uniform vanishing on a cone about the vertical axis.
+Integration over multiplicative annuli then proves absolute integrability
+of the regularized X-chart and of every Jacquet weight.
 
 The pointwise identification of J(ℱΦ) with the explicit dual weight in
 Proposition 10.8 remains admitted in `jacquet_fourier_test`. Applied to
