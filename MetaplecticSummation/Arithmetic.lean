@@ -1,5 +1,6 @@
+import MetaplecticSummation.HaarNormalization
 import Mathlib.NumberTheory.NumberField.AdeleRing
-import Mathlib.NumberTheory.NumberField.Completion.FinitePlace
+import MetaplecticSummation.FiniteCompletionTopology
 import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
 import Mathlib.Analysis.Complex.Circle
 import Mathlib.Algebra.Group.AddChar
@@ -56,12 +57,34 @@ def Character.localValue (ψ : Character F) (v : Place F) (x : LocalField F v) :
 
 /-- Plancherel on continuous compactly supported functions fixes the scalar of Haar measure. -/
 def IsSelfDual (ψ : Character F) (v : Place F) (dx : Measure (LocalField F v)) : Prop :=
-  dx.IsAddHaarMeasure ∧ ∀ f : LocalField F v → ℂ, Continuous f → HasCompactSupport f →
-    (∫⁻ y, ‖∫ x, f x * ψ.localValue F v (x * y) ∂dx‖ₑ ^ 2 ∂dx) =
-      ∫⁻ x, ‖f x‖ₑ ^ 2 ∂dx
+  dx.IsAddHaarMeasure ∧ KernelPlancherel (fun x y => ψ.localValue F v (x*y)) dx
+
+theorem IsSelfDual.unique {ψ : Character F} {v : Place F} {μ ν : Measure (LocalField F v)}
+    (hμ : IsSelfDual F ψ v μ) (hν : IsSelfDual F ψ v ν) : μ = ν := by
+  letI : LocallyCompactSpace (LocalField F v) := by
+    cases v with
+    | inl w => exact inferInstanceAs (LocallyCompactSpace w.Completion)
+    | inr p => exact inferInstanceAs (LocallyCompactSpace (p.adicCompletion F))
+  letI : TopologicalSpace.SeparableSpace (LocalField F v) := by
+    cases v with
+    | inl w =>
+      letI : SecondCountableTopology (LocalField F (.inl w)) :=
+        (InfinitePlace.Completion.isometry_extensionEmbedding w).isEmbedding.secondCountableTopology
+      infer_instance
+    | inr p =>
+      letI : Countable F := (Module.finBasis ℚ F).equivFun.injective.countable
+      exact TopologicalSpace.SeparableSpace.of_denseRange _ (HeightOneSpectrum.denseRange_algebraMap (K := F) p)
+  letI : μ.IsAddHaarMeasure := hμ.1
+  letI : ν.IsAddHaarMeasure := hν.1
+  exact haar_eq_of_plancherel (fun x y => ψ.localValue F v (x*y)) ν μ hν.2 hμ.2
+
+theorem exists_selfDual (ψ : Character F) (v : Place F) :
+    ∃ dx, IsSelfDual F ψ v dx := by sorry
 
 theorem existsUnique_selfDual (ψ : Character F) (v : Place F) :
-    ∃! dx, IsSelfDual F ψ v dx := by sorry
+    ∃! dx, IsSelfDual F ψ v dx := by
+  obtain ⟨μ,hμ⟩ := exists_selfDual F ψ v
+  exact ⟨μ, hμ, fun _ hν => IsSelfDual.unique F hν hμ⟩
 
 def selfDual (ψ : Character F) (v : Place F) := (existsUnique_selfDual F ψ v).exists.choose
 
