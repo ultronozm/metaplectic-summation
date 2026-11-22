@@ -80,6 +80,39 @@ def tensorMap (ξ : ∀ i, V i) (η : ∀ i, W i) (L : ∀ i, V i →ₗ[ℂ] W 
     change ∀ᶠ i in cofinite, x i = ξ i at hx
     exact (hx.and h).mono fun i ⟨hi, hi'⟩ => (congrArg (L i) hi).trans hi')
 
+/-- A family of surjective local maps induces a surjection of restricted tensor
+products. When lifting a pure tensor one can choose the reference vector at
+every place where it maps to the requested factor. -/
+theorem tensorMap_surjective (ξ : ∀ i, V i) (η : ∀ i, W i) (L : ∀ i, V i →ₗ[ℂ] W i)
+    (h : ∀ᶠ i in cofinite, L i (ξ i) = η i) (hs : ∀ i, Function.Surjective (L i)) :
+    Function.Surjective (tensorMap ξ η L h) := by
+  classical
+  rintro ⟨y, hy⟩
+  let T := tensorMap ξ η L h
+  suffices pre : ∃ x, (T x).val = y by
+    obtain ⟨x, hx⟩ := pre
+    exact ⟨x, Subtype.ext hx⟩
+  refine Submodule.span_induction (p := fun y _ => ∃ x, (T x).val = y) ?_ ?_ ?_ ?_ hy
+  · rintro _ ⟨g, hg, rfl⟩
+    let f (i : ι) := if L i (ξ i) = g i then ξ i else (hs i (g i)).choose
+    have hfg (i : ι) : L i (f i) = g i := by
+      dsimp only [f]
+      split_ifs with hi
+      · exact hi
+      · exact (hs i (g i)).choose_spec
+    have hf : ∀ᶠ i in cofinite, f i = ξ i := by
+      filter_upwards [h, hg] with i hi hgi
+      simp [f, hi.trans hgi.symm]
+    refine ⟨⟨_, Submodule.subset_span ⟨f, hf, rfl⟩⟩, ?_⟩
+    change PiTensorProduct.map L (PiTensorProduct.tprod ℂ f) = _
+    rw [PiTensorProduct.map_tprod]
+    exact congrArg (PiTensorProduct.tprod ℂ) (funext hfg)
+  · exact ⟨0, by simp⟩
+  · rintro _ _ _ _ ⟨x, rfl⟩ ⟨y, rfl⟩
+    exact ⟨x+y, by simp⟩
+  · rintro c _ _ ⟨x, rfl⟩
+    exact ⟨c • x, by simp⟩
+
 end Adelic
 
 end

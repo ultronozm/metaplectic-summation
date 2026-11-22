@@ -18,7 +18,8 @@ def adelicLeading : d.Schwartz →ₗ[ℂ] d.Boundary :=
   tensorMap d.basic (fun v => (d.leading v).rangeRestrict (d.basic v))
     (fun v => (d.leading v).rangeRestrict) (Eventually.of_forall fun _ => rfl)
 
-theorem adelicLeading_surjective : Function.Surjective d.adelicLeading := by sorry
+theorem adelicLeading_surjective : Function.Surjective d.adelicLeading :=
+  tensorMap_surjective _ _ _ _ (fun v => (d.leading v).surjective_rangeRestrict)
 
 def pure (f : ∀ v, d.schwartz v) (hf : ∀ᶠ v in cofinite, f v = d.basic v) : d.Schwartz :=
   ⟨PiTensorProduct.tprod ℂ f, Submodule.subset_span ⟨f, hf, rfl⟩⟩

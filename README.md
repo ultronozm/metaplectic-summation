@@ -20,6 +20,12 @@ products and rational evaluations all depend on these inputs.
 | [Schwartz](MetaplecticSummation/Schwartz.lean) | Local test functions, the span of test functions and their transforms, and the good-place basic vector |
 | [SymbolOnLines](MetaplecticSummation/SymbolOnLines.lean) | Equality of the two integrands up to the chart multiplier on every line, from the Steinberg relation |
 | [LocalSymbols](MetaplecticSummation/LocalSymbols.lean) | Continuity and unitarity of the complex symbol from the stated arithmetic characterization |
+| [LineMeasures](MetaplecticSummation/LineMeasures.lean) | Affine change of variables and equality of the normalized Radon charts |
+| [ArchimedeanLines](MetaplecticSummation/ArchimedeanLines.lean) | The infinite-place modulus and Steinberg relation |
+| [FiniteHaar](MetaplecticSummation/FiniteHaar.lean) | The finite residue field, compact ring of integers and the equality of the Haar modulus and the adic norm |
+| [PowerSubgroup](MetaplecticSummation/PowerSubgroup.lean) | Openness of the nonzero n-th powers when n is nonzero in the local field |
+| [TameSymbols](MetaplecticSummation/TameSymbols.lean) | Principal units are n-th powers at tame places, giving the tame Steinberg relation |
+| [WildSymbols](MetaplecticSummation/WildSymbols.lean) | Steinberg at the wild places by reciprocity, Lemma 4.2(ii) at every place, and gluing of every Schwartz section |
 | [FiniteLines](MetaplecticSummation/FiniteLines.lean) | Absolute convergence, joint continuity and uniform vanishing for large line parameter on finite-place test functions in Lemma 4.2 |
 | [Poisson](MetaplecticSummation/Poisson.lean) | The adelic spaces and maps, rational evaluation, Theorem 9.1, Corollary 9.2 and the degree-one boundary value |
 | [Shears](MetaplecticSummation/Shears.lean) | Proved chart gluing, additive composition and the two Radon and Fourier identities of Lemma 5.2 |
@@ -40,8 +46,12 @@ This keeps the statement on Mathlib. A future class-field-theoretic proof can
 compare Tau Ceti's Kummer-cup invariant to the tame normalization.
 Tau Ceti proves the Steinberg relation for its local symbol in
 `TauCeti.ClassFieldTheory.localSymbol_kummerClass_eq_zero_of_add_eq_one`.
-Identifying its symbol with this project's arithmetic family remains open.
-`Datum.lineSymbol` takes that family's Steinberg relation as an explicit hypothesis.
+This project's proof of Steinberg uses the arithmetic characterization directly.
+Hensel lifting treats principal units at tame places. At the remaining finite
+places weak approximation and reciprocity isolate the desired symbol.
+`Datum.radon_glues` uses these results with the normalized Haar measures.
+It proves chart compatibility for Lean's totalized integrals. Absolute
+convergence is a separate assertion, currently proved on finite-place test functions.
 
 The local Fourier and leading-term maps are chosen from stated existence
 lemmas prescribing their values by the integrals and ray limits. At the
