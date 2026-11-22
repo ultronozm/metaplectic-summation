@@ -1,4 +1,4 @@
-import MetaplecticSummation.Schwartz
+import MetaplecticSummation.Schwartz.Basic
 import MetaplecticSummation.SymbolOnLines
 
 noncomputable section

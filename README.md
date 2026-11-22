@@ -17,7 +17,8 @@ products and rational evaluations all depend on these inputs.
 | --- | --- |
 | [Arithmetic](MetaplecticSummation/Arithmetic.lean) | Completions, local characters, normalized modulus, self-dual measures and the Hilbert symbol |
 | [Core](MetaplecticSummation/Core.lean) | The two chart integrals in Definition 4.4, normalized ray limits and maps of restricted tensor products |
-| [Schwartz](MetaplecticSummation/Schwartz.lean) | Local test functions, the span of test functions and their transforms, and the good-place basic vector |
+| [Schwartz/Basic](MetaplecticSummation/Schwartz/Basic.lean) | Local test functions, the span of test functions and their transforms, and the good-place basic vector |
+| [Schwartz](MetaplecticSummation/Schwartz.lean) | The leading-term map and its values on both types of generator at finite places |
 | [SymbolOnLines](MetaplecticSummation/SymbolOnLines.lean) | Equality of the two integrands up to the chart multiplier on every line, from the Steinberg relation |
 | [LocalSymbols](MetaplecticSummation/LocalSymbols.lean) | Continuity and unitarity of the complex symbol from the stated arithmetic characterization |
 | [LineMeasures](MetaplecticSummation/LineMeasures.lean) | Affine change of variables and equality of the normalized Radon charts |
@@ -27,6 +28,11 @@ products and rational evaluations all depend on these inputs.
 | [TameSymbols](MetaplecticSummation/TameSymbols.lean) | Principal units are n-th powers at tame places, giving the tame Steinberg relation |
 | [WildSymbols](MetaplecticSummation/WildSymbols.lean) | Steinberg at the wild places by reciprocity, Lemma 4.2(ii) at every place, and gluing of every Schwartz section |
 | [FiniteLines](MetaplecticSummation/FiniteLines.lean) | Absolute convergence, joint continuity and uniform vanishing for large line parameter on finite-place test functions in Lemma 4.2 |
+| [SmoothFiniteLines](MetaplecticSummation/SmoothFiniteLines.lean) | Joint local constancy of both finite-place Radon charts and uniform Schwartz–Bruhat bounds for the line slices over compact sets of output vectors |
+| [LocalCharacters](MetaplecticSummation/LocalCharacters.lean) | Continuity, additivity and unitarity of the restrictions of the adelic character |
+| [FiniteTransform](MetaplecticSummation/FiniteTransform.lean) | Absolute convergence of the outer transform integral on finite-place test sections and local constancy of both charts of every finite-place Schwartz section |
+| [RayFourier](MetaplecticSummation/RayFourier.lean) | The normalized transform on each power ray as a one-dimensional Fourier integral, at every place |
+| [FiniteLeading](MetaplecticSummation/FiniteLeading.lean) | Construction of the leading-term map on the full finite-place Schwartz space and its formula at frequency zero |
 | [Poisson](MetaplecticSummation/Poisson.lean) | The adelic spaces and maps, rational evaluation, Theorem 9.1, Corollary 9.2 and the degree-one boundary value |
 | [Shears](MetaplecticSummation/Shears.lean) | Proved chart gluing, additive composition and the two Radon and Fourier identities of Lemma 5.2 |
 | [Inversion](MetaplecticSummation/Inversion.lean) | The root kernel, the local cover acting on Schwartz functions, Fourier inversion, equivariance and Plancherel (Theorem 7.1) |
@@ -53,8 +59,12 @@ places weak approximation and reciprocity isolate the desired symbol.
 It proves chart compatibility for Lean's totalized integrals. Absolute
 convergence is a separate assertion, currently proved on finite-place test functions.
 
-The local Fourier and leading-term maps are chosen from stated existence
-lemmas prescribing their values by the integrals and ray limits. At the
+The existence of the local Fourier endomorphism and of the archimedean
+leading-term map is admitted. At a finite place the normalized ray identity
+and absolute convergence give the leading term on transforms of test sections.
+Test sections themselves vanish near the origin. Linearity and uniqueness of
+limits extend these values to the entire finite-place Schwartz space. This
+construction uses the arithmetic inputs above, including self-dual Haar measure. At the
 finitely many places without a basic vector, the restricted tensor construction
 uses zero as an arbitrary reference value. Local factors at these places vary
 freely. The boundary space is the restricted tensor product of the **local
