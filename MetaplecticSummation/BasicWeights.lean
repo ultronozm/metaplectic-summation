@@ -1,4 +1,5 @@
 import MetaplecticSummation.Gauss.Setup
+import MetaplecticSummation.FourierOrthogonality
 
 /-! The unit and nonintegral shells in the local factors of the global Gauss sum. -/
 
@@ -54,59 +55,8 @@ theorem hat_subring_indicator {K : Type*} [NormedField K] [MeasurableSpace K] [B
     (μ : Measure K) [μ.IsAddHaarMeasure] (ψ : K → ℂ) (ha : ∀ x y, ψ (x+y) = ψ x * ψ y)
     (hperp : ∀ x : K, (∀ y ∈ O, ψ (x*y) = 1) ↔ x ∈ D) (y : K) :
     (∫ x, (O : Set K).indicator (fun _ => (1 : ℂ)) x * ψ (x*y) ∂μ) =
-      D.indicator (fun _ => (μ.real (O : Set K) : ℂ)) y := by
-  let g := (O : Set K).indicator (fun _ => (1 : ℂ))
-  change (∫ x, g x * ψ (x*y) ∂μ) = _
-  by_cases hy : y ∈ D
-  · rw [indicator_of_mem hy]
-    have he (x : K) : g x * ψ (x*y) = g x := by
-      by_cases hx : x ∈ O
-      · rw [mul_comm x y, (hperp y).mpr hy x hx, mul_one]
-      · simp [g,hx]
-    simp only [he, g, integral_indicator hO, integral_const, Measure.restrict_apply_univ,
-      Complex.real_smul, mul_one, Measure.real]
-  · obtain ⟨t, ht, hχ⟩ : ∃ t ∈ O, ψ (y*t) ≠ 1 := by
-      by_contra! he
-      exact hy ((hperp y).mp he)
-    let f (x : K) := g x * ψ (x*y)
-    have htrans (x : K) : f (x+t) = f x * ψ (y*t) := by
-      have hmem : x + t ∈ O ↔ x ∈ O := O.toAddSubgroup.add_mem_cancel_right ht
-      simp only [f, g, indicator, SetLike.mem_coe, hmem, add_mul, ha, mul_assoc, mul_comm t y]
-    have hi := integral_add_right_eq_self (μ := μ) f t
-    simp_rw [htrans] at hi
-    rw [integral_mul_const] at hi
-    rw [indicator_of_notMem hy]
-    exact by_contra fun h => hχ ((mul_eq_left₀ h).mp hi)
-
-/-- Plancherel on the characteristic function of an additive compact open
-subring makes the product of its volume and its annihilator’s volume one. -/
-private theorem volume_mul_annihilator {K : Type*} [NormedField K] [MeasurableSpace K]
-    [BorelSpace K] (O : Subring K) (D : Set K) (hD : MeasurableSet D) (hO : IsClopen (O : Set K)) (hK : IsCompact (O : Set K))
-    (μ : Measure K) [μ.IsAddHaarMeasure] (ψ : K → ℂ)
-    (ha : ∀ x y, ψ (x+y) = ψ x * ψ y)
-    (hperp : ∀ x : K, (∀ y ∈ O, ψ (x*y) = 1) ↔ x ∈ D)
-    (hP : ∀ f : K → ℂ, Continuous f → HasCompactSupport f →
-      (∫⁻ y, ‖∫ x, f x * ψ (x*y) ∂μ‖ₑ^2 ∂μ) = ∫⁻ x, ‖f x‖ₑ^2 ∂μ) :
-    μ.real O * μ.real D = 1 := by
-  let g := (O : Set K).indicator (fun _ => (1 : ℂ))
-  let V := μ.real (O : Set K)
-  have hV : 0 < V := ENNReal.toReal_pos
-    (hO.isOpen.measure_pos μ ⟨0,O.zero_mem⟩).ne' hK.measure_ne_top
-  have hhat (y : K) : (∫ x, g x * ψ (x*y) ∂μ) = D.indicator (fun _ => (V : ℂ)) y :=
-    hat_subring_indicator O D hO.isOpen.measurableSet μ ψ ha hperp y
-  have hp := hP g (hO.continuous_indicator continuous_const)
-    (HasCompactSupport.intro hK fun _ h => indicator_of_notMem h _)
-  have hind (A : Set K) (r : ℂ) (x : K) : ‖A.indicator (fun _ => r) x‖ₑ ^ 2 =
-      A.indicator (fun _ => ‖r‖ₑ^2) x := by
-    by_cases hx : x ∈ A <;> simp [hx]
-  simp only [hhat, g, hind, lintegral_indicator hD, lintegral_indicator hO.isOpen.measurableSet, lintegral_const,
-    Measure.restrict_apply_univ, enorm_one, one_pow, one_mul] at hp
-  have he := congrArg ENNReal.toReal hp
-  have hnorm : ‖(V : ℂ)‖ = V := by simp [abs_of_pos hV]
-  simp only [ENNReal.toReal_mul, ENNReal.toReal_pow, toReal_enorm, hnorm] at he
-  change V^2 * μ.real D = V at he
-  apply mul_left_cancel₀ hV.ne' (b := V * μ.real D)
-  linear_combination he
+      D.indicator (fun _ => (μ.real (O : Set K) : ℂ)) y :=
+  hat_addSubgroup_indicator O.toAddSubgroup D hO μ ψ ha hperp y
 
 omit [NeZero n] in
 /-- The annihilator of the integer ring is b⁻¹ times the ring. The
@@ -134,9 +84,12 @@ theorem selfDual_volume_of_conductor (p : Prime F) (b : (p.adicCompletion F)ˣ)
     rw [Set.mem_inv_smul_set_iff, Units.smul_def, smul_eq_mul, mul_comm]
     rfl
   have hD : MeasurableSet D := hO.isOpen.smul b⁻¹ |>.measurableSet
-  have hp := volume_mul_annihilator O D hD hO (FinitePlace.isCompact_adicCompletionIntegers p)
+  have hp := volume_mul_annihilator O.toAddSubgroup D hD hO (FinitePlace.isCompact_adicCompletionIntegers p)
     μ (d.character.localValue F (.inr p)) (d.character.localValue_add (.inr p))
-    (fun x => by simpa only [hd, hmem] using hψ x) hm.2
+    (fun x => by
+      change (∀ y ∈ O, _) ↔ x ∈ D
+      simpa only [hd, hmem] using hψ x) hm.2
+  change μ.real (O : Set _) * μ.real D = 1 at hp
   have hvol := congrArg ENNReal.toReal (distribHaarChar_mul μ b⁻¹ (O : Set (p.adicCompletion F)))
   rw [FinitePlace.haarChar_eq_nnnorm, ENNReal.toReal_mul, ENNReal.coe_toReal] at hvol
   change ‖b⁻¹.val‖ * μ.real O = μ.real D at hvol

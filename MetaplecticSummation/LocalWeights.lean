@@ -41,7 +41,7 @@ theorem jacquet_inversion (v : Place F) (Φ : d.schwartz v) (c : (LocalField F v
   simp_rw [eval] at ht
   change d.jacquet v (d.fourier v (d.fourier v Φ)) c = d.symbol v (-c) e * d.jacquet v Φ (e*c)
   unfold jacquet
-  rw [(d.schwartz_inversion v).2.1 Φ]
+  rw [d.schwartz_fourier_square v Φ]
   change (∫ y, (d.symbol v c e * d.symbol v (-1) e * Φ.val.1 (e*c) (y/e.val)) *
     d.character.localValue F v (-y/c.val) ∂_) = _
   rw [hs]
