@@ -297,6 +297,17 @@ shells. Applying the transform expresses the basic vector as a linear
 combination of a dilated test section and a transformed test section.
 Rescaling the character gives the result at every conductor.
 
+At every place, a compactly supported test weight W lifts to a test section
+whose Jacquet integral equals W. The X-chart of the lift is
+|x|ᵥ⁻¹ W(x) β(y/x), where β has Fourier coefficient one at the chosen
+frequency. At finite places β is a normalized compact-open ball indicator.
+At real and complex places, smooth compact tests separate the continuous
+additive character from zero. The support stays in a compact subset of the
+X-chart, and the Hilbert-symbol transition preserves smoothness and rapid
+decay on the Y-chart. The same β works for all W. The power average of the
+lift is given on the X-chart by the weighted moment of W over xFᵥˣⁿ.
+If every such moment vanishes, the average vanishes on both charts.
+
 The untwisted S-integer summation formula follows in Lean from the adelic
 line formula, the identity for the transformed basic Jacquet weight, and
 `product_basic`. Lean now derives the basic-weight identity from Corollary 6.5
