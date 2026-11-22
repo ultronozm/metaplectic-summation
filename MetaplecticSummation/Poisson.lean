@@ -1,13 +1,10 @@
-import MetaplecticSummation.Schwartz
+import MetaplecticSummation.RationalEvaluation
 
 noncomputable section
 namespace MetaplecticPoisson
 namespace Datum
 open Filter
 variable {F : Type} [Field F] [NumberField F] {n : ℕ} [NeZero n] (d : Datum F n)
-
-/-- Algebraic adelic Schwartz space of §9.2. -/
-abbrev Schwartz := restrictedTensor d.basic
 
 def adelicFourier : d.Schwartz →ₗ[ℂ] d.Schwartz :=
   tensorMap d.basic d.basic d.fourier d.eventually_fourier_basic
@@ -21,33 +18,21 @@ def adelicLeading : d.Schwartz →ₗ[ℂ] d.Boundary :=
 theorem adelicLeading_surjective : Function.Surjective d.adelicLeading :=
   tensorMap_surjective _ _ _ _ (fun v => (d.leading v).surjective_rangeRestrict)
 
-def pure (f : ∀ v, d.schwartz v) (hf : ∀ᶠ v in cofinite, f v = d.basic v) : d.Schwartz :=
-  ⟨PiTensorProduct.tprod ℂ f, Submodule.subset_span ⟨f, hf, rfl⟩⟩
+theorem adelicFourier_pure (f : ∀ v, d.schwartz v) (hf) :
+    d.adelicFourier (d.pure f hf) = d.pure (fun v => d.fourier v (f v)) (by
+      filter_upwards [hf,d.eventually_fourier_basic] with v hv hb
+      exact hv ▸ hb) := by
+  apply Subtype.ext
+  change PiTensorProduct.map d.fourier (PiTensorProduct.tprod ℂ f) = _
+  rw [PiTensorProduct.map_tprod]
+  rfl
 
-def diagonalPoint (p : RationalPoint F) (v : Place F) : LocalField F v × LocalField F v :=
-  (diagonal F v p.val.1, diagonal F v p.val.2)
-
-/-- The chart choice is made once at the rational point. -/
-def localValue (p : RationalPoint F) (v : Place F) (f : d.schwartz v) : ℂ := by
-  classical exact if p.val.1 ≠ 0 then xChart f (diagonalPoint p v) else yChart f (diagonalPoint p v)
-
-theorem eventually_basic_value (p : RationalPoint F) :
-    ∀ᶠ v in cofinite, d.localValue p v (d.basic v) = 1 := by sorry
-
-/-- Extension from restricted pure tensors by multilinearity. -/
-theorem exists_evaluation :
-    ∃ ev : d.Schwartz →ₗ[ℂ] (RationalPoint F → ℂ),
-      ∀ f hf p, ev (d.pure f hf) p = ∏ᶠ v, d.localValue p v (f v) := by sorry
-
-def evaluation := d.exists_evaluation.choose
-
-theorem evaluation_pure (f : ∀ v, d.schwartz v) (hf) (p : RationalPoint F) :
-    d.evaluation (d.pure f hf) p = ∏ᶠ v, d.localValue p v (f v) :=
-  d.exists_evaluation.choose_spec f hf p
-
-/-- Reciprocity gives the same product in the Y chart whenever that chart is available. -/
-theorem evaluation_pure_y (f : ∀ v, d.schwartz v) (hf) (p : RationalPoint F) (hy : p.val.2 ≠ 0) :
-    d.evaluation (d.pure f hf) p = ∏ᶠ v, yChart (f v) (diagonalPoint p v) := by sorry
+theorem adelicLeading_pure_eq_zero (f : ∀ v, d.schwartz v) (hf) (v : Place F)
+    (hv : d.leading v (f v) = 0) : d.adelicLeading (d.pure f hf) = 0 := by
+  apply Subtype.ext
+  change PiTensorProduct.map _ (PiTensorProduct.tprod ℂ f) = 0
+  rw [PiTensorProduct.map_tprod]
+  exact (PiTensorProduct.tprod ℂ).map_coord_zero v (Subtype.ext hv)
 
 /-- Theorem 9.1. Both sums range over the nonzero rational vectors. -/
 theorem poisson :
@@ -64,6 +49,15 @@ theorem poisson_of_leading_eq_zero (Φ : d.Schwartz)
     (∑' v, d.evaluation Φ v) = ∑' v, d.evaluation (d.adelicFourier Φ) v := by
   obtain ⟨B, hB, _⟩ := d.poisson
   simpa only [h, hF, map_zero, add_zero] using (hB Φ).2.2
+
+/-- The pure-tensor case of Corollary 9.2 allows the two vanishing factors
+to occur at different places. -/
+theorem poisson_pure_of_local_vanishing (f : ∀ v, d.schwartz v) (hf) (v w : Place F)
+    (hv : d.leading v (f v) = 0) (hw : d.leading w (d.fourier w (f w)) = 0) :
+    (∑' p, d.evaluation (d.pure f hf) p) = ∑' p, d.evaluation (d.adelicFourier (d.pure f hf)) p := by
+  apply d.poisson_of_leading_eq_zero _ (d.adelicLeading_pure_eq_zero f hf v hv)
+  rw [d.adelicFourier_pure]
+  exact d.adelicLeading_pure_eq_zero _ _ w hw
 
 /-- The paragraph following Theorem 9.1. In degree one the leading term
 in the direction (1,0) gives the local Schwartz function's value at zero. -/

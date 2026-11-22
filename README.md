@@ -36,12 +36,14 @@ products and rational evaluations all depend on these inputs.
 | [FiniteRayFourier](MetaplecticSummation/FiniteRayFourier.lean) | Local constancy and nontriviality of finite-place additive characters, and uniform Schwartz–Bruhat bounds after one-dimensional Fourier transformation |
 | [FiniteRays](MetaplecticSummation/FiniteRays.lean) | Bounded families of normalized ray extensions for every finite-place Schwartz section in §8 |
 | [FiniteGerms](MetaplecticSummation/FiniteGerms.lean) | Local constancy and homogeneity of the leading term, compact support in the plane, agreement with the leading term near zero, and identification of its kernel with the test sections |
-| [Poisson](MetaplecticSummation/Poisson.lean) | The adelic spaces and maps, rational evaluation, Theorem 9.1, Corollary 9.2 and the degree-one boundary value |
+| [RationalEvaluation](MetaplecticSummation/RationalEvaluation.lean) | The product formula for the normalized modulus, adelic chart evaluations on the restricted tensor product, and agreement at rational points by Hilbert reciprocity |
+| [Poisson](MetaplecticSummation/Poisson.lean) | The adelic Fourier and leading-term maps, Theorem 9.1, Corollary 9.2 including its local vanishing criterion, and the degree-one boundary value |
 | [Shears](MetaplecticSummation/Shears.lean) | Proved chart gluing, additive composition and the two Radon and Fourier identities of Lemma 5.2 |
 | [Inversion](MetaplecticSummation/Inversion.lean) | The root kernel, the local cover acting on Schwartz functions, Fourier inversion, equivariance and Plancherel (Theorem 7.1) |
 | [Jacquet](MetaplecticSummation/Jacquet.lean) | Jacquet integrals, the explicit dual weight (Proposition 10.8), and adelic summation with its power-class main term (Theorem 10.16) |
 | [Gauss](MetaplecticSummation/Gauss.lean) | Power residue symbols, Gauss sums and their divisor sums over S-integers, the twisted formula (Theorem 10.34), and quadratic duals (Corollary 10.40) |
 | [LocalWeights](MetaplecticSummation/LocalWeights.lean) | Mellin factors, transforms of basic and character weights, the Gauss-sum expression for ε, and the intertwining operator on leading terms |
+| [AdeleLattice](MetaplecticSummation/AdeleLattice.lean) | Discreteness of the diagonal field, an additive fundamental domain in the adeles, and compactness of the Hausdorff quotient |
 | [FourierCoefficients](MetaplecticSummation/FourierCoefficients.lean) | Unfolding at frequencies zero and one, the two local marginal identities, Poisson on power classes and the constant-term identity |
 
 ## Conventions and proof status
@@ -73,11 +75,18 @@ sets of chart vectors. A compact annulus meets every power ray, so uniform
 bounds there give compact support in the plane and equality with the leading
 term near the origin.
 
-At the
-finitely many places without a basic vector, the restricted tensor construction
+At the finitely many places without a basic vector, the restricted tensor construction
 uses zero as an arbitrary reference value. Local factors at these places vary
 freely. The boundary space is the restricted tensor product of the **local
 images** of the leading-term maps.
+
+For a pure tensor, rational evaluation is the product of its local chart values.
+The basic vector evaluates to one at almost every place, and Hilbert reciprocity
+makes the two chart products agree when both coordinates are nonzero.
+The Fourier coefficient uses the unique Haar probability measure on the compact
+additive quotient. Translation by a principal adele permutes the rational points
+in the theta series, so its character-weighted integrand descends to the quotient.
+The unfolding identities at frequencies zero and one remain admitted.
 
 The main theorem and the arithmetic and analytic inputs still have `sorry`
 proofs. Corollary 9.2 is deduced from Theorem 9.1 in Lean. To list the current

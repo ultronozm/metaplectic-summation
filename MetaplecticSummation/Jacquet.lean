@@ -57,8 +57,6 @@ theorem root_fourier (v : Place F) (W : Weight v) (h : TestWeight v W)
         ∫ t, d.kernelIntegral v W c t * d.character.localValue F v (t * lam)
           ∂(selfDual F d.character v) := by sorry
 
-abbrev atPlace (v : Place F) (x : Fˣ) : (LocalField F v)ˣ := Units.map (diagonal F v) x
-
 def GoodOutside (S : Finset (Place F)) : Prop :=
   S.Nonempty ∧ (∀ w, Sum.inl w ∈ S) ∧ ∀ p : HeightOneSpectrum (𝓞 F), Sum.inr p ∉ S →
     p.asIdeal.absNorm.Coprime n ∧ ∀ x : LocalField F (.inr p), ‖x‖ ≤ 1 →
