@@ -39,8 +39,8 @@ products and rational evaluations all depend on these inputs.
 | [FourierDifferences](MetaplecticSummation/FourierDifferences.lean), [ArchimedeanFourierDecay](MetaplecticSummation/ArchimedeanFourierDecay.lean) | Fourier multipliers for translations and differences, integral decay estimates from real derivatives, and uniform Fourier decay for bounded Schwartz families |
 | [FiniteTransform](MetaplecticSummation/FiniteTransform.lean) | Absolute convergence of the outer transform integral on finite-place test sections and local constancy of both charts of every finite-place Schwartz section |
 | [FiniteSchwartzLines](MetaplecticSummation/FiniteSchwartzLines.lean) | Absolute convergence of both line integrals on the full Schwartz space at every finite place for nonzero line parameters |
-| [FiniteRadonContinuity](MetaplecticSummation/FiniteRadonContinuity.lean) | Absolute convergence and joint continuity for all finite-place Schwartz sections on both charts, including the fiber of determinant zero |
-| [TransformLinearity](MetaplecticSummation/TransformLinearity.lean) | Scalar linearity of the chart integrals and additivity at finite places under absolute convergence |
+| [RadonConvergence](MetaplecticSummation/RadonConvergence.lean), [RadonDecay](MetaplecticSummation/RadonDecay.lean) | Lemma 4.2(i) at every number-field place under the chart growth hypothesis, absolute convergence and chart-valued linearity of the Fourier integral on the local Schwartz space |
+| [TransformLinearity](MetaplecticSummation/TransformLinearity.lean) | Scalar linearity and additivity of the chart integrals under absolute convergence |
 | [RayFourier](MetaplecticSummation/RayFourier.lean) | The normalized transform on each power ray as a one-dimensional Fourier integral, at every place |
 | [FiniteLeading](MetaplecticSummation/FiniteLeading.lean) | Construction of the leading-term map on the full finite-place Schwartz space and its formula at frequency zero |
 | [FiniteRayFourier](MetaplecticSummation/FiniteRayFourier.lean) | Local constancy and nontriviality of finite-place additive characters, and uniform Schwartz–Bruhat bounds after one-dimensional Fourier transformation |
@@ -144,16 +144,15 @@ This project's proof of Steinberg uses the arithmetic characterization directly.
 Hensel lifting treats principal units at tame places. At the remaining finite
 places weak approximation and reciprocity isolate the desired symbol.
 `Datum.radon_glues` uses these results with the normalized Haar measures.
-At every finite place the inner line integrals converge absolutely on the full
-Schwartz space and vary continuously in both the chart vector and the line parameter.
-At tame places the outer integrals converge absolutely for every Schwartz
-section at every output vector.
-
-At archimedean places both line integrals converge absolutely on test
-sections. A bound from the determinant equation gives integrable decay in the
-line coordinate and arbitrary polynomial decay in the parameter. The latter
-is uniform on compact subsets of the output chart. Dominated convergence
-gives joint continuity, and the outer integral also converges absolutely.
+At every number-field place, continuous charts satisfying (4.2) have
+absolutely convergent line integrals, including at τ = 0. In multiplicative
+Haar measure, the integrand is bounded by a constant times
+min(|x|ᵥ^(1/n), |x|ᵥ^(−1/n)). Dominated convergence gives joint continuity.
+A cutoff removes the singularity at the origin. On a compact set of output
+vectors, the determinant equation bounds the values of τ for which this
+cutoff affects the integral. The Radon slices therefore decay rapidly in τ,
+uniformly on each such compact set. Every local Schwartz section satisfies
+(4.2), so both outer integrals converge absolutely as well.
 
 At every place the normalized ray identity gives the leading term on a
 transformed test section by evaluating a one-dimensional Fourier integral at
@@ -164,7 +163,9 @@ power-dilation law follows by reparametrizing the ray limit. The leading term
 commutes with the two shear generators. Its kernel is invariant under every
 element of the local cover, and the cover acts on the space of leading terms.
 
-The all-place construction of the Fourier endomorphism remains admitted. At
+The defining integral gives a linear map to pairs of chart functions at every place.
+The remaining condition for an endomorphism is that the second transform of
+every test section belongs to the Schwartz space. At
 tame finite places `tame_schwartz_inversion` constructs the Fourier
 automorphism independently. At finite places the normalized rays extend to bounded Schwartz–Bruhat families over compact
 sets of chart vectors. A compact annulus meets every power ray, so uniform

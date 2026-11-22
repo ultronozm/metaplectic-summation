@@ -16,41 +16,39 @@ variable (w : InfinitePlace F)
 local notation "vi" => (Sum.inl w : Place F)
 local notation "K" => LocalField F vi
 
-private theorem continuous_test_X {L : Type} [NormedField L] [NormedAlgebra ℝ L]
-    (e : w.Completion ≃+* L) (he : Isometry e) {g : Charts K} (hg : archTest e g) :
-    Continuous (Function.uncurry g.1) := by
-  let q (z : Kˣ × K) := (e z.1.val,e z.2)
-  have hq : Continuous q := (he.continuous.comp (Units.continuous_val.comp continuous_fst)).prodMk
-    (he.continuous.comp continuous_snd)
-  have hc := hg.1.1.continuousOn.comp_continuous hq (fun z => (map_ne_zero e).mpr z.1.ne_zero)
-  apply hc.congr
-  intro z
-  simp only [Function.comp_apply,q,e.symm_apply_apply,Function.uncurry]
-  exact xChart_unit_eval g _ _
-
-theorem continuous_arch_schwartz_X (Φ : d.schwartz vi) : Continuous (Function.uncurry Φ.val.1) := by
-  refine Submodule.span_induction (p := fun g _ => Continuous (Function.uncurry g.1)) ?_ ?_ ?_ ?_ Φ.property
+theorem continuous_arch_schwartz_charts (Φ : d.schwartz vi) :
+    Continuous (Function.uncurry Φ.val.1) ∧ Continuous (Function.uncurry Φ.val.2) := by
+  refine Submodule.span_induction (p := fun g _ =>
+    Continuous (Function.uncurry g.1) ∧ Continuous (Function.uncurry g.2)) ?_ ?_ ?_ ?_ Φ.property
   · rintro g (hg | ⟨f,hf,rfl⟩)
-    · by_cases h : w.IsReal
-      · exact continuous_test_X w _ (InfinitePlace.Completion.isometry_extensionEmbeddingOfIsReal h)
-          (by simpa only [testSet,dif_pos h] using hg.2)
-      · exact continuous_test_X w _ (InfinitePlace.Completion.isometry_extensionEmbedding w)
-          (by simpa only [testSet,dif_neg h] using hg.2)
+    · obtain ⟨hx,hy⟩ := d.arch_test_lineCharts w hg
+      exact ⟨hx.1,hy.1.comp (f := Prod.swap) continuous_swap⟩
     · have hc := (d.arch_radon_hat_bounded w hf).1.comp
         (continuous_id.prodMk (continuous_const (y := (1:K))))
       let s : ℂ := (Real.sqrt (modulus F vi (n : K)) : ℂ)⁻¹
-      apply ((continuous_const (y := s)).mul hc.fst).congr
-      intro z
-      change s * d.hat vi _ 1 = s * _
-      simp only [hat,one_mul]
-      congr 1
-      apply integral_congr_ae
-      filter_upwards with t using mul_comm _ _
-  · exact continuous_const
+      constructor
+      · apply ((continuous_const (y := s)).mul hc.fst).congr
+        intro z
+        change s * d.hat vi _ 1 = s * _
+        simp only [hat,one_mul]
+        congr 1
+        apply integral_congr_ae
+        filter_upwards with t using mul_comm _ _
+      · apply ((continuous_const (y := s)).mul (hc.snd.comp continuous_swap)).congr
+        intro z
+        change s * d.hat vi _ 1 = s * _
+        simp only [hat,one_mul]
+        congr 1
+        apply integral_congr_ae
+        filter_upwards with t using mul_comm _ _
+  · exact ⟨continuous_const,continuous_const⟩
   · intro f g _ _ hf hg
-    exact hf.add hg
+    exact ⟨hf.1.add hg.1,hf.2.add hg.2⟩
   · intro c g _ hg
-    exact continuous_const.mul hg
+    exact ⟨continuous_const.mul hg.1,continuous_const.mul hg.2⟩
+
+theorem continuous_arch_schwartz_X (Φ : d.schwartz vi) : Continuous (Function.uncurry Φ.val.1) :=
+  (d.continuous_arch_schwartz_charts w Φ).1
 
 /-- On any region where the modulus of the first coordinate is bounded
 below, the vertical slices have one integrable majorant. -/

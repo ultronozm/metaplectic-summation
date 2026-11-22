@@ -9,7 +9,7 @@ open scoped Topology
 open Classical
 
 /-- A chart with the unit coordinate first, including its estimates at infinity. -/
-private def RapidLineChart {K : Type} [NormedField K] (f : Kˣ → K → ℂ) : Prop :=
+def RapidLineChart {K : Type} [NormedField K] (f : Kˣ → K → ℂ) : Prop :=
   Continuous (Function.uncurry f) ∧ ∀ j : ℕ, ∃ C : ℝ, 0 ≤ C ∧ ∀ a b,
     ‖f a b‖ * (1 + max ‖a.val‖ ‖b‖)^j ≤ C
 
@@ -238,7 +238,7 @@ end Slice
 namespace Datum
 variable {F : Type} [Field F] [NumberField F] {n : ℕ} [NeZero n] (d : Datum F n)
 
-private theorem arch_test_lineCharts (w : InfinitePlace F) {f : Charts (LocalField F (.inl w))}
+theorem arch_test_lineCharts (w : InfinitePlace F) {f : Charts (LocalField F (.inl w))}
     (hf : f ∈ d.testSet (.inl w)) : RapidLineChart f.1 ∧ RapidLineChart (fun b a => f.2 a b) := by
   by_cases hw : w.IsReal
   · exact archTest_lineCharts _ (InfinitePlace.Completion.isometry_extensionEmbeddingOfIsReal hw)
@@ -271,6 +271,51 @@ theorem arch_integrable_inv_cube (w : InfinitePlace F) :
   · exact pull (InfinitePlace.Completion.ringEquivComplexOfIsComplex (InfinitePlace.not_isReal_iff_isComplex.mp hw)) (InfinitePlace.Completion.isometry_extensionEmbedding w) (by norm_num)
 
 set_option maxHeartbeats 800000 in
+/-- Radon integration of continuous, rapidly decreasing charts. The two inner integrals converge
+absolutely, and the Radon slices are jointly continuous and rapidly decreasing
+in the line parameter, uniformly on compact sets of output vectors. -/
+theorem radon_of_rapid_charts (v : Place F) {f : Charts (LocalField F v)}
+    (hint : Integrable (fun x : LocalField F v => ((1+‖x‖)^3)⁻¹) (selfDual F d.character v))
+    (hx : RapidLineChart f.1) (hy : RapidLineChart (fun b a => f.2 a b)) :
+    let K := LocalField F v
+    let dx := selfDual F d.character v
+    let R := radon n (d.symbol v) (modulus F v) dx f
+    (∀ (a : Kˣ) (b t : K), Integrable (fun x : K => if hx : x ≠ 0 then
+      f.1 (Units.mk0 x hx) ((x*b-t^n)/a.val) * d.symbol v (Units.mk0 x hx) (-a) else 0) dx) ∧
+    (∀ (a : K) (b : Kˣ) (t : K), Integrable (fun y : K => if hy : y ≠ 0 then
+      f.2 ((a*y+t^n)/b.val) (Units.mk0 y hy) * d.symbol v (Units.mk0 y hy) b * d.symbol v (-1) b else 0) dx) ∧
+    RapidRadonValues (fun (q : Kˣ × K) t => (R t).1 q.1 q.2) ∧
+    RapidRadonValues (fun (q : K × Kˣ) t => (R t).2 q.1 q.2) := by
+  let K := LocalField F v
+  let dx := selfDual F d.character v
+  let m (a : Kˣ) := modulus F v a.val
+  have hm : Continuous m := by cases v <;> first | exact Units.continuous_val.norm.pow _ | exact Units.continuous_val.norm
+  have hm' (a : Kˣ) : 0 < m a := by cases v <;> simp [m,modulus,norm_pos_iff,a.ne_zero,pow_pos]
+  let S := d.symbol v
+  have hs := d.continuous_symbol v
+  have hneg : Continuous (fun a : Kˣ => -a) := Units.isEmbedding_val₀.continuous_iff.mpr Units.continuous_val.neg
+  have cx : Continuous (Function.uncurry (fun x a : Kˣ => S x (-a))) :=
+    hs.comp (continuous_fst.prodMk (hneg.comp continuous_snd))
+  have cy : Continuous (Function.uncurry (fun y b : Kˣ => S y b * S (-1) b)) :=
+    hs.mul (hs.comp (continuous_const.prodMk continuous_snd))
+  obtain ⟨ix,X⟩ := normalize_slice dx hint hx cx (fun x a => d.norm_symbol v x (-a))
+    (NeZero.pos n) (show Continuous (fun t : K => -(t^n)) by fun_prop) (fun t => by rw [norm_neg,norm_pow]) m hm hm'
+  obtain ⟨iy,Y⟩ := normalize_slice dx hint hy cy
+    (fun x a => by simp [S]) (NeZero.pos n) (show Continuous (fun t : K => t^n) by fun_prop) (fun t => norm_pow t n) m hm hm'
+  refine ⟨fun a b t => ?_,fun a b t => ?_,?_,?_⟩
+  · have h := ix (a,b) t
+    unfold sliceKernel at h
+    simpa only [← sub_eq_add_neg] using! h
+  · have h := iy (b,a) t
+    unfold sliceKernel at h
+    simpa only [mul_comm _ a,← mul_assoc] using! h
+  · simpa only [radon,sliceKernel,← sub_eq_add_neg] using! X
+  · let R := radon n (d.symbol v) (modulus F v) dx f
+    have hY : RapidRadonValues (fun (q : Kˣ × K) t => (R t).2 q.2 q.1) := by
+      simpa only [R,radon,sliceKernel,mul_comm _ (Prod.snd _),← mul_assoc] using! Y
+    exact hY.comp (Prod.swap : K × Kˣ → Kˣ × K) continuous_swap
+
+set_option maxHeartbeats 800000 in
 /-- Lemma 4.2(i) on archimedean test sections. The two inner integrals converge
 absolutely, and the Radon slices are jointly continuous and rapidly decreasing
 in the line parameter, uniformly on compact sets of output vectors. -/
@@ -286,36 +331,8 @@ theorem arch_test_radon (w : InfinitePlace F) {f : Charts (LocalField F (.inl w)
       f.2 ((a*y+t^n)/b.val) (Units.mk0 y hy) * d.symbol v (Units.mk0 y hy) b * d.symbol v (-1) b else 0) dx) ∧
     RapidRadonValues (fun (q : Kˣ × K) t => (R t).1 q.1 q.2) ∧
     RapidRadonValues (fun (q : K × Kˣ) t => (R t).2 q.1 q.2) := by
-  let v : Place F := .inl w
-  let K := LocalField F v
-  let dx := selfDual F d.character v
   obtain ⟨hx,hy⟩ := d.arch_test_lineCharts w hf
-  let m (a : Kˣ) := ‖a.val‖^w.mult
-  have hm : Continuous m := Units.continuous_val.norm.pow _
-  have hm' (a : Kˣ) : 0 < m a := pow_pos (norm_pos_iff.mpr a.ne_zero) _
-  let S := d.symbol v
-  have hs := d.continuous_symbol v
-  have hneg : Continuous (fun a : Kˣ => -a) := Units.isEmbedding_val₀.continuous_iff.mpr Units.continuous_val.neg
-  have cx : Continuous (Function.uncurry (fun x a : Kˣ => S x (-a))) :=
-    hs.comp (continuous_fst.prodMk (hneg.comp continuous_snd))
-  have cy : Continuous (Function.uncurry (fun y b : Kˣ => S y b * S (-1) b)) :=
-    hs.mul (hs.comp (continuous_const.prodMk continuous_snd))
-  obtain ⟨ix,X⟩ := normalize_slice dx (d.arch_integrable_inv_cube w) hx cx (fun x a => d.norm_symbol v x (-a))
-    (NeZero.pos n) (show Continuous (fun t : K => -(t^n)) by fun_prop) (fun t => by rw [norm_neg,norm_pow]) m hm hm'
-  obtain ⟨iy,Y⟩ := normalize_slice dx (d.arch_integrable_inv_cube w) hy cy
-    (fun x a => by simp [S]) (NeZero.pos n) (show Continuous (fun t : K => t^n) by fun_prop) (fun t => norm_pow t n) m hm hm'
-  refine ⟨fun a b t => ?_,fun a b t => ?_,?_,?_⟩
-  · have h := ix (a,b) t
-    unfold sliceKernel at h
-    simpa only [← sub_eq_add_neg] using! h
-  · have h := iy (b,a) t
-    unfold sliceKernel at h
-    simpa only [mul_comm _ a,← mul_assoc] using! h
-  · simpa only [radon,sliceKernel,← sub_eq_add_neg] using! X
-  · let R := radon n (d.symbol v) (modulus F v) dx f
-    have hY : RapidRadonValues (fun (q : Kˣ × K) t => (R t).2 q.2 q.1) := by
-      simpa only [R,radon,sliceKernel,mul_comm _ (Prod.snd _),← mul_assoc] using! Y
-    exact hY.comp (Prod.swap : K × Kˣ → Kˣ × K) continuous_swap
+  exact d.radon_of_rapid_charts (.inl w) (d.arch_integrable_inv_cube w) hx hy
 
 theorem arch_test_integrable_slices (w : InfinitePlace F) {f : Charts (LocalField F (.inl w))}
     (hf : f ∈ d.testSet (.inl w)) :

@@ -229,14 +229,14 @@ theorem finiteTest_continuous_radon {h : Kˣ → Kˣ → ℂ} (hu : ∀ x y, ‖
       · simp [hy, continuous_const]
 
 omit [BorelSpace K] [IsFiniteMeasureOnCompacts dx] in
-/-- Uniform vanishing in the line parameter over a compact set of output vectors.
-The bound uses the determinant on the product of the two compact sets. -/
-theorem finiteTest_radon_vanishes (hf : finiteTest f) (n : ℕ) (h : Kˣ → Kˣ → ℂ)
-    (m : K → ℝ) {T : Set (K × K)} (hT : IsCompact T) :
-    ∃ B : ℝ, ∀ t : K, B < ‖t‖ ^ n →
-      (∀ (a : Kˣ) (b : K), ((a : K), b) ∈ T → (radon n h m dx f t).1 a b = 0) ∧
-      (∀ (a : K) (b : Kˣ), (a, (b : K)) ∈ T → (radon n h m dx f t).2 a b = 0) := by
-  obtain ⟨C, hC, _, hs⟩ := hf.2.2
+/-- Changing the input charts on a compact set only affects bounded determinant
+parameters, uniformly on compact sets of output vectors. -/
+theorem radon_eq_off_compact {g : Charts K} {C : Set (K × K)} (hC : IsCompact C)
+    (hs : ∀ z ∉ C, xChart f z = xChart g z ∧ yChart f z = yChart g z)
+    (n : ℕ) (h : Kˣ → Kˣ → ℂ) (m : K → ℝ) {T : Set (K × K)} (hT : IsCompact T) :
+    ∃ B : ℝ, ∀ t : K, B < ‖t‖^n →
+      (∀ (a : Kˣ) (b : K), (a.val,b) ∈ T → (radon n h m dx f t).1 a b = (radon n h m dx g t).1 a b) ∧
+      (∀ (a : K) (b : Kˣ), (a,b.val) ∈ T → (radon n h m dx f t).2 a b = (radon n h m dx g t).2 a b) := by
   let det (z : (K × K) × (K × K)) := z.1.1 * z.2.2 - z.1.2 * z.2.1
   have hc : Continuous (fun z => ‖det z‖) := by dsimp [det]; fun_prop
   obtain ⟨B, hB⟩ := (hC.prod hT).bddAbove_image hc.continuousOn
@@ -247,28 +247,36 @@ theorem finiteTest_radon_vanishes (hf : finiteTest f) (n : ℕ) (h : Kˣ → Kˣ
     exact ht.not_ge (by simpa [he] using hle)
   constructor
   · intro a b hw
-    dsimp [radon]
-    suffices ∀ x : K, (if hx : x ≠ 0 then
-        f.1 (Units.mk0 x hx) ((x*b-t^n)/a) * h (Units.mk0 x hx) (-a) else 0) = 0 by
-      simp [this]
-    intro x
+    dsimp only [radon]
+    congr 1
+    apply integral_congr_ae
+    filter_upwards with x
     split_ifs with hx
-    · have hz := (hs _ (outside (x, (x*b-t^n)/a) _ hw (by
-          dsimp [det]; field_simp; ring))).1
-      simpa [xChart, hx] using mul_eq_zero_of_left hz (h (Units.mk0 x hx) (-a))
+    · have hz := (hs _ (outside (x,(x*b-t^n)/a) _ hw (by dsimp [det]; field_simp; ring))).1
+      rw [show f.1 (Units.mk0 x hx) _ = g.1 (Units.mk0 x hx) _ from by simpa only [xChart,dif_pos hx] using hz]
     · rfl
   · intro a b hw
-    dsimp [radon]
-    suffices ∀ y : K, (if hy : y ≠ 0 then
-        f.2 ((a*y+t^n)/b) (Units.mk0 y hy) * h (Units.mk0 y hy) b * h (-1) b else 0) = 0 by
-      simp [this]
-    intro y
+    dsimp only [radon]
+    congr 1
+    apply integral_congr_ae
+    filter_upwards with y
     split_ifs with hy
-    · have hz := (hs _ (outside ((a*y+t^n)/b, y) _ hw (by
-          dsimp [det]; field_simp; ring))).2
-      simp [yChart, hy] at hz
-      simp [hz]
+    · have hz := (hs _ (outside ((a*y+t^n)/b,y) _ hw (by dsimp [det]; field_simp; ring))).2
+      rw [show f.2 _ (Units.mk0 y hy) = g.2 _ (Units.mk0 y hy) from by simpa only [yChart,dif_pos hy] using hz]
     · rfl
+
+omit [BorelSpace K] [IsFiniteMeasureOnCompacts dx] in
+/-- Uniform vanishing in the line parameter over a compact set of output vectors.
+The bound uses the determinant on the product of the two compact sets. -/
+theorem finiteTest_radon_vanishes (hf : finiteTest f) (n : ℕ) (h : Kˣ → Kˣ → ℂ)
+    (m : K → ℝ) {T : Set (K × K)} (hT : IsCompact T) :
+    ∃ B : ℝ, ∀ t : K, B < ‖t‖ ^ n →
+      (∀ (a : Kˣ) (b : K), ((a : K), b) ∈ T → (radon n h m dx f t).1 a b = 0) ∧
+      (∀ (a : K) (b : Kˣ), (a, (b : K)) ∈ T → (radon n h m dx f t).2 a b = 0) := by
+  obtain ⟨C,hC,_,hs⟩ := hf.2.2
+  obtain ⟨B,hB⟩ := radon_eq_off_compact dx (g := 0) hC (fun z hz => by
+    simpa [xChart,yChart] using! hs z hz) n h m hT
+  exact ⟨B,fun t ht => by simpa [radon] using! hB t ht⟩
 
 namespace Datum
 open NumberField IsDedekindDomain
