@@ -44,8 +44,8 @@ theorem norm_degree_of_tame (hp : p.asIdeal.absNorm.Coprime n) : ‖(n : p.adicC
 
 /-- Property 2(f). Every principal unit is an n-th power when the residue
 characteristic is prime to n. -/
-theorem principal_unit_pow (hp : p.asIdeal.absNorm.Coprime n) (u : (p.adicCompletion F)ˣ)
-    (hu : ‖u.val - 1‖ < 1) : ∃ z : (p.adicCompletion F)ˣ, z ^ n = u := by
+theorem principal_unit_pow_norm (hp : p.asIdeal.absNorm.Coprime n) (u : (p.adicCompletion F)ˣ)
+    (hu : ‖u.val - 1‖ < 1) : ∃ z : (p.adicCompletion F)ˣ, z ^ n = u ∧ ‖z.val - 1‖ = ‖u.val - 1‖ := by
   let O := p.adicCompletionIntegers F
   let k := ResidueField O
   have hi : Valued.v (u.val - 1) < 1 := Valued.toNormedField.norm_lt_one_iff.mp hu
@@ -70,11 +70,27 @@ theorem principal_unit_pow (hp : p.asIdeal.absNorm.Coprime n) (u : (p.adicComple
   have hd : IsUnit (Ideal.Quotient.mk (maximalIdeal O) (f.derivative.eval 1)) := by
     simp [f, derivative_X_pow]
     exact isUnit_iff_ne_zero.mpr hn
-  obtain ⟨x, hx, _⟩ := HenselianRing.is_henselian f (monic_X_pow_sub_C a (NeZero.ne n)) 1 heval hd
+  obtain ⟨x, hx, hx₁⟩ := HenselianRing.is_henselian f (monic_X_pow_sub_C a (NeZero.ne n)) 1 heval hd
   have hx' : x^n = a := sub_eq_zero.mp (by simpa [f, Polynomial.IsRoot] using hx)
   have hpow : x.val ^ n = u.val := congrArg Subtype.val hx'
   have hx₀ : x.val ≠ 0 := fun hz => u.ne_zero (by simpa [hz, zero_pow (NeZero.ne n)] using hpow.symm)
-  exact ⟨Units.mk0 _ hx₀, Units.ext hpow⟩
+  refine ⟨Units.mk0 _ hx₀, Units.ext hpow,?_⟩
+  let g : O := ∑ i ∈ Finset.range n, x^i
+  have hr : residue O x = 1 := by
+    apply sub_eq_zero.mp
+    rw [← map_one (residue O),← map_sub]
+    exact Ideal.Quotient.eq_zero_iff_mem.mpr hx₁
+  have hg : residue O g = (n : k) := by simp [g,hr]
+  have hgu : IsUnit g := (residue_ne_zero_iff_isUnit g).mp (hg ▸ hn)
+  have hnorm : ‖g.val‖ = 1 := (Datum.localInteger_isUnit_iff p g).mp hgu
+  have heq : g.val * (x.val-1) = u.val-1 := congrArg Subtype.val ((geom_sum_mul x n).trans (congrArg (·-1) hx'))
+  rw [← heq,norm_mul,hnorm,one_mul]
+  rfl
+
+theorem principal_unit_pow (hp : p.asIdeal.absNorm.Coprime n) (u : (p.adicCompletion F)ˣ)
+    (hu : ‖u.val - 1‖ < 1) : ∃ z : (p.adicCompletion F)ˣ, z ^ n = u := by
+  obtain ⟨z,hz,_⟩ := principal_unit_pow_norm p hp u hu
+  exact ⟨z,hz⟩
 
 end MetaplecticPoisson.FinitePlace
 

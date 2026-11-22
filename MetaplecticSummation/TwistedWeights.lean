@@ -1,3 +1,4 @@
+import MetaplecticSummation.RamifiedGauss
 import MetaplecticSummation.GaussProduct
 import MetaplecticSummation.CharacterScaling
 
@@ -10,22 +11,6 @@ open scoped Topology
 open scoped ComplexConjugate
 open Classical
 variable {F : Type} [Field F] [NumberField F] {n : ℕ} [NeZero n] (d : Datum F n)
-
-def unitGauss (p : Prime F) (θ : Weight (.inr p : Place F)) (α : LocalField F (.inr p)) :=
-  d.lineIntegral (.inr p) fun x => if ‖(x : LocalField F (.inr p))‖ = 1 then
-    θ x * d.character.localValue F (.inr p) (α*x) else 0
-
-theorem twistedVector (p : Prime F) (hp : p.asIdeal.absNorm.Coprime n) (hψ : d.UnramifiedAt (.inr p))
-    (χ : UnitChar p) (hχ : Continuous χ) (e : ℕ) (he : 0 < e)
-    (cond : IsLeast {k | trivialAtLevel (χ^n) k} e) (c : (LocalField F (.inr p))ˣ) :
-    let q : ℝ := p.asIdeal.absNorm
-    let V := d.dualWeight (.inr p) (charWeight χ) c
-    (‖(c : LocalField F (.inr p))‖ ≠ q ^ ((n-1)*e) → V = 0) ∧
-    (‖(c : LocalField F (.inr p))‖ = q ^ ((n-1)*e) →
-      ‖V‖ = 1 ∧ ∀ t : (LocalField F (.inr p))ˣ, ‖(t : LocalField F (.inr p))‖ = q ^ e →
-        V = (q : ℂ)^e * d.unitGauss p (charWeight (χ ^ n)) t *
-          d.unitGauss p (fun x => conj (charWeight χ x) * d.symbol (.inr p) c x)
-            (-((t : LocalField F (.inr p)) ^ n) / c)) := by sorry
 
 private theorem isUnit_of_coprime_local {R : Type*} [CommRing R] [IsLocalRing R] {a b : R}
     (h : IsCoprime a b) (hb : ¬ IsUnit b) : IsUnit a := by
@@ -124,17 +109,6 @@ theorem epsilon_gauss {S : Finset (Place F)} (h : d.ClassicalSetting S)
         d.unitGauss p.val (fun x => conj (charWeight (T.character p) x) * d.symbol v f' x)
           (-(diagonal F v (fieldUnit b)) / f') := by
   exact Finset.prod_congr rfl fun p _ => (d.epsilon_factor h f b T hb p).2
-
-private theorem charWeight_unit_mul {p : Prime F} (χ : UnitChar p) (u : integralUnits p)
-    (x : (LocalField F (.inr p))ˣ) :
-    charWeight χ (u.val*x) = (χ u : ℂ) * charWeight χ x := by
-  by_cases hx : x ∈ integralUnits p
-  · have hux := (integralUnits p).mul_mem u.property hx
-    simp only [charWeight,dif_pos hux,dif_pos hx]
-    exact (congrArg ((↑) : Circle → ℂ) (χ.map_mul u ⟨x,hx⟩)).trans (Circle.coe_mul _ _)
-  · have hux : u.val*x ∉ integralUnits p := fun hm => hx
-           (((integralUnits p).mul_mem_cancel_left u.property).mp hm)
-    simp only [charWeight,dif_neg hx,dif_neg hux,mul_zero]
 
 omit [NeZero n] in
 /-- A unit character whose n-th power is nontrivial has zero moment on

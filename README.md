@@ -87,6 +87,8 @@ products and rational evaluations all depend on these inputs.
 | [PowerDivisors](MetaplecticSummation/PowerDivisors.lean) | Classification of global power divisors up to S-units by their tuples of local exponents under the PID hypothesis |
 | [GaussProduct](MetaplecticSummation/GaussProduct.lean) | The product of the basic functions outside S as a normalized global Gauss sum for arbitrary integral moduli |
 | [CharacterScaling](MetaplecticSummation/CharacterScaling.lean) | Self-dual measure under scaling of the character, and the dilation and change-of-character formulas for the dual weight |
+| [UnitGauss](MetaplecticSummation/UnitGauss.lean) | Support and absolute value of a ramified character Gauss integral, and the unit-character reduction of the Jacquet kernel |
+| [RamifiedGauss](MetaplecticSummation/RamifiedGauss.lean) | Conductor of the Hilbert-symbol twist and the two Gauss factors in the ramified local transform |
 | [TwistedWeights](MetaplecticSummation/TwistedWeights.lean) | Character test weights, unit covariance of their transforms, vanishing of power-class moments, and the norm and Gauss-sum expression for ε |
 | [TwistedSummation](MetaplecticSummation/TwistedSummation.lean) | Adelic line summation at S ∪ T, vanishing of the main term for nonempty T, and the product of transformed weights at the conductor primes |
 | [LocalWeights](MetaplecticSummation/LocalWeights.lean) | Jacquet inversion from Schwartz inversion, Mellin factors, and the intertwining operator on leading terms |
@@ -306,8 +308,13 @@ multiplicative measures using the scaled character. With nonempty twist set,
 Lean proves that each power-class moment vanishes by translating by an n-th
 power of a local unit on which the twisting character is nontrivial. This
 gives the absolutely convergent adelic identity from the admitted line formula.
-The epsilon norm and its Gauss-sum expression follow from the admitted local
-twisted-vector evaluation. After reindexing, the product at the conductor
+The local twisted-vector evaluation now follows from unit Gauss integrals.
+A unit detecting the character gives vanishing below the conductor shell,
+and an additive period gives vanishing above it. Parseval fixes the absolute
+value on the shell. Tame power lifting preserves the principal-unit depth,
+so the conjugate character twisted by the Hilbert symbol has the conductor
+of the original character's n-th power. Substitution in the Jacquet kernel
+then gives the two Gauss factors and the epsilon norm. After reindexing, the product at the conductor
 primes gives ε, the conjugate twisting character and the residue symbol
 with denominator f. For the original adelic sum, splitting the product over S,
 the conductor primes and the remaining places gives the stated sum over
@@ -317,7 +324,7 @@ conductor primes contributes one Hilbert symbol. For an integral argument
 with nonzero twist, their product is the residue symbol with that argument
 as denominator. Reindexing the dual sum and cancelling the common square-root
 factor proves Theorem 10.34 from the adelic line formula and the local
-twisted-vector evaluation. Both S-integer series converge absolutely. The
+evaluations. Both S-integer series converge absolutely. The
 empty conductor retains the scaled main term.
 
 The quadratic-dual corollary and its sextic specialization now follow in Lean

@@ -11,19 +11,6 @@ open Classical
 variable {F : Type} [Field F] [NumberField F] {n : ℕ} [NeZero n] (d : Datum F n)
 
 /-- Restriction of the Hilbert character of t to the local integer units. -/
-private def hilbertUnitChar (p : Prime F) (t : (p.adicCompletion F)ˣ) : UnitChar p where
-  toFun u := ⟨d.symbol (.inr p) t u.val, mem_sphere_zero_iff_norm.mpr (d.norm_symbol (.inr p) t u.val)⟩
-  map_one' := Subtype.ext (congrArg Units.val ((d.unitPairing (.inr p) t).map_one))
-  map_mul' x y := Subtype.ext (congrArg Units.val ((d.unitPairing (.inr p) t).map_mul x.val y.val))
-
-private theorem continuous_hilbertUnitChar (p : Prime F) (t : (p.adicCompletion F)ˣ) :
-    Continuous (d.hilbertUnitChar p t) :=
-  ((d.continuous_symbol (.inr p)).comp (continuous_const.prodMk continuous_subtype_val)).subtype_mk _
-
-private theorem hilbertUnitChar_pow (p : Prime F) (t : (p.adicCompletion F)ˣ) : (d.hilbertUnitChar p t)^n = 1 := by
-  ext u
-  exact congrArg Units.val (d.unitPairing_pow (.inr p) t u.val)
-
 private theorem twist_pow (b : Datum F 2) (odd : Odd n) (p : Prime F) (t : (p.adicCompletion F)ˣ) :
     (b.hilbertUnitChar p t * (d.hilbertUnitChar p t)^2)^n = b.hilbertUnitChar p t := by
   rw [mul_pow,pow_right_comm,hilbertUnitChar_pow,one_pow,mul_one]
