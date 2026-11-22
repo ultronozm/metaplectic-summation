@@ -19,6 +19,7 @@ products and rational evaluations all depend on these inputs.
 | [Core](MetaplecticSummation/Core.lean) | The two chart integrals in Definition 4.4, normalized ray limits and maps of restricted tensor products |
 | [Schwartz](MetaplecticSummation/Schwartz.lean) | Local test functions, the span of test functions and their transforms, and the good-place basic vector |
 | [Poisson](MetaplecticSummation/Poisson.lean) | The adelic spaces and maps, rational evaluation, Theorem 9.1, Corollary 9.2 and the degree-one boundary value |
+| [Shears](MetaplecticSummation/Shears.lean) | Proved chart gluing, additive composition and the two Radon and Fourier identities of Lemma 5.2 |
 | [Inversion](MetaplecticSummation/Inversion.lean) | The root kernel, the local cover acting on Schwartz functions, Fourier inversion, equivariance and Plancherel (Theorem 7.1) |
 | [Jacquet](MetaplecticSummation/Jacquet.lean) | Jacquet integrals, the explicit dual weight (Proposition 10.8), and adelic summation with its power-class main term (Theorem 10.16) |
 | [Gauss](MetaplecticSummation/Gauss.lean) | Power residue symbols, Gauss sums and their divisor sums over S-integers, the twisted formula (Theorem 10.34), and quadratic duals (Corollary 10.40) |

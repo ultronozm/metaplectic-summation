@@ -1,4 +1,5 @@
 import MetaplecticSummation.Schwartz
+import MetaplecticSummation.Shears
 import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 
 noncomputable section
