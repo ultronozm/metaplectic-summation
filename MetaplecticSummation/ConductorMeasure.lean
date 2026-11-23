@@ -11,31 +11,6 @@ open scoped Pointwise
 open Classical
 variable {F : Type} [Field F] [NumberField F] {n : ℕ} [NeZero n] (d : Datum F n)
 
-theorem integral_norm_power (p : Prime F) (t : (p.adicCompletion F)ˣ) (ht : ‖t.val‖ ≤ 1) :
-    ∃ k : ℕ, ‖t.val‖ = ((p.asIdeal.absNorm : ℝ)^k)⁻¹ := by
-  have hv : Valued.v t.val ≠ 0 := Valued.v.ne_zero_iff.mpr t.ne_zero
-  have hle := Valued.toNormedField.norm_le_one_iff.mp ht
-  rw [← exp_log hv,← exp_zero] at hle
-  let k := (-(Valued.v t.val).log).toNat
-  have h : Valued.v t.val = exp (-(k : ℤ)) := by
-    simp only [k,Int.toNat_of_nonneg (neg_nonneg.mpr (exp_le_exp.mp hle)),neg_neg,exp_log hv]
-  refine ⟨k,?_⟩
-  rw [NumberField.FinitePlace.norm_def,h,WithZeroMulInt.toNNReal_neg_apply _ (exp_ne_zero (a := _))]
-  change (↑((p.asIdeal.absNorm : NNReal) ^ (-(k : ℤ))) : ℝ) = _
-  simp
-
-/-- Every nonzero absolute value in the local field is an integral power of q. -/
-theorem norm_zpow_residue_card (p : Prime F) (a : (p.adicCompletion F)ˣ) :
-    ∃ j : ℤ, ‖a.val‖ = (p.asIdeal.absNorm : ℝ)^j := by
-  by_cases h : ‖a.val‖ ≤ 1
-  · obtain ⟨k,hk⟩ := integral_norm_power p a h
-    exact ⟨-(k : ℤ),by simpa only [zpow_neg,zpow_natCast] using hk⟩
-  · have hi : ‖a⁻¹.val‖ ≤ 1 := by
-      rw [Units.val_inv_eq_inv_val,norm_inv]
-      exact inv_le_one_of_one_le₀ (le_of_not_ge h)
-    obtain ⟨k,hk⟩ := integral_norm_power p a⁻¹ hi
-    exact ⟨k,by simpa only [Units.val_inv_eq_inv_val,norm_inv,inv_inj,zpow_natCast] using hk⟩
-
 omit [NeZero n] in
 /-- The annihilator of the integer ring is a fractional ideal. Local constancy
 and nontriviality give the first ball on which the character is nontrivial. -/
@@ -188,6 +163,6 @@ theorem integral_unitBall_character (p : Prime F) (hψ : d.UnramifiedAt (.inr p)
   have hset : (O : Set K) = {z | ‖z‖ ≤ 1} := Set.ext hmem
   rw [show μ.real (O : Set K) = 1 from hset ▸ d.selfDual_volume_unramified p hψ] at h
   simp only [indicator,SetLike.mem_coe,hmem,Complex.ofReal_one] at h
-  exact h
+  exact h.trans (if_congr (show u ∈ (O : Set K) ↔ ‖u‖ ≤ 1 from hmem u) rfl rfl)
 
 end MetaplecticPoisson.Datum

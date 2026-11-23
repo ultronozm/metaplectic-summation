@@ -19,7 +19,7 @@ private theorem arch_selfDual_coordinates {L : Type} [RCLike L] (e : w.Completio
     fun x y => by rw [map_add]; exact ψ.localValue_add v _ _⟩
   have hc : Continuous χ := (ψ.continuous_localValue v).comp i.symm.continuous
   obtain ⟨x,hx⟩ := ψ.nontrivial_localValue v
-  have hn : ∃ z, χ z ≠ 1 := ⟨e x,by simpa only [χ,AddChar.coe_mk,e.symm_apply_apply] using hx⟩
+  have hn : ∃ z, χ z ≠ 1 := ⟨e x,fun hh => hx ((congrArg (ψ.localValue F v) (e.symm_apply_apply x)).symm.trans hh)⟩
   obtain ⟨ν,hν,hP⟩ := exists_rclike_plancherel χ hc (fun _ => ψ.norm_localValue v _) hn
   letI : ν.IsAddHaarMeasure := hν
   let j := i.symm.toHomeomorph.toMeasurableEquiv

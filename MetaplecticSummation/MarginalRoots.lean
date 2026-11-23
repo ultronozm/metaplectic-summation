@@ -86,4 +86,22 @@ theorem integral_difference_roots (v : Place F) (f h : LocalField F v → ℂ) (
   have hn : t^n ≠ a.val := fun he => ht ((mem_nthRootsFinset (NeZero.pos n) _).mpr he)
   exact (congrArg (h t * ·) (d.differenceIntegral_roots v f a ha hi t hn)).trans (Finset.mul_sum ..)
 
+/-- For a nonpower with nontrivial symbol character, the difference integral
+vanishes at every polynomial argument and the root sum is empty. -/
+theorem differenceIntegral_nonpower (v : Place F) (f : LocalField F v → ℂ)
+    (a : (LocalField F v)ˣ) (hp : ¬ ∃ b, b^n = a)
+    (hi : ∀ c, d.LineIntegrable v (d.marginalDifference v f a c))
+    (hχ : ∃ u, d.symbol v u a ≠ 1) :
+    nthRootsFinset n a.val = ∅ ∧ ∀ t : LocalField F v, d.differenceIntegral v f a (t^n-a.val) = 0 := by
+  have hn (t : LocalField F v) : t^n ≠ a.val := by
+    intro ht
+    have ht₀ : t ≠ 0 := fun h => a.ne_zero (by simpa [h,zero_pow (NeZero.ne n)] using ht.symm)
+    exact hp ⟨Units.mk0 t ht₀, Units.ext ht⟩
+  constructor
+  · exact Finset.eq_empty_iff_forall_notMem.mpr fun t ht =>
+      hn t ((mem_nthRootsFinset (NeZero.pos n) _).mp ht)
+  · intro t
+    rw [differenceIntegral,dif_pos (sub_ne_zero.mpr (hn t))]
+    exact d.marginalDifference_vanishes v f a _ hi hχ t (sub_add_cancel _ _)
+
 end MetaplecticPoisson.Datum

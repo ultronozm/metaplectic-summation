@@ -3,6 +3,7 @@ import MetaplecticSummation.Marginals.Basic
 
 /-! Schwartz regularity of the axis density of an archimedean test section. -/
 
+set_option backward.isDefEq.respectTransparency false
 noncomputable section
 namespace MetaplecticPoisson
 open Filter Set Asymptotics NumberField MeasureTheory
@@ -218,10 +219,8 @@ private theorem axisDensity_test_coordinates {L : Type} [RCLike L] (e : w.Comple
   · let u := Units.mk0 t ht
     have E : e.symm (b*(e t)^n) = (-(u^n)/x).val := by
       simp [b,u,div_eq_mul_inv,mul_comm]
-      rfl
     have hh : f (0,b*(e t)^n) = d.axis vₐ Φ (-(u^n)/x) := by
       simp only [f,yChart,map_zero,E,dif_pos (Units.ne_zero _),Units.mk0_val,axis]
-      rfl
     rw [hh,he.norm_map_of_map_zero e.map_zero]
     change d.axisDensity vₐ Φ x u.val = _
     rw [d.axisDensity_unit,mul_assoc]

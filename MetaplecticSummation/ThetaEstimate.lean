@@ -44,7 +44,7 @@ private theorem sum_levels_le {I : Type*} [Fintype I] (J : Finset (I → ℕ)) :
     _ ≤ ∑ j ∈ Fintype.piFinset T, ∏ i, ((1:ℝ)/2)^j i := Finset.sum_le_sum_of_subset_of_nonneg hsub
       (fun _ _ _ => Finset.prod_nonneg (fun _ _ => by positivity))
     _ = ∏ i, ∑ k ∈ T i, ((1:ℝ)/2)^k := (Finset.prod_univ_sum T _).symm
-    _ ≤ ∏ _ : I, (2:ℝ) := Finset.prod_le_prod (fun i _ => Finset.sum_nonneg (fun _ _ => by positivity)) (fun i _ => hT i)
+    _ ≤ ∏ _ : I, (2:ℝ) := Finset.prod_le_prod₀ (fun i _ => Finset.sum_nonneg (fun _ _ => by positivity)) (fun i _ => hT i)
     _ = (2:ℝ)^(Fintype.card I) := by simp
 
 private def archScale (j : InfinitePlace F → ℕ) : Place F → ℝ
@@ -91,7 +91,7 @@ theorem theta_box_estimate : ∃ C : ℝ, 0 < C ∧ ∀ r : Place F → ℝ,
       calc
         M⁻¹^3 ≤ (2/((2:ℝ)^level z w))^3 := pow_le_pow_left₀ (inv_pos.mpr hM).le h' _
         _ = _ := by rw [div_eq_mul_inv,mul_pow]; norm_num
-    apply (Finset.prod_le_prod (fun w _ => by positivity [le_max_left (1:ℝ) (vectorModulus (.inl w) z/r (.inl w))]) (fun w _ => hw w)).trans_eq
+    apply (Finset.prod_le_prod₀ (fun w _ => by positivity [le_max_left (1:ℝ) (vectorModulus (.inl w) z/r (.inl w))]) (fun w _ => hw w)).trans_eq
     simp [volume,Finset.prod_mul_distrib,Finset.prod_pow,Finset.prod_inv_distrib,m]
   have hsum (S : Finset (RationalPoint F)) : ∑ z ∈ S, boxWeight r z ≤ C*8^m*2^m*R^2 := by
     let P := S.filter good

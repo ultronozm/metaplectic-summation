@@ -18,6 +18,12 @@ def pure (f : ∀ v, d.schwartz v) (hf : ∀ᶠ v in cofinite, f v = d.basic v) 
 def diagonalPoint (p : RationalPoint F) (v : Place F) : LocalField F v × LocalField F v :=
   (diagonal F v p.val.1, diagonal F v p.val.2)
 
+private theorem xChart_unit {K : Type} [Field K] (f : Charts K) (u : Kˣ) (y : K) :
+    xChart f (u.val,y) = f.1 u y := by simp [xChart,u.ne_zero]
+
+private theorem yChart_unit {K : Type} [Field K] (f : Charts K) (x : K) (u : Kˣ) :
+    yChart f (x,u.val) = f.2 x u := by simp [yChart,u.ne_zero]
+
 /-- The chart choice is made once at the rational point. -/
 def localValue (p : RationalPoint F) (v : Place F) (f : d.schwartz v) : ℂ := by
   classical exact if p.val.1 ≠ 0 then xChart f (diagonalPoint p v) else yChart f (diagonalPoint p v)
@@ -54,7 +60,7 @@ theorem transform_normalization_product :
   have hm : Function.HasFiniteMulSupport m := eventually_cofinite.mp
     (eventually_place_of_finite (P := fun v => m v = 1) (eventually_diagonal_norm_one hn))
   let S := hm.toFinset
-  have hS (v : Place F) (hv : v ∉ S) : m v = 1 := by simpa [S,Function.mem_mulSupport] using hv
+  have hS (v : Place F) (hv : v ∉ S) : m v = 1 := Classical.byContradiction (fun h => hv (hm.mem_toFinset.mpr h))
   have hprod : ∏ v ∈ S, m v = 1 := by
     rw [← finprod_eq_prod _ hm]
     exact diagonal_modulus_product hn
@@ -204,14 +210,10 @@ theorem evaluation_pure_y (f : ∀ v, d.schwartz v) (hf) (p : RationalPoint F) (
     let χ (v : Place F) := d.symbol v (atPlace v a) (atPlace v b)
     let Y (v : Place F) := yChart (f v) (diagonalPoint p v)
     have hxy (v : Place F) : d.localValue p v (f v) = χ v * Y v := by
-      have ha := (diagonal F v).injective.ne hx
-      have hb := (diagonal F v).injective.ne hy
-      simp only [map_zero] at ha hb
-      have hax : Units.mk0 _ ha = atPlace v a := Units.ext rfl
-      have hby : Units.mk0 _ hb = atPlace v b := Units.ext rfl
-      simp only [localValue,if_pos hx,diagonalPoint,xChart,yChart,Y,χ]
-      rw [dif_pos ha,dif_pos hb,hax,hby]
-      exact d.schwartz_glues v (f v) (atPlace v a) (atPlace v b)
+      rw [localValue,if_pos hx]
+      exact (xChart_unit (f v).val (atPlace v a) _).trans
+        ((d.schwartz_glues v (f v) (atPlace v a) (atPlace v b)).trans
+          (congrArg (χ v * ·) (yChart_unit (f v).val _ (atPlace v b)).symm))
     obtain ⟨hs,hp⟩ := d.symbol_reciprocity a b
     have hY : ∀ᶠ v in cofinite, Y v = 1 := by
       filter_upwards [hs,hf,d.eventually_basic_value p] with v hχ hv h1
@@ -307,7 +309,8 @@ theorem evaluation_eq_adelicX (p : RationalPoint F) (hx : p.val.1 ≠ 0) (Φ : d
   apply finprod_congr
   intro v
   have hn : diagonal F v p.val.1 ≠ 0 := (map_ne_zero (diagonal F v)).mpr hx
-  simp only [localValue,if_pos hx,diagonalPoint,xChart,dif_pos hn]
+  rw [localValue,if_pos hx]
+  refine (xChart_unit (f v).val (Units.mk0 _ hn) _).trans ?_
   have hu : Units.mk0 _ hn = Units.map (componentHom v).toMonoidHom x := by
     apply Units.ext
     cases v <;> rfl
@@ -327,7 +330,7 @@ theorem evaluation_eq_adelicY (p : RationalPoint F) (hy : p.val.2 ≠ 0) (Φ : d
   apply finprod_congr
   intro v
   have hn : diagonal F v p.val.2 ≠ 0 := (map_ne_zero (diagonal F v)).mpr hy
-  simp only [diagonalPoint,yChart,dif_pos hn]
+  refine (yChart_unit (f v).val _ (Units.mk0 _ hn)).trans ?_
   have hu : Units.mk0 _ hn = Units.map (componentHom v).toMonoidHom y := by
     apply Units.ext
     cases v <;> rfl

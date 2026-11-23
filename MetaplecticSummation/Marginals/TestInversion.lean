@@ -1,4 +1,5 @@
 import MetaplecticSummation.DiagonalTransform
+import MetaplecticSummation.Marginals.FiniteTestInversion
 import MetaplecticSummation.Marginals.Density
 
 noncomputable section
@@ -8,10 +9,18 @@ open Classical
 variable {F : Type} [Field F] [NumberField F] {n : ℕ} [NeZero n] (d : Datum F n)
 variable (v : Place F)
 
+/-- The Archimedean case of Appendix A on test sections. -/
+theorem arch_reverse_marginal_on_test (w : InfinitePlace F) (Φ : d.schwartz (.inl w)) (hΦ : Φ.val ∈ d.testSet (.inl w)) (x : (LocalField F (.inl w))ˣ) :
+    ∀ u : (LocalField F (.inl w))ˣ, d.marginal (.inl w) (d.transformTest (.inl w) Φ hΦ) (u^n*x) =
+      (Real.sqrt (modulus F (.inl w) (n : LocalField F (.inl w))) : ℂ)⁻¹ * d.hat (.inl w) (d.axisDensity (.inl w) Φ x) u := by sorry
+
 /-- The converse marginal Fourier identity on test sections (Appendix A). -/
 theorem reverse_marginal_on_test (v : Place F) (Φ : d.schwartz v) (hΦ : Φ.val ∈ d.testSet v) (x : (LocalField F v)ˣ) :
     ∀ u : (LocalField F v)ˣ, d.marginal v (d.transformTest v Φ hΦ) (u^n*x) =
-      (Real.sqrt (modulus F v (n : LocalField F v)) : ℂ)⁻¹ * d.hat v (d.axisDensity v Φ x) u := by sorry
+      (Real.sqrt (modulus F v (n : LocalField F v)) : ℂ)⁻¹ * d.hat v (d.axisDensity v Φ x) u := by
+  cases v with
+  | inl w => exact d.arch_reverse_marginal_on_test w Φ hΦ x
+  | inr p => exact d.reverse_marginal_finite p Φ hΦ x
 
 /-- The double integral on a test section is the indicated diagonal translate.
 This deduction from the reverse test identity does not use a Fourier endomorphism. -/

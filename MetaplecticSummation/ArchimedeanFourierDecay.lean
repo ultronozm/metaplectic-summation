@@ -45,7 +45,8 @@ theorem hat_decay_of_schwartz_slices (w : InfinitePlace F) {P L : Type} [Topolog
     apply (congrArg norm (fwdDiff_pullback e (hG q) h j t)).trans_le
     have hstep : ‖e h‖ ≤ ‖a‖ := (he.norm_map_of_map_zero e.map_zero h).trans_le hh
     have ht := fwdDiff_decay ((G q).smooth ⊤) (hD q hq) (e t) (e h) hstep
-    simpa only [D,he.norm_map_of_map_zero e.map_zero] using! ht
+    simpa only [D,he.norm_map_of_map_zero e.map_zero (h : w.Completion),
+      he.norm_map_of_map_zero e.map_zero (t : w.Completion)] using! ht
   have hi' := (d.hat_iterated_fwdDiff (.inl w) (hi q) h u j).1.norm
   have hle := integral_mono hi' ((d.arch_integrable_inv_cube w).const_mul (D*‖h‖^j)) bound
   apply hle.trans_eq
@@ -121,6 +122,7 @@ theorem arch_linear_radon_schwartz_slices (w : InfinitePlace F) {f : Charts w.Co
       (InfinitePlace.Completion.isometry_extensionEmbedding w)
       (by simpa only [testSet,dif_neg hw] using! hf.2)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The slice assertion of Lemma 4.2(iii) at a real or complex place. -/
 theorem arch_radon_schwartz_slices (w : InfinitePlace F) {f : Charts w.Completion} (hf : f ∈ d.testSet (.inl w))
     {L : Type} [NormedField L] [NormedAlgebra ℝ L] (e : w.Completion ≃+* L) (he : Isometry e) :

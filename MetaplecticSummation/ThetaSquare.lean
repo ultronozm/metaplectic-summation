@@ -35,7 +35,14 @@ private theorem evaluation_square_pure (f : ∀ v, d.schwartz v) (hf) (z : Ratio
   have hT (v : Place F) : (T v).val = d.torusCharts v (atPlace v a) (f v).val := by
     rw [show atPlace v a = _ from mapped_sign (n := n) v]
     exact d.schwartz_fourier_square v _
-  rw [d.adelicFourier_pure,d.adelicFourier_pure,d.evaluation_pure,d.evaluation_pure]
+  let g (v : Place F) := d.fourier v (f v)
+  have hg : ∀ᶠ v in cofinite, g v = d.basic v := by
+    filter_upwards [hf,d.eventually_fourier_basic] with v hv hb
+    exact hv ▸ hb
+  rw [d.adelicFourier_pure f hf]
+  change d.evaluation (d.adelicFourier (d.pure g hg)) z = _
+  rw [d.adelicFourier_pure g hg]
+  erw [d.evaluation_pure, d.evaluation_pure f hf]
   change (∏ᶠ v, d.localValue z v (T v)) = ∏ᶠ v, d.localValue b v (f v)
   have hb : ∀ᶠ v in cofinite, d.localValue b v (f v) = 1 := by
     filter_upwards [hf,d.eventually_basic_value b] with v h h'

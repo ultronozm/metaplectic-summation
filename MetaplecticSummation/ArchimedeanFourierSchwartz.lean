@@ -25,7 +25,8 @@ private theorem arch_hat_coordinates {L : Type} [RCLike L] (e : w.Completion ≃
   have hc : Continuous χ := (d.character.continuous_localValue vi).comp i.symm.continuous
   have hn : ∃ x, χ x ≠ 1 := by
     obtain ⟨x,hx⟩ := d.character.nontrivial_localValue vi
-    exact ⟨e x,by simpa only [χ,AddChar.coe_mk,e.symm_apply_apply] using hx⟩
+    refine ⟨e x, fun h => hx ?_⟩
+    exact (congrArg (d.character.localValue F vi) (e.symm_apply_apply x)).symm.trans h
   obtain ⟨T,hT⟩ := character_frequency_equiv χ hc (fun x => d.character.norm_localValue vi _) hn
   let ν := (dx).map i
   letI : (dx).IsAddHaarMeasure := (existsUnique_selfDual F d.character vi).exists.choose_spec.1
@@ -39,8 +40,9 @@ private theorem arch_hat_coordinates {L : Type} [RCLike L] (e : w.Completion ≃
     unfold H
     rw [← hT]
     change _ = d.character.localValue F vi (e.symm (e x * e t)) * _
-    rw [← map_mul,e.symm_apply_apply]
-    rfl
+    have h : e.symm (e x * e t) = x*t :=
+      (congrArg e.symm (e.map_mul x t).symm).trans (e.symm_apply_apply _)
+    exact congrArg (fun z : K => d.character.localValue F vi z * g (e t)) h.symm
   unfold hat
   simp_rw [heq]
   have pull : (∫ t : K, H (i t) ∂dx) = ∫ y, H y ∂ν :=

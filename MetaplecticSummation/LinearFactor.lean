@@ -159,11 +159,13 @@ private theorem integrable_weight_div_norm (p : HeightOneSpectrum (𝓞 F)) {ρ 
     exact hρ.2.norm.mul_right
 
 omit [NeZero n] in
-/-- Absolute convergence and evaluation of the double integral after affine
-Fourier pairing. The test ρ vanishes near zero and can have arbitrary conductor. -/
-private theorem finite_linearFactor_dual (p : HeightOneSpectrum (𝓞 F)) {f ρ : LocalField F (.inr p) → ℂ}
-    (hf : Bruhat (.inr p) f) (hρ : Bruhat (.inr p) ρ) (h₀ : ρ 0 = 0) (a : LocalField F (.inr p)) :
-    let v : Place F := .inr p
+/-- The dual affine integral at any completion, with the normalized local modulus. -/
+theorem linearFactor_dual (v : Place F) {f ρ : LocalField F v → ℂ}
+    (hc : Continuous ρ) (gc : Continuous (d.hat v f))
+    (gi : Integrable (d.hat v f) (selfDual F d.character v))
+    (hzero : (∫ x, d.hat v f x ∂(selfDual F d.character v)) = f 0)
+    (hweight : Integrable (fun x => ‖ρ x‖ / modulus F v x) (selfDual F d.character v))
+    (a : LocalField F v) :
     let J := fun (μ : LocalField F v) (u : (LocalField F v)ˣ) =>
       ρ μ * (d.hat v f (μ/u.val) / (modulus F v u.val : ℂ)) * d.character.localValue F v (μ*a)
     let dx := selfDual F d.character v
@@ -171,30 +173,29 @@ private theorem finite_linearFactor_dual (p : HeightOneSpectrum (𝓞 F)) {f ρ 
     Integrable (Function.uncurry J) (dx.prod ν) ∧
       (∫ u, ∫ μ, J μ u ∂dx ∂ν) =
         f 0 * d.lineIntegral v (fun μ => ρ μ.val * d.character.localValue F v (μ.val*a)) := by
-  let v : Place F := .inr p
   let K := LocalField F v
   let dx := selfDual F d.character v
   let ν := d.lineMeasure v
   letI : dx.IsAddHaarMeasure := (existsUnique_selfDual F d.character v).exists.choose_spec.1
   letI : NullSingletonClass dx := d.selfDual_nullSingleton v
   let g := d.hat v f
-  have hg := d.hat_finite_bruhat p hf
-  have gi : Integrable g dx := hg.integrable d
   let c (μ : K) := ρ μ * d.character.localValue F v (μ*a)
   let J (μ : K) (u : Kˣ) := ρ μ * (g (μ/u.val) / (modulus F v u.val : ℂ)) * d.character.localValue F v (μ*a)
   have jmeas : AEStronglyMeasurable (Function.uncurry J) (dx.prod ν) := by
-    have gc : Continuous g := hg.1.continuous
-    have hc : Continuous ρ := hρ.1.continuous
     have ψc := d.character.continuous_localValue v
     apply Continuous.aestronglyMeasurable
     have hu : Continuous (fun z : K × Kˣ => z.2.val) := Units.continuous_val.comp continuous_snd
     have ht := continuous_fst.div hu (fun z => z.2.ne_zero)
-    have hden := (Complex.continuous_ofReal.comp hu.norm)
+    have hm : Continuous (modulus F v) := by
+      cases v with
+      | inl w => exact continuous_norm.pow w.mult
+      | inr _ => exact continuous_norm
+    have hden := Complex.continuous_ofReal.comp (hm.comp hu)
     exact ((hc.comp continuous_fst).mul ((gc.comp ht).div hden
-      (fun z => Complex.ofReal_ne_zero.mpr (norm_ne_zero_iff.mpr z.2.ne_zero)))).mul
+      (fun z => Complex.ofReal_ne_zero.mpr (modulus_ne_zero v z.2)))).mul
       (ψc.comp (continuous_fst.mul continuous_const))
-  have eqn (μ : K) (u : Kˣ) : J μ u = c μ * ((‖u.val‖⁻¹ : ℝ) • g (μ/u.val)) := by
-    simp only [J,c,v,modulus,Complex.real_smul,Complex.ofReal_inv,div_eq_mul_inv]
+  have eqn (μ : K) (u : Kˣ) : J μ u = c μ * (((modulus F v u.val)⁻¹ : ℝ) • g (μ/u.val)) := by
+    simp only [J,c,Complex.real_smul,Complex.ofReal_inv,div_eq_mul_inv]
     ring
   have jInt : Integrable (Function.uncurry J) (dx.prod ν) := by
     apply (integrable_prod_iff jmeas).2
@@ -202,13 +203,15 @@ private theorem finite_linearFactor_dual (p : HeightOneSpectrum (𝓞 F)) {f ρ 
     · filter_upwards [dx.ae_ne 0] with μ hμ
       simp_rw [Function.uncurry,eqn]
       exact ((d.reciprocal_integral v (Units.mk0 μ hμ) g gi).1).const_mul (c μ)
-    · have hi := (d.integrable_weight_div_norm p hρ h₀).mul_const (∫ t, ‖g t‖ ∂dx)
+    · have hi := hweight.mul_const (∫ t, ‖g t‖ ∂dx)
       apply hi.congr
       filter_upwards [dx.ae_ne 0] with μ hμ
       have hr := (d.reciprocal_integral v (Units.mk0 μ hμ) (fun x => ‖g x‖) gi.norm).2
-      change (∫ u : Kˣ, ‖u.val‖⁻¹ * ‖g (μ/u.val)‖ ∂ν) = ‖μ‖⁻¹ * ∫ x, ‖g x‖ ∂dx at hr
+      change (∫ u : Kˣ, (modulus F v u.val)⁻¹ * ‖g (μ/u.val)‖ ∂ν) = (modulus F v μ)⁻¹ * ∫ x, ‖g x‖ ∂dx at hr
       have hc : ‖c μ‖ = ‖ρ μ‖ := by simp only [c,norm_mul,d.character.norm_localValue,mul_one]
-      have hab (u : Kˣ) : |‖u.val‖| = ‖u.val‖ := abs_of_nonneg (norm_nonneg _)
+      have hab (u : Kˣ) : |(modulus F v u.val)| = (modulus F v u.val) := by
+        apply abs_of_nonneg
+        cases v <;> simp only [modulus] <;> positivity
       simp only [Function.uncurry,eqn,norm_mul,norm_smul,Real.norm_eq_abs,abs_inv,hab,hc,
         integral_const_mul]
       rw [hr,div_eq_mul_inv,mul_assoc]
@@ -218,13 +221,13 @@ private theorem finite_linearFactor_dual (p : HeightOneSpectrum (𝓞 F)) {f ρ 
   apply integral_congr_ae
   filter_upwards [dx.ae_ne 0] with μ hμ
   have hr := (d.reciprocal_integral v (Units.mk0 μ hμ) g gi).2
-  change (∫ u : Kˣ, ‖u.val‖⁻¹ • g (μ/u.val) ∂ν) = ‖μ‖⁻¹ • ∫ x, g x ∂dx at hr
+  change (∫ u : Kˣ, (modulus F v u.val)⁻¹ • g (μ/u.val) ∂ν) = (modulus F v μ)⁻¹ • ∫ x, g x ∂dx at hr
   change (∫ u, J μ u ∂ν) = _
   simp_rw [eqn]
   rw [integral_const_mul,hr]
-  rw [show (∫ x, g x ∂dx) = f 0 from d.integral_hat_finite p hf]
-  change c μ * ((‖μ‖⁻¹ : ℝ) • f 0) = f 0 *
-    (if hz : μ ≠ 0 then ρ (Units.mk0 μ hz).val * d.character.localValue F v ((Units.mk0 μ hz).val*a) / (‖μ‖ : ℂ) else 0)
+  rw [show (∫ x, g x ∂dx) = f 0 from hzero]
+  change c μ * (((modulus F v μ)⁻¹ : ℝ) • f 0) = f 0 *
+    (if hz : μ ≠ 0 then ρ (Units.mk0 μ hz).val * d.character.localValue F v ((Units.mk0 μ hz).val*a) / ((modulus F v μ) : ℂ) else 0)
   rw [dif_pos (show μ ≠ 0 from hμ)]
   simp only [Units.val_mk0,c,Complex.real_smul,Complex.ofReal_inv,div_eq_mul_inv]
   ring
@@ -263,7 +266,9 @@ theorem finite_linearFactor (p : HeightOneSpectrum (𝓞 F)) {f ρ : LocalField 
   refine ⟨hD.integral_prod_right.congr he, (integral_congr_ae he.symm).trans ?_⟩
   refine (integral_integral_swap hD).symm.trans ?_
   refine Eq.trans (integral_congr_ae (Filter.Eventually.of_forall fun u => ?_))
-    (d.finite_linearFactor_dual p hf hρ h₀ a).2
+    (d.linearFactor_dual v hρ.1.continuous (d.hat_finite_bruhat p hf).1.continuous
+      ((d.hat_finite_bruhat p hf).integrable d) (d.integral_hat_finite p hf)
+      (d.integrable_weight_div_norm p hρ h₀) a).2
   refine Eq.trans ?_ (d.finite_linearFactor_pairing p hf hρ a u)
   let g (t : K) := f ((t-a)*u.val)
   have gc : Continuous g := hf.1.continuous.comp ((continuous_id.sub continuous_const).mul continuous_const)

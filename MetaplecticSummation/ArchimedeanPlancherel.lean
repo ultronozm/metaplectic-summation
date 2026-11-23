@@ -51,9 +51,9 @@ theorem euclidean_integral_plancherel {f : L → ℂ} (hi : Integrable f) (h₂ 
   have hn : eLpNorm (𝓕 f) 2 volume = eLpNorm f 2 volume := by
     rw [eLpNorm_congr_ae ae,← Lp.enorm_def,← Lp.enorm_toLp h₂]
     simpa only [ofReal_norm] using congrArg ENNReal.ofReal (Lp.norm_fourier_eq g)
-  have sq (h : L → ℂ) : (∫⁻ x, ‖h x‖ₑ^2) = eLpNorm h 2 volume ^ 2 := by
-    simpa using (eLpNorm_nnreal_pow_eq_lintegral (μ := volume) (f := h) (p := 2) (by norm_num)).symm
-  rw [sq,sq,hn]
+  have sq (h : L → ℂ) (hm : AEStronglyMeasurable h volume) : (∫⁻ x, ‖h x‖ₑ^2) = eLpNorm h 2 volume ^ 2 := by
+    simpa using (eLpNorm_nnreal_pow_eq_lintegral (μ := volume) (f := h) (p := 2) (by norm_num) hm).symm
+  rw [sq _ hc.aestronglyMeasurable,sq _ hi.aestronglyMeasurable,hn]
 
 /-- In inner-product coordinates the nontrivial character of the field
 pairing differs from the standard Fourier character by a linear isomorphism. -/

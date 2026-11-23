@@ -58,7 +58,7 @@ theorem finprod_mono_real {ι : Type*} {a b : ι → ℝ}
   have B : Function.HasFiniteMulSupport b := eventually_cofinite.mp hb
   rw [finprod_eq_prod_of_mulSupport_toFinset_subset a A (Finset.subset_union_left (s₂ := B.toFinset)),
     finprod_eq_prod_of_mulSupport_toFinset_subset b B (Finset.subset_union_right (s₁ := A.toFinset))]
-  exact Finset.prod_le_prod (fun i _ => h₀ i) (fun i _ => hle i)
+  exact Finset.prod_le_prod₀ (fun i _ => h₀ i) (fun i _ => hle i)
 
 theorem modulus_eventually_one {x : F} (hx : x ≠ 0) :
     ∀ᶠ v in cofinite, modulus F v (diagonal F v x) = 1 :=

@@ -1,5 +1,7 @@
 import MetaplecticSummation.Marginals.Basic
-import MetaplecticSummation.Jacquet.Local
+import MetaplecticSummation.LineIntegral
+import MetaplecticSummation.WildSymbols
+import MetaplecticSummation.ArchimedeanLines
 
 /-! The multiplicative difference integral in the converse marginal identity of Appendix A. -/
 

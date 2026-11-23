@@ -5,7 +5,9 @@ n-fold cover of SL₂*. The Poisson formula is stated in
 [`MetaplecticPoisson.Datum.poisson`](MetaplecticSummation/Poisson.lean),
 Theorem 9.1. For the global Gauss-sum formulas, start with
 [`twistedGaussSummation`, `quadraticDual`, and `sextic_to_quadratic`](MetaplecticSummation/Gauss.lean).
-Open the project with Lean v4.32.2 and run `lake build`.
+Open the project with Lean v4.35.0-rc2 and run `lake build`.
+The [Hilbert-symbol bridge and Appendix A notes](experiments/class-field-theory/README.md)
+record the pin tests, the local proofs, and the quotient estimates needed in Proposition B.6.
 
 The inputs are a number field, a positive cover degree, a primitive root, an
 embedding of its group of roots of unity in the complex units, and a nontrivial
@@ -117,10 +119,10 @@ products and rational evaluations all depend on these inputs.
 | [TestedMarginal](MetaplecticSummation/TestedMarginal.lean) | The scaled marginal, the change to the Y chart, and the finite-place pairing against a test frequency with its first exchange of integrals |
 | [MarginalConvergence](MetaplecticSummation/MarginalConvergence.lean) | Joint absolute convergence of the subtracted integral and the tested reverse marginal identity for finite-place test sections |
 | [TamePowers](MetaplecticSummation/TamePowers.lean) | Identification of the radical of the normalized tame Hilbert pairing with the subgroup of n-th powers |
-| [MarginalRootFormula](MetaplecticSummation/MarginalRootFormula.lean) | The pointwise sum over roots in Appendix A for finite-place test sections, conditional on Hilbert nondegeneracy at wild places |
+| [MarginalRootFormula](MetaplecticSummation/MarginalRootFormula.lean) | The pointwise sum over roots in Appendix A for finite-place test sections, with the power criterion at all finite places |
 | [PowerJacobian](MetaplecticSummation/PowerJacobian.lean) | Bijection of sufficiently small balls under the power map, with radius scaled by the norm of its derivative |
 | [PowerArea](MetaplecticSummation/PowerArea.lean) | Integrated change of variables for the power map on locally constant compactly supported functions vanishing at zero, at every finite place |
-| [FiniteMarginal](MetaplecticSummation/FiniteMarginal.lean) | Reverse marginal Fourier identity and the square of the defining integral transform on tame test sections |
+| [FiniteMarginal](MetaplecticSummation/FiniteMarginal.lean) | Reverse marginal Fourier identity on test sections at every finite place |
 | [TransformedMarginals](MetaplecticSummation/TransformedMarginals.lean) | Extension of the reverse identity from test sections to the full span, and the independent proof at tame places |
 | [DiagonalTransform](MetaplecticSummation/DiagonalTransform.lean) | Covariance of both defining chart integrals under the diagonal lifts at every place |
 | [SchwartzStability](MetaplecticSummation/SchwartzStability.lean) | Absolute convergence of the outer integral, the Fourier automorphism of the full tame Schwartz space, and its square |
@@ -212,8 +214,8 @@ The marginal-to-axis identity is proved at all places from chart gluing and
 the one-dimensional power-ray formula. Both marginal kernels are Schwartz–Bruhat
 for every Schwartz section at every number-field place. For a pure tensor at
 almost every finite place the axis density is the indicator of the local integers.
-The remaining analytic input to Lemma A.6 is the reverse Fourier identity on test
-sections (Lemma A.2). Lean proves it on the full tame Schwartz space. The finite-place proof establishes
+The remaining analytic input to Lemma A.6 is the Archimedean case of the reverse Fourier identity on test
+sections (Lemma A.2). Lean proves the identity on tests at every finite place. The finite-place proof establishes
 absolute convergence of the multiplicative difference integral for finite-place
 tests and its vanishing when the Hilbert character is nontrivial. For an n-th
 power parameter the cocycle splits the integral into contributions from its
@@ -223,23 +225,19 @@ integral of the test. The reciprocal change of variables uses the measure
 obtained by weighting additive self-dual measure by the inverse modulus.
 At every finite place, for test sections, subtracting the axis value gives
 joint absolute convergence and justifies the exchange of the three integrals.
-At tame places the normalized Hilbert pairing detects every non-power.
-Localizing the frequency test therefore gives the pointwise sum over the
-roots of −sy in Appendix A. The same argument works at wild places once
-the radical of the Hilbert pairing is identified with the n-th powers there.
+At every finite place the right kernel of the normalized Hilbert pairing consists
+of the powers. Localizing the frequency test gives the pointwise sum over the
+roots of −sy in Appendix A, including at primes dividing the degree.
 On a sufficiently small ball around a nonzero root a, the power map is
 bijective onto a ball with radius scaled by |n a^(n−1)|. Partitioning the
 compact support into disjoint such balls gives the integrated change of
-variables at all finite places. At tame places this proves the reverse
+variables at all finite places. This proves the reverse
 marginal Fourier identity on test sections. Ordinary Fourier inversion gives
 the square of the defining integral transform on the vertical axis. The upper
 and lower shears preserve finite-place test sections, so the equality extends
 to both charts. Diagonal covariance gives the square on transforms of test sections as
 well. Absolute convergence gives linearity on their span, and the square
-formula gives bijectivity. This proves Theorem 7.1(i) on the entire tame
-Schwartz space using one admitted project result, the normalized Hilbert
-symbol family. The argument applies at a wild
-place under the same radical condition.
+formula gives bijectivity. The finite-place right-kernel theorem supplies the arithmetic input to this argument in every residue characteristic.
 
 For a real or complex test section, restricting the rapid chart to the vertical
 axis gives a Schwartz function flat at zero. Pullback by the power map preserves
@@ -326,8 +324,8 @@ there. The Poisson vanishing criterion applied to upper unipotent translates
 then identifies their Fourier coefficients. The difference of the two sums
 therefore descends to a multilinear form on the moment vectors. Evaluation
 on products of the normalized tests determines its coefficients uniquely.
-The remaining project admissions used by this deduction are the normalized
-Hilbert symbol, the reverse marginal identity on tests, Proposition B.6 on the theta
+The remaining project admissions used by this deduction are the Archimedean
+reverse marginal identity on tests, Proposition B.6 on the theta
 difference, and Fourier coefficient unfolding.
 For any covering degree, the original summand has finite support on those
 elements. The local tests at S give bounded radii, the basic factors outside S
@@ -336,7 +334,7 @@ In degree one, the local dual of a test weight is evaluation at the reciprocal
 argument. The same identity holds for the basic Jacquet factor at every finite
 conductor. Reindexing the finite sum by inversion proves `line_degree_one`
 with zero main term independently of `lineSummation`. The project dependencies
-that still contain admissions are the normalized Hilbert symbols and the
+that still contain admissions include the Archimedean
 reverse marginal identity on tests used to construct the local Fourier operator.
 `twistedGaussSummation` assumes the S-integers form a PID and sums over their
 nonzero **elements**. Only the inner divisor sum in `normalizedGauss` runs over
@@ -356,8 +354,8 @@ weights and the local Gauss factors gives `product_basic` for every nonzero
 field element, including integral moduli divisible by repeated n-th powers.
 
 The residue-ring isomorphism uses only standard Lean axioms. The proof of the
-ordinary Gauss-sum factorization depends on the admitted characterization of
-the Hilbert symbols. The basic Jacquet evaluation uses this same arithmetic input.
+ordinary Gauss-sum factorization uses the normalized family of
+Hilbert symbols. The basic Jacquet evaluation uses this same arithmetic input.
 
 At a tame finite place, the explicit charts for the basic vector satisfy gluing
 and invariance under integral shears. With unramified character the integral

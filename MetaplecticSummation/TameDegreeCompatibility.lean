@@ -11,20 +11,6 @@ local notation "K" => p.adicCompletion F
 local notation "O" => p.adicCompletionIntegers F
 local notation "q" => p.asIdeal.absNorm
 
-omit [NeZero n] in
-private theorem root_local_pow (z : Mu F n) :
-    (diagonal F (.inr p) (z.val : F))^n = 1 := by
-  rw [← map_pow,show (z.val : F)^n = 1 from congrArg Units.val z.property,map_one]
-
-private def rootInteger (z : Mu F n) : O :=
-  ⟨diagonal F (.inr p) (z.val : F), (mem_localIntegers_iff p _).mpr (by
-    have hp : ‖diagonal F (.inr p) (z.val : F)‖^n = (1 : ℝ)^n := by
-      rw [← norm_pow,root_local_pow,norm_one,one_pow]
-    exact ((pow_left_inj₀ (norm_nonneg _) zero_le_one (NeZero.ne n)).mp hp).le)⟩
-
-private theorem rootInteger_pow (z : Mu F n) : rootInteger p z ^ n = 1 :=
-  Subtype.ext (root_local_pow p z)
-
 /-- On a uniformizer and a unit the degree-m symbol is the (n/m)-th power
 of the degree-n symbol, as roots of unity in the number field. -/
 theorem tame_uniformizer_change_degree (D : Datum F n) (d : Datum F m) (l : ℕ)

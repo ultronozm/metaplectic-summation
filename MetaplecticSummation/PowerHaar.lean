@@ -71,7 +71,7 @@ private theorem map_unitPower_proportional {K : Type*} [NontriviallyNormedField 
     ⟨_,Measure.isMulLeftInvariant_eq_smul _ _⟩
   refine ⟨c,?_⟩
   have h := congrArg (Measure.map H.subtype) he
-  rw [Measure.map_map emb.continuous.measurable hf.measurable,Measure.map_smul,
+  rw [Measure.map_map emb.continuous.measurable hf.measurable,Measure.map_smul (hf := emb.continuous.aemeasurable),
     emb.measurableEmbedding.map_comap] at h
   exact h.trans (by rw [show range H.subtype = (H : Set Kˣ) from Subtype.range_coe])
 

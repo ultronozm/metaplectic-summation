@@ -93,7 +93,7 @@ section NumberField
 variable {K : Type*} [Field K] [NumberField K] (v : HeightOneSpectrum (𝓞 K))
 
 instance : Finite (IsLocalRing.ResidueField (v.adicCompletionIntegers K)) :=
-  haveI := Ideal.finiteQuotientOfFreeOfNeBot v.asIdeal v.ne_bot
+  haveI := Ring.HasFiniteQuotients.finiteQuotient v.ne_bot
   Finite.of_equiv _ (residueFieldEquiv v).toEquiv
 
 theorem natCard_residueField_adicCompletionIntegers :

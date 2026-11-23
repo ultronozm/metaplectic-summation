@@ -14,8 +14,11 @@ local notation "dxᵥ" => selfDual F d.character v
 
 private theorem eLpNorm_hat (f : C_c(K, ℂ)) : eLpNorm (d.hat v f) 2 dxᵥ = eLpNorm f 2 dxᵥ := by
   have hp := (existsUnique_selfDual F d.character v).exists.choose_spec.2 f f.continuous f.hasCompactSupport
-  simp only [eLpNorm_eq_lintegral_rpow_enorm_toReal (by norm_num : (2 : ℝ≥0∞) ≠ 0)
-    (by norm_num : (2 : ℝ≥0∞) ≠ ⊤), ENNReal.toReal_ofNat, ENNReal.rpow_ofNat]
+  letI : (dxᵥ).IsAddHaarMeasure := (existsUnique_selfDual F d.character v).exists.choose_spec.1
+  rw [eLpNorm_eq_lintegral_rpow_enorm_toReal (by norm_num) (by norm_num)
+        (d.continuous_hat v f.integrable).aestronglyMeasurable,
+      eLpNorm_eq_lintegral_rpow_enorm_toReal (f := ⇑f) (by norm_num) (by norm_num) f.continuous.aestronglyMeasurable]
+  simp only [ ENNReal.toReal_ofNat, ENNReal.rpow_ofNat]
   simpa only [hat, mul_comm] using! congrArg (fun a : ℝ≥0∞ => a ^ ((1:ℝ)/2)) hp
 
 /-- For the self-dual measure the Fourier integral distinguishes continuous
@@ -29,15 +32,14 @@ theorem hat_injective_compact (f g : C_c(K, ℂ)) (h : d.hat v f = d.hat v g) : 
     exact sub_eq_zero.mpr (congrFun h y)
   have he := (d.eLpNorm_hat v (f-g)).symm
   rw [hz,eLpNorm_zero] at he
-  have ae := (eLpNorm_eq_zero_iff (f-g).continuous.aestronglyMeasurable (by norm_num : (2:ℝ≥0∞) ≠ 0)).mp he
+  have ae := (eLpNorm_eq_zero_iff (by norm_num : (2:ℝ≥0∞) ≠ 0)).mp he
   have eqn := ((f-g).continuous.ae_eq_iff_eq (μ := dxᵥ) continuous_zero).mp ae
   ext y
   exact sub_eq_zero.mp (congrFun eqn y)
 
 private theorem compact_hat_memLp (f : C_c(K, ℂ)) : MemLp (d.hat v f) 2 dxᵥ := by
   letI : (dxᵥ).IsAddHaarMeasure := (existsUnique_selfDual F d.character v).exists.choose_spec.1
-  exact ⟨(d.continuous_hat v f.integrable).aestronglyMeasurable,
-    (d.eLpNorm_hat v f).trans_lt (f.continuous.memLp_of_hasCompactSupport f.hasCompactSupport).2⟩
+  exact (d.eLpNorm_hat v f).trans_lt (f.continuous.memLp_of_hasCompactSupport f.hasCompactSupport)
 
 /-- Send a compactly supported continuous test to its Fourier integral in L². -/
 private def compactFourierL2 : C_c(K, ℂ) →ₗ[ℂ] Lp ℂ 2 dxᵥ := by
@@ -99,14 +101,15 @@ private theorem compact_hat_pair [LocallyCompactSpace K] [SecondCountableTopolog
     { toFun := fun x => conj (f (-x))
       continuous_toFun := Complex.continuous_conj.comp (f.continuous.comp continuous_neg)
       hasCompactSupport' := (f.hasCompactSupport.comp_homeomorph (Homeomorph.neg K)).comp_left (map_zero _) }
+  have happ (x : K) : h x = conj (f (-x)) := rfl
   have hh (y : K) : conj (d.hat v h y) = d.hat v f y := by
     rw [hat,← integral_conj,hat,← integral_neg_eq_self (fun t : K => f t * d.character.localValue F v (y*t))]
     apply integral_congr_ae
     filter_upwards with x
-    simp [h,mul_neg,d.localValue_neg_conj v]
+    simp [happ,mul_neg,d.localValue_neg_conj v]
   have H := d.hat_parseval v h g
   simp_rw [hh] at H
-  simpa [h] using H
+  simpa [happ] using H
 
 /-- Plancherel on compact tests implies pointwise inversion whenever the compact tests
 with integrable transforms distinguish continuous functions. -/

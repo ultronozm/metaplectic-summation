@@ -43,6 +43,7 @@ theorem scaled_localValue (b : Fˣ) (v : Place F) (x : LocalField F v) :
   classical
   cases v with
   | inl w =>
+    change w.Completion at x
     apply Prod.ext
     · funext u
       change algebraMap F u.Completion (b : F) * Pi.single w x u = Pi.single w (_ * x) u

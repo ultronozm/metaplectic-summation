@@ -1,3 +1,4 @@
+import MetaplecticSummation.HilbertTame
 import MetaplecticSummation.TameSymbols
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 
@@ -18,54 +19,19 @@ private abbrev includeUnits : Oˣ →* Kˣ := Units.map (p.adicCompletionInteger
 local notation "red" => residueUnits p
 local notation "inc" => includeUnits p
 
-private theorem norm_one_of_power {x : K} (hx : x^n = 1) : ‖x‖ = 1 := by
-  have h : ‖x‖^n = (1 : ℝ)^n := by simp [← norm_pow,hx]
-  exact (pow_left_inj₀ (norm_nonneg _) zero_le_one (NeZero.ne n)).mp h
-
-include d in
-/-- Reduction of a primitive root stays primitive when n is invertible in
-the residue field, by reduction of the n-th cyclotomic polynomial. -/
-private theorem tame_primitive_lift (hp : p.asIdeal.absNorm.Coprime n) :
-    ∃ z : O, IsPrimitiveRoot z n ∧ IsPrimitiveRoot (IsLocalRing.residue O z) n := by
-  letI : Fintype k := Fintype.ofFinite k
-  have hcard : Fintype.card k = p.asIdeal.absNorm := by
-    rw [← Nat.card_eq_fintype_card,FinitePlace.natCard_residueField_adicCompletionIntegers]
-  have hq : (p.asIdeal.absNorm : k) = 0 := hcard ▸ Nat.cast_card_eq_zero k
-  letI : NeZero (n : k) := ⟨(ne_zero_or_ne_zero_of_nat_coprime (A := k) hp).resolve_left (not_not.mpr hq)⟩
-  let ζ : K := diagonal F (.inr p) d.root
-  have hζ : IsPrimitiveRoot ζ n := d.primitive.map_of_injective (diagonal F (.inr p)).injective
-  let z : O := ⟨ζ,(mem_localIntegers_iff p _).mpr (norm_one_of_power p hζ.pow_eq_one).le⟩
-  have hz : IsPrimitiveRoot z n := IsPrimitiveRoot.of_map_of_injective (f := (p.adicCompletionIntegers F).subtype) hζ Subtype.val_injective
-  have hr : IsPrimitiveRoot (IsLocalRing.residue O z) n := by
-    apply Polynomial.isRoot_cyclotomic_iff.mp
-    change Polynomial.eval _ _ = 0
-    rw [Polynomial.cyclotomic.eval_apply,(show Polynomial.eval z (Polynomial.cyclotomic n O) = 0 from hz.isRoot_cyclotomic (NeZero.pos n)),map_zero]
-  exact ⟨z,hz,hr⟩
-
 include d in
 theorem tame_degree_dvd (hp : p.asIdeal.absNorm.Coprime n) : n ∣ p.asIdeal.absNorm - 1 := by
-  obtain ⟨z,_,hr⟩ := d.tame_primitive_lift p hp
+  obtain ⟨z,_,hr⟩ := tame_primitive_lift p d.primitive hp
   letI : Fintype k := Fintype.ofFinite k
   have hcard : Fintype.card k = p.asIdeal.absNorm := by
     rw [← Nat.card_eq_fintype_card,FinitePlace.natCard_residueField_adicCompletionIntegers]
   rw [← hcard]
   exact hr.dvd_of_pow_eq_one _ (FiniteField.pow_card_sub_one_eq_one _ (hr.ne_zero (NeZero.ne n)))
 
-theorem residue_eq_iff_norm_sub_lt (a b : O) :
-    IsLocalRing.residue O a = IsLocalRing.residue O b ↔ ‖(a : K) - b‖ < 1 := by
-  rw [← sub_eq_zero,← map_sub,residue_eq_zero_iff,mem_maximalIdeal,mem_nonunits_iff,
-    localInteger_isUnit_iff]
-  exact ne_iff_lt_iff_le.mpr ((mem_localIntegers_iff p _).mp (a-b).property)
-
 include d in
-/-- Reduction modulo a tame finite prime distinguishes n-th roots of unity. -/
 theorem tame_root_reduction_injective (hp : p.asIdeal.absNorm.Coprime n) {x y : O}
-    (hx : x^n = 1) (hy : y^n = 1) (h : IsLocalRing.residue O x = IsLocalRing.residue O y) : x = y := by
-  obtain ⟨z,hz,hr⟩ := d.tame_primitive_lift p hp
-  obtain ⟨i,hi,ei⟩ := hz.eq_pow_of_pow_eq_one hx
-  obtain ⟨j,hj,ej⟩ := hz.eq_pow_of_pow_eq_one hy
-  rw [← ei,← ej,map_pow,map_pow] at h
-  exact ei.symm.trans ((congrArg (fun l : ℕ => z^l) (hr.pow_inj hi hj h)).trans ej)
+    (hx : x^n = 1) (hy : y^n = 1) (h : IsLocalRing.residue O x = IsLocalRing.residue O y) : x = y :=
+  tame_root_reduction_injective_of_primitive p d.primitive hp hx hy h
 
 private theorem units_lift (g : kˣ) : ∃ G : Oˣ, red G = g := by
   obtain ⟨x,hx⟩ := (IsLocalRing.residue_surjective (R := O)) g.val

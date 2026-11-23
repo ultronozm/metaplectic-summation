@@ -59,7 +59,7 @@ private theorem component_single (x : Adeles F) (i v : Place F) :
   classical
   rcases i with i|i <;> rcases v with v|v
   · by_cases h : i = v
-    · subst v; simp [component,singleAdele]
+    · subst v; simp [component,singleAdele] <;> rfl
     · simp [component,singleAdele,h]; rfl
   · exact rfl
   · exact rfl
