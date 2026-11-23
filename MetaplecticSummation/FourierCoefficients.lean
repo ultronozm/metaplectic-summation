@@ -5,6 +5,7 @@ import MetaplecticSummation.LeadingAction
 import MetaplecticSummation.LineMoments
 import MetaplecticSummation.PowerClassPoisson
 import MetaplecticSummation.PowerClassIntegrals
+import MetaplecticSummation.RationalPowerSums
 
 noncomputable section
 namespace MetaplecticPoisson.Datum
@@ -59,6 +60,35 @@ private theorem remove_normalization {g : Place F → ℂ} (hg : g ∈ normaliza
     filter_upwards [h₁,eventually_cofinite.mpr he] with v h₁ hv
     simpa only [h₁,one_mul] using hv
 
+/-- Rational scaling multiplies a local Fourier integral by the square root
+of the modulus and scales its frequency by the same rational element. -/
+theorem hat_scaled (b : Fˣ) (v : Place F) (f : LocalField F v → ℂ) (t : LocalField F v) :
+    (d.scaled b).hat v f t = (Real.sqrt (modulus F v (diagonal F v b.val)) : ℂ) *
+      d.hat v f (diagonal F v b.val * t) := by
+  rw [hat,d.selfDual_scaled,integral_smul_nnreal_measure,NNReal.smul_def,Complex.real_smul]
+  congr 1
+  · rw [Real.sqrt]
+  · simp only [d.scaled_localValue,← mul_assoc,hat]
+
+/-- The global rational-frequency sum of Fourier factors is independent of a
+rational change of additive character, including the self-dual measure change. -/
+theorem tsum_hat_scaled (b : Fˣ) (f : ∀ v : Place F, LocalField F v → ℂ) :
+    (∑' t : F, ∏ᶠ v, (d.scaled b).hat v (f v) (diagonal F v t)) =
+      ∑' t : F, ∏ᶠ v, d.hat v (f v) (diagonal F v t) := by
+  let m (v : Place F) : ℂ := Real.sqrt (modulus F v (diagonal F v b.val))
+  have hm : m ∈ normalizations F := by
+    refine ⟨eventually_place_of_finite ?_,diagonal_sqrt_modulus_product b⟩
+    filter_upwards [eventually_diagonal_norm_one b.ne_zero] with p hp
+    simp only [m,modulus,hp,Real.sqrt_one,Complex.ofReal_one]
+  let e := Equiv.mulLeft₀ b.val b.ne_zero
+  let g (t : F) := ∏ᶠ v, d.hat v (f v) (diagonal F v t)
+  apply Eq.trans _ (e.tsum_eq g)
+  apply tsum_congr
+  intro t
+  change _ = ∏ᶠ v, d.hat v (f v) (diagonal F v (b.val*t))
+  simp only [d.hat_scaled,map_mul]
+  exact remove_normalization hm _
+
 private theorem axisLine_normalization (y : Fˣ) :
     (fun v => d.symbol v (-1) (atPlace v y) / (modulus F v (atPlace v y) : ℂ)) ∈ normalizations F := by
   simp_rw [div_eq_mul_inv]
@@ -66,6 +96,46 @@ private theorem axisLine_normalization (y : Fˣ) :
   change (∀ᶠ v in cofinite, d.symbol v (-1) (atPlace v y) = 1) ∧
     ∏ᶠ v, d.symbol v (-1) (atPlace v y) = 1
   simpa only [atPlace,Units.map_neg,map_one] using d.symbol_reciprocity (-1) y
+
+/-- The axis part of a pure tensor is absolutely summable over the rational units. -/
+theorem summable_rational_axis (Φ : ∀ v, d.schwartz v) (hΦ : ∀ᶠ v in cofinite, Φ v = d.basic v) :
+    Summable (fun y : Fˣ => ‖∏ᶠ v, d.axis v (Φ v) (atPlace v y)‖) := by
+  let j (y : Fˣ) : RationalPoint F := ⟨(0,y.val),fun h => y.ne_zero (congrArg Prod.snd h)⟩
+  have hj : Function.Injective j := fun _ _ he => Units.ext (congrArg (fun z : RationalPoint F => z.val.2) he)
+  apply ((d.summable_theta_pure Φ hΦ).comp_injective hj).congr
+  intro y
+  apply congrArg norm
+  change d.evaluation (d.pure Φ hΦ) (j y) = _
+  rw [d.evaluation_pure_y _ _ _ y.ne_zero]
+  apply finprod_congr
+  intro v
+  change yChart (Φ v).val (diagonal F v 0,(atPlace v y).val) = _
+  rw [yChart,dif_pos (atPlace v y).ne_zero,Units.mk0_val,map_zero]
+  rfl
+
+/-- The nonzero axis terms in the two applications of additive Poisson
+each sum to n times the rational-axis sum. -/
+theorem hasSum_axis_powerClasses (Φ : ∀ v, d.schwartz v) (hΦ : ∀ᶠ v in cofinite, Φ v = d.basic v) :
+    let r := fun y : Fˣ => ∏ᶠ v, d.axis v (Φ v) (atPlace v y)
+    let total := (n:ℂ) * ∑' y, r y
+    HasSum (fun c : GlobalClass n F => ∑' t : Fˣ, r (t^n * c.out)) total ∧
+      HasSum (fun c : GlobalClass n F => ∑' t : Fˣ, r (-(t^n) / c.out)) total := by
+  let r := fun y : Fˣ => ∏ᶠ v, d.axis v (Φ v) (atPlace v y)
+  have hr : Summable r := (d.summable_rational_axis Φ hΦ).of_norm
+  let Q := QuotientGroup.mk' (powMonoidHom n : Fˣ →* Fˣ).range
+  constructor
+  · apply (d.hasSum_powerClass_representatives r hr (Equiv.refl _) Quotient.out
+      (fun c => Quotient.out_eq c)).congr_fun
+    intro c
+    exact tsum_congr fun t => congrArg r (mul_comm ..)
+  · have he (c : GlobalClass n F) : Q (-1 / c.out) = Equiv.divLeft (Q (-1)) c := by
+      rw [map_div]
+      exact congrArg (Q (-1) / ·) (Quotient.out_eq c)
+    apply (d.hasSum_powerClass_representatives r hr _ _ he).congr_fun
+    intro c
+    apply tsum_congr
+    intro t
+    exact congrArg r (by simp [div_eq_mul_inv,mul_comm])
 
 /-- The product of the vertical line kernels at a nonzero rational parameter. -/
 theorem axisLine_product (Φ : ∀ v, d.schwartz v) (y t : Fˣ) :
@@ -102,6 +172,33 @@ theorem axisClassIntegral_sum_eq_axisLine_zero (Φ : ∀ v, d.schwartz v)
   intro v
   exact (d.powerClassTransform_representatives v (β v) (QuotientGroup.mk (atPlace v c.out))).symm.trans
     (d.powerClassTransform_axisClassIntegral v (Φ v) (atPlace v c.out) (hi v))
+
+/-- The two zero-frequency sums in Proposition B.4 cancel for every pure tensor,
+with the rational classes reindexed by the involution x ↦ −1/x. -/
+theorem axisDensity_hat_zero_sum_eq_axisLine_zero (Φ : ∀ v, d.schwartz v)
+    (hΦ : ∀ᶠ v in cofinite, Φ v = d.basic v) :
+    (∑' x : GlobalClass n F, ∏ᶠ v, d.hat v (d.axisDensity v (Φ v) (atPlace v x.out)) 0) =
+      ∑' y : GlobalClass n F, ∏ᶠ v, d.axisLine v (Φ v) (atPlace v y.out) 0 := by
+  let Q := QuotientGroup.mk' (powMonoidHom n : Fˣ →* Fˣ).range
+  let e := Equiv.divLeft (Q (-1))
+  let β (c : GlobalClass n F) := ∏ᶠ v, d.axisClassIntegral v (Φ v) (QuotientGroup.mk (atPlace v c.out))
+  apply Eq.trans _ (d.axisClassIntegral_sum_eq_axisLine_zero Φ (fun v => d.integrable_axis v (Φ v))
+    (d.eventually_axisClassIntegral_basic Φ hΦ))
+  change _ = ∑' c, β c
+  rw [← e.tsum_eq β]
+  apply tsum_congr
+  intro x
+  have rep : Q (e x).out = Q (-1 / x.out) := by
+    refine (Quotient.out_eq (e x)).trans ?_
+    rw [map_div]
+    exact congrArg (Q (-1) / ·) (Quotient.out_eq x).symm
+  apply finprod_congr
+  intro v
+  let loc := (adelicClassAt n v).comp (rationalClassMap n F)
+  have loc_mk (b : Fˣ) : loc (Q b) = QuotientGroup.mk (atPlace v b) := by cases v <;> rfl
+  have hrep := (loc_mk _).symm.trans ((congrArg loc rep).trans (loc_mk _))
+  rw [hrep,axisClassIntegral_eq_integral_density]
+  simp only [atPlace,map_div,Units.map_neg,map_one,div_div_cancel,hat,zero_mul,Character.localValue_zero,mul_one]
 
 /-- The local densities at zero give exactly the global leading-term axis value. -/
 theorem axisDensity_zero_product (Φ : ∀ v, d.schwartz v) (x : Fˣ) :

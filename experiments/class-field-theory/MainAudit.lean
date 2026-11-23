@@ -104,3 +104,24 @@ run_cmd do
 
 #print axioms MetaplecticPoisson.Datum.powerClassTransform_axisClassIntegral
 #print axioms MetaplecticPoisson.Datum.axisClassIntegral_sum_eq_axisLine_zero
+
+#print axioms MetaplecticPoisson.Datum.integrable_axis
+#print axioms MetaplecticPoisson.Datum.axisClassIntegral_eq_integral_density
+#print axioms MetaplecticPoisson.Datum.axisClassIntegral_basic
+#print axioms MetaplecticPoisson.Datum.eventually_axisClassIntegral_basic
+#print axioms MetaplecticPoisson.Datum.axisLine_basic
+#print axioms MetaplecticPoisson.Datum.eventually_axisLine_basic
+#print axioms MetaplecticPoisson.Datum.hasSum_powerClass_representatives
+#print axioms MetaplecticPoisson.Datum.summable_rational_axis
+#print axioms MetaplecticPoisson.Datum.axisDensity_hat_zero_sum_eq_axisLine_zero
+#print axioms MetaplecticPoisson.Datum.diagonal_sqrt_modulus_product
+#print axioms MetaplecticPoisson.Datum.hat_scaled
+#print axioms MetaplecticPoisson.Datum.tsum_hat_scaled
+#print axioms GroundTheory.Global.existsUnique_eq_adelicChar_mul
+#print axioms GroundTheory.Global.tsum_algebraMap_eq_tsum_adelicFourier
+#print axioms MetaplecticPoisson.Character.existsUnique_trace_parameter
+#print axioms MetaplecticPoisson.Character.adelic_poisson
+#print axioms MetaplecticPoisson.Datum.finiteTensor_mem_schwartzBruhat
+#print axioms MetaplecticPoisson.Datum.finiteTensor_axisLine
+#print axioms MetaplecticPoisson.Datum.finiteTensor_axisDensity
+#print axioms MetaplecticPoisson.Datum.hasSum_axis_powerClasses

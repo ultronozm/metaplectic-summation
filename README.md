@@ -264,13 +264,24 @@ adelic annihilator. After restriction to a sufficiently large set of places,
 the two sums are finite Fourier sums on the image of the $S$-units.
 [PowerClassPoisson](MetaplecticSummation/PowerClassPoisson.lean)
 
-For Proposition B.4, the local transform of the integral over a power class
-equals the Hilbert-symbol-weighted axis integral. Applying Lemma B.3 equates
-the two global class sums whenever the axes are integrable and almost every
-class integral is the integral-unit indicator. Applying this to the sections
-in the paper and proving the additive adelic Poisson step remain open.
+For every pure tensor in Proposition B.4, the sums of the zero-frequency
+terms agree. The proof identifies the class integral with the integral of
+the normalized axis density and reindexes the rational classes by $x ↦ -1/x$.
+Summing a convergent series over all rational power classes and power
+parameters gives exactly $n$ copies of the original sum.
 [Class integrals](MetaplecticSummation/PowerClassIntegrals.lean) ·
-[Global comparison](MetaplecticSummation/FourierCoefficients.lean)
+[Global comparison](MetaplecticSummation/FourierCoefficients.lean) ·
+[Rational multiplicity](MetaplecticSummation/RationalPowerSums.lean)
+
+Ordinary additive Poisson over the number field, with absolute convergence
+on both sides, is proved for every adelic Schwartz–Bruhat function and
+every character allowed by the paper. Applying it in Proposition B.4
+uses two tests whose finite-adelic factors are now proved Schwartz–Bruhat.
+The infinite-place tensor construction and the identification of the adelic
+Fourier integrals with products of local transforms are still open.
+[Additive Poisson](MetaplecticSummation/AdditivePoisson.lean) ·
+[Finite adelic tests](MetaplecticSummation/FiniteAdelicTests.lean) ·
+[GroundTheory sources](vendor/ground-theory/README.md)
 
 The global product calculations cancel the normalizing constants at rational arguments
 and identify the leading-term contributions at zero. The unfolding identities

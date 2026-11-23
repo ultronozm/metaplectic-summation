@@ -13,16 +13,6 @@ def jacquet (v : Place F) (Φ : d.schwartz v) (c : (LocalField F v)ˣ) : ℂ :=
   ∫ y, Φ.val.1 c y * d.character.localValue F v (-y / (c : LocalField F v))
     ∂(selfDual F d.character v)
 
-open Set in
-theorem basic_x_outside (p : Prime F) (ht : p.asIdeal.absNorm.Coprime n)
-    (x : (LocalField F (.inr p))ˣ) (y : LocalField F (.inr p)) (h : 1 < max ‖x.val‖ ‖y‖) :
-    (d.basic (.inr p)).val.1 x y = 0 := by
-  have hq : 1 ≤ (p.asIdeal.absNorm : ℝ) := by
-    exact_mod_cast (NumberField.HeightOneSpectrum.one_lt_absNorm p).le
-  have he (k : ℕ) : max ‖x.val‖ ‖y‖ ≠ ((p.asIdeal.absNorm : ℝ)^(n*k))⁻¹ :=
-    ne_of_gt ((inv_le_one_of_one_le₀ (one_le_pow₀ hq)).trans_lt h)
-  simp [basic, dif_pos ht, basicCharts, he]
-
 theorem jacquet_basic_nonintegral (p : Prime F) (ht : p.asIdeal.absNorm.Coprime n)
     (c : (LocalField F (.inr p))ˣ) (hc : 1 < ‖c.val‖) :
     d.jacquet (.inr p) (d.basic (.inr p)) c = 0 := by

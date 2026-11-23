@@ -1,5 +1,6 @@
 import MetaplecticSummation.Marginals.Basic
-import MetaplecticSummation.BasicWeights
+import MetaplecticSummation.RationalEvaluation
+import MetaplecticSummation.ConductorMeasure
 
 /-! The marginal kernels of the basic vector in Appendix A. -/
 
@@ -10,7 +11,7 @@ open scoped Topology
 open Classical
 variable {F : Type} [Field F] [NumberField F] {n : ℕ} [NeZero n] (d : Datum F n)
 
-private theorem axis_basic (p : Prime F) (hp : p.asIdeal.absNorm.Coprime n) (y : (LocalField F (.inr p))ˣ) :
+theorem axis_basic (p : Prime F) (hp : p.asIdeal.absNorm.Coprime n) (y : (LocalField F (.inr p))ˣ) :
     d.axis (.inr p) (d.basic (.inr p)) y = ∑' k : ℕ,
       if ‖y.val‖ = ((p.asIdeal.absNorm : ℝ)^(n*k))⁻¹ then (p.asIdeal.absNorm : ℂ)^((n-1)*k) else 0 := by
   unfold axis

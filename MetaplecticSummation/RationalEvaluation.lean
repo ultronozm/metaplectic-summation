@@ -52,27 +52,32 @@ theorem diagonal_modulus_product {a : F} (ha : a ≠ 0) :
   rw [finprod_comp_equiv NumberField.FinitePlace.equivHeightOneSpectrum.symm (f := fun w : NumberField.FinitePlace F => w a)]
   exact NumberField.prod_abs_eq_one ha
 
-/-- The normalizing constants in the adelic Fourier transform have product one. -/
-theorem transform_normalization_product :
-    (∏ᶠ v : Place F, (Real.sqrt (modulus F v (n : LocalField F v)) : ℂ)⁻¹) = 1 := by
-  let m (v : Place F) := modulus F v (diagonal F v (n : F))
-  have hn : (n : F) ≠ 0 := Nat.cast_ne_zero.mpr (NeZero.ne n)
+/-- The square-root local measure changes for a rational scaling multiply to one. -/
+theorem diagonal_sqrt_modulus_product (a : Fˣ) :
+    (∏ᶠ v : Place F, (Real.sqrt (modulus F v (diagonal F v a.val)) : ℂ)) = 1 := by
+  let m (v : Place F) := modulus F v (diagonal F v a.val)
   have hm : Function.HasFiniteMulSupport m := eventually_cofinite.mp
-    (eventually_place_of_finite (P := fun v => m v = 1) (eventually_diagonal_norm_one hn))
+    (eventually_place_of_finite (P := fun v => m v = 1) (eventually_diagonal_norm_one a.ne_zero))
   let S := hm.toFinset
   have hS (v : Place F) (hv : v ∉ S) : m v = 1 := Classical.byContradiction (fun h => hv (hm.mem_toFinset.mpr h))
   have hprod : ∏ v ∈ S, m v = 1 := by
     rw [← finprod_eq_prod _ hm]
-    exact diagonal_modulus_product hn
+    exact diagonal_modulus_product a.ne_zero
   have hpos (v : Place F) : 0 ≤ m v := by cases v <;> simp [m,modulus]
   have he : (∏ v ∈ S, Real.sqrt (m v)) = 1 := by rw [← Real.sqrt_prod S (fun v _ => hpos v),hprod,Real.sqrt_one]
-  have hm' (v : Place F) : modulus F v (n : LocalField F v) = m v := by simp [m]
-  simp_rw [hm']
+  change (∏ᶠ v, (Real.sqrt (m v) : ℂ)) = 1
   rw [finprod_eq_prod_of_mulSupport_subset (s := S) _ (by
     intro v hv
     by_contra h
-    simpa [Function.mem_mulSupport,hS v h] using hv),Finset.prod_inv_distrib,← Complex.ofReal_prod,he]
-  simp
+    simpa [Function.mem_mulSupport,hS v h] using hv),← Complex.ofReal_prod,he,Complex.ofReal_one]
+
+/-- The normalizing constants in the adelic Fourier transform have product one. -/
+theorem transform_normalization_product :
+    (∏ᶠ v : Place F, (Real.sqrt (modulus F v (n : LocalField F v)) : ℂ)⁻¹) = 1 := by
+  let a := Units.mk0 (n : F) (Nat.cast_ne_zero.mpr (NeZero.ne n))
+  have h := diagonal_sqrt_modulus_product a
+  simp only [a,Units.val_mk0,map_natCast] at h
+  rw [finprod_inv_distrib,h,inv_one]
 
 private theorem basic_weight_one (w : HeightOneSpectrum (𝓞 F)) :
     (∑' k : ℕ, if (1 : ℝ) = ((w.asIdeal.absNorm : ℝ)^(n*k))⁻¹ then
@@ -83,6 +88,16 @@ private theorem basic_weight_one (w : HeightOneSpectrum (𝓞 F)) :
     have hq : 1 < (w.asIdeal.absNorm : ℝ) := by exact_mod_cast NumberField.HeightOneSpectrum.one_lt_absNorm w
     have h := one_lt_pow₀ hq (Nat.mul_ne_zero (NeZero.ne n) hk)
     simp [ne_of_gt h]
+
+open Set in
+theorem basic_x_outside (p : Prime F) (ht : p.asIdeal.absNorm.Coprime n)
+    (x : (LocalField F (.inr p))ˣ) (y : LocalField F (.inr p)) (h : 1 < max ‖x.val‖ ‖y‖) :
+    (d.basic (.inr p)).val.1 x y = 0 := by
+  have hq : 1 ≤ (p.asIdeal.absNorm : ℝ) := by
+    exact_mod_cast (NumberField.HeightOneSpectrum.one_lt_absNorm p).le
+  have he (k : ℕ) : max ‖x.val‖ ‖y‖ ≠ ((p.asIdeal.absNorm : ℝ)^(n*k))⁻¹ :=
+    ne_of_gt ((inv_le_one_of_one_le₀ (one_le_pow₀ hq)).trans_lt h)
+  simp [basic, dif_pos ht, basicCharts, he]
 
 theorem basic_xChart_unit (w : HeightOneSpectrum (𝓞 F)) (ht : w.asIdeal.absNorm.Coprime n)
     (x y : LocalField F (.inr w)) (hx : ‖x‖ = 1) (hy : ‖y‖ ≤ 1) :

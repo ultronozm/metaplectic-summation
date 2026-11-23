@@ -236,7 +236,7 @@ theorem finite_axisLine_bruhat_of_transform (Φ Ψ : d.schwartz vp)
   exact Bruhat.const_mul vp (d.axisDensity_finite_bruhat p Ψ x) _
 
 theorem finite_axisLine_bruhat (Φ : d.schwartz vp) (y : Kvˣ) : Bruhat vp (d.axisLine vp Φ y) :=
-  d.finite_axisLine_bruhat_of_transform p Φ (d.fourier vp Φ) (d.fourier_apply vp Φ) y
+  d.finite_axisLine_bruhat_of_transform p Φ (d.finiteSchwartzTransform p (d.finite_symbol_power p) Φ) rfl y
 
 /-- Appendix A's marginal kernels and converse Fourier identity for the
 transform constructed under Hilbert nondegeneracy. -/
