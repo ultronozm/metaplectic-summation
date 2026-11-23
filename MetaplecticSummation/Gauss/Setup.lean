@@ -11,15 +11,6 @@ structure ClassicalSetting (S : Finset (Place F)) : Prop where
   unramified : ∀ p : Prime F, Sum.inr p ∉ S → d.UnramifiedAt (.inr p)
   principal : IsPrincipalIdealRing (SIntegers S)
 
-def integralUnits (p : Prime F) : Subgroup (LocalField F (.inr p))ˣ where
-  carrier := {u | ‖(u : LocalField F (.inr p))‖ = 1}
-  one_mem' := norm_one
-  mul_mem' := by intro a b ha hb; change ‖(a : LocalField F (.inr p)) * b‖ = 1; rw [norm_mul, ha, hb, one_mul]
-  inv_mem' := by
-    intro a ha
-    change ‖((a⁻¹ : (LocalField F (.inr p))ˣ) : LocalField F (.inr p))‖ = 1
-    rw [Units.val_inv_eq_inv_val, norm_inv, ha, inv_one]
-
 abbrev UnitChar (p : Prime F) := integralUnits p →* Circle
 
 def charWeight {p : Prime F} (χ : UnitChar p) : Weight (.inr p : Place F) := by

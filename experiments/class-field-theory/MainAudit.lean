@@ -23,6 +23,22 @@ run_cmd do
     ``MetaplecticPoisson.Datum.symbol_power_of_local_right_kernel,
     ``MetaplecticPoisson.Datum.finite_reverse_marginal_on_test,
     ``MetaplecticPoisson.Datum.tame_reverse_marginal_on_test,
+    ``MetaplecticPoisson.Datum.localClassPairing_right_kernel,
+    ``MetaplecticPoisson.Datum.adelicClass_eq_one_of_local,
+    ``MetaplecticPoisson.Datum.rationalClass_le_orthogonal,
+    ``MetaplecticPoisson.Datum.mem_rationalClass_iff_eventually,
+    ``MetaplecticPoisson.Datum.eq_one_of_orthogonal_of_principal_sIntegers,
+    ``MetaplecticPoisson.Datum.card_powerClass_mul_modulus,
+    ``MetaplecticPoisson.Datum.involutive_normalized_powerClassTransform,
+    ``MetaplecticPoisson.Datum.eventually_powerClassTransform_unitClassTest,
+    ``MetaplecticPoisson.Datum.exists_finite_support_detecting_orthogonal,
+    ``MetaplecticPoisson.Datum.rationalOrthogonal_eq_of_sUnit_card,
+    ``MetaplecticPoisson.Datum.card_sUnitClassImage_on_kummerSupport,
+    ``MetaplecticPoisson.Datum.rationalOrthogonal_eq,
+    ``MetaplecticPoisson.Datum.rationalClassMap_injective,
+    ``MetaplecticPoisson.Datum.powerClass_poisson_finite_support,
+    ``MetaplecticPoisson.Datum.axisClassIntegral_sum_eq_axisLine_zero,
+    ``MetaplecticPoisson.Datum.powerClass_poisson,
     ``MetaplecticPoisson.Datum.poisson,
     ``MetaplecticPoisson.Datum.lineSummation,
     ``MetaplecticPoisson.Datum.twistedGaussSummation]
@@ -65,3 +81,26 @@ run_cmd do
 #print axioms MetaplecticPoisson.Datum.marginal_root_formula_finite
 
 #print axioms MetaplecticPoisson.Datum.marginal_root_formula_finite_on_test
+
+#print axioms MetaplecticPoisson.Datum.localClassPairing_right_kernel
+#print axioms MetaplecticPoisson.Datum.adelicClass_eq_one_of_local
+#print axioms MetaplecticPoisson.Datum.rationalClass_le_orthogonal
+#print axioms MetaplecticPoisson.Datum.mem_rationalClass_iff_eventually
+#print axioms MetaplecticPoisson.Datum.eq_one_of_orthogonal_of_principal_sIntegers
+#print axioms MetaplecticPoisson.Datum.card_powerClass_mul_modulus
+#print axioms MetaplecticPoisson.Datum.involutive_normalized_powerClassTransform
+#print axioms MetaplecticPoisson.Datum.eventually_powerClassTransform_unitClassTest
+
+#print axioms MetaplecticPoisson.Datum.exists_finite_support_detecting_orthogonal
+#print axioms MetaplecticPoisson.Datum.rationalOrthogonal_eq_of_sUnit_card
+#print axioms MetaplecticPoisson.Datum.card_sUnitClassImage_on_kummerSupport
+#print axioms MetaplecticPoisson.Datum.rationalOrthogonal_eq
+
+#print axioms MetaplecticPoisson.Datum.rationalClassMap_injective
+
+#print axioms MetaplecticPoisson.Datum.powerClass_poisson
+
+#print axioms MetaplecticPoisson.Datum.powerClass_poisson_finite_support
+
+#print axioms MetaplecticPoisson.Datum.powerClassTransform_axisClassIntegral
+#print axioms MetaplecticPoisson.Datum.axisClassIntegral_sum_eq_axisLine_zero

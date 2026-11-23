@@ -258,6 +258,20 @@ central scalars (`tame_transform_equivariant`). Identifying the projection of th
 resulting operator group to SL₂ and proving the Plancherel identity in
 Theorem 7.1 remain open.
 
+Lemma B.3, `Datum.powerClass_poisson`, is proved over number fields. The
+Hilbert pairing identifies the image of the rational power classes with its
+adelic annihilator. After restriction to a sufficiently large set of places,
+the two sums are finite Fourier sums on the image of the $S$-units.
+[PowerClassPoisson](MetaplecticSummation/PowerClassPoisson.lean)
+
+For Proposition B.4, the local transform of the integral over a power class
+equals the Hilbert-symbol-weighted axis integral. Applying Lemma B.3 equates
+the two global class sums whenever the axes are integrable and almost every
+class integral is the integral-unit indicator. Applying this to the sections
+in the paper and proving the additive adelic Poisson step remain open.
+[Class integrals](MetaplecticSummation/PowerClassIntegrals.lean) ·
+[Global comparison](MetaplecticSummation/FourierCoefficients.lean)
+
 The global product calculations cancel the normalizing constants at rational arguments
 and identify the leading-term contributions at zero. The unfolding identities
 at frequencies zero and one and the global constant-term identity remain admitted.

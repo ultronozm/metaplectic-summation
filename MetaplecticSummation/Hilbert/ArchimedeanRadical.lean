@@ -42,4 +42,20 @@ theorem real_symbol_power (w : InfinitePlace F) (hw : w.IsReal) (a : (LocalField
   change e ((e.symm z)^n) = e a.val
   rw [map_pow,e.apply_symm_apply,hz]
 
+/-- Every nonzero complex number is an n-th power in the completion. -/
+theorem complex_unit_power (w : InfinitePlace F) (hw : w.IsComplex) (a : (LocalField F (.inl w))ˣ) :
+    ∃ b : (LocalField F (.inl w))ˣ, b^n = a := by
+  let e := InfinitePlace.Completion.ringEquivComplexOfIsComplex hw
+  obtain ⟨z,hz⟩ := IsAlgClosed.exists_pow_nat_eq (e a.val) (NeZero.pos n)
+  have hne : z ≠ 0 := by
+    rintro rfl
+    exact ((map_ne_zero e).mpr a.ne_zero) (hz.symm.trans (zero_pow (NeZero.ne n)))
+  let b : (LocalField F (.inl w))ˣ := Units.mk0 (e.symm z) ((map_ne_zero _).mpr hne)
+  have hb : b^n = a := by
+    apply Units.ext
+    apply e.injective
+    change e ((e.symm z)^n) = e a.val
+    rw [map_pow,e.apply_symm_apply,hz]
+  exact ⟨b,hb⟩
+
 end MetaplecticPoisson.Datum

@@ -128,6 +128,26 @@ theorem primeOrder_eq_zero_of_not_mem (c : NonzeroInteger S) (p : Prime F)
   have hq : 1 < (p.asIdeal.absNorm : ℝ) := by exact_mod_cast HeightOneSpectrum.one_lt_absNorm p
   exact pow_lt_one₀ (by positivity) (inv_lt_one_of_one_lt₀ hq) hn
 
+/-- Over a principal ring of S-integers, an orthogonal power class with
+integral-unit representatives outside S is detected at the places of S. -/
+theorem eq_one_of_orthogonal_of_principal_sIntegers {n : ℕ} [NeZero n] (d : Datum F n)
+    [IsPrincipalIdealRing (SIntegers S)] (x : AdelicPowerClass n F) (hx : x ∈ d.rationalOrthogonal)
+    (hS : ∀ v ∈ S, adelicClassAt n v x = 1) (hinf : ∀ w : InfinitePlace F, Sum.inl w ∈ S)
+    (ht : ∀ p : Prime F, Sum.inr p ∉ S → p.asIdeal.absNorm.Coprime n)
+    (hu : ∀ p : Prime F, Sum.inr p ∉ S →
+      ∃ u : (LocalField F (.inr p))ˣ, ‖u.val‖ = 1 ∧ QuotientGroup.mk u = adelicClassAt n (.inr p) x) :
+    x = 1 := by
+  apply d.eq_one_of_orthogonal_of_unit_outside S x hx hS hinf ht hu
+  intro p hp
+  obtain ⟨t,htp,htq⟩ := exists_prime_generator p hp
+  refine ⟨fieldUnit t, ?_, fun q hq hne => ?_⟩
+  · change ‖diagonal F (.inr p) (t.val : F)‖ = _
+    rw [norm_primeOrder p hp t]
+    simp [primeOrder,htp]
+  · change ‖diagonal F (.inr q) (t.val : F)‖ = _
+    rw [norm_primeOrder q hq t]
+    simp [primeOrder,htq q hq hne]
+
 section PID
 variable [IsPrincipalIdealRing (SIntegers S)] (c : NonzeroInteger S)
 

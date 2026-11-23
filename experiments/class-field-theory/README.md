@@ -18,7 +18,7 @@ lake env lean experiments/class-field-theory/Audit.lean
 lake env lean experiments/class-field-theory/MainAudit.lean
 ```
 
-The external audit prints the axioms of the pairing, both kernels, the tame and residue comparisons, and the product formulas for the existential and concrete families. The 15 declarations each use only `propext`, `Classical.choice`, and `Quot.sound`. [External audit](Audit.lean)
+The external audit prints the axioms of the pairing, both kernels, the tame and residue comparisons, and the product formulas for the existential and concrete families. The original 15 Hilbert declarations each use only `propext`, `Classical.choice`, and `Quot.sound`. [External audit](Audit.lean)
 
 The project theorem `MetaplecticPoisson.existsUnique_hilbert` now combines the constructed family with weak approximation. The proof of uniqueness imports only the local arithmetic and the definition of a normalized family. [Arithmetic.lean](../../MetaplecticSummation/Arithmetic.lean) · [HilbertUniqueness.lean](../../MetaplecticSummation/HilbertUniqueness.lean)
 
@@ -32,7 +32,7 @@ The full build completed on the pinned archive. The direct project admissions re
 | `Datum.lineSummation` | The same two and `unfolding` |
 | `Datum.twistedGaussSummation` | The same two and `unfolding` |
 
-There are 11 direct admissions in the library. The eight outside those three dependency chains are listed in the original audit below. At finite places, the defining-integral version of the root formula uses the proved right-kernel theorem directly. The version stated with `d.fourier` also references the construction of the all-place Fourier endomorphism, whose axiom audit still reaches the Archimedean marginal. [Finite root formulas](../../MetaplecticSummation/MarginalRootFormula.lean)
+After proving Lemma B.3 there are 10 direct admissions in the library. Seven lie outside these three dependency chains: `kubota_projection`, `fourier_mass`, `fourier_root_kernel`, `arch_integrableOn_shear_vertical`, `mellin_dual`, `constantTerm_identity`, and `boundary_degree_one`. At finite places, the defining-integral version of the root formula uses the proved right-kernel theorem directly. The version stated with `d.fourier` also references the construction of the all-place Fourier endomorphism, whose axiom audit still reaches the Archimedean marginal. [Finite root formulas](../../MetaplecticSummation/MarginalRootFormula.lean)
 
 ## The arithmetic comparison
 
@@ -106,4 +106,16 @@ $$
 
 Here $g$ is any lift of $m$. The two quotient integrations must use compatible measures. The first unfolding is to $N(F)\backslash G(\mathbb A)$, followed by integration along $N(F)\backslash N(\mathbb A)$. The inner integral is the translated constant term.
 
-Yamaguchi's `Idele/NormOneCompact.lean` gives `compactNormOneClassCover` and its image in the idele class group. AutomorphicLean's `LocalGL2.exists_iwasawa` factors a local $\mathrm{GL}_2$ matrix as upper triangular times integral. Tau Ceti's `CanonicalEmbedding/PoissonSummation.lean` proves `tsum_idealLattice_eq_tsum_mixedDual_mixedFourier` for an invertible fractional ideal. The multiplicative Poisson step needs a separate proof that the image $\Delta$ of rational power classes in $\mathbb A^\times/\mathbb A^{\times n}$ satisfies $\Delta^\perp=\Delta$. Reciprocity gives the inclusion $\Delta\subseteq\Delta^\perp$.
+Yamaguchi's `Idele/NormOneCompact.lean` gives `compactNormOneClassCover` and its image in the idele class group. AutomorphicLean's `LocalGL2.exists_iwasawa` factors a local $\mathrm{GL}_2$ matrix as upper triangular times integral. Tau Ceti's `CanonicalEmbedding/PoissonSummation.lean` proves `tsum_idealLattice_eq_tsum_mixedDual_mixedFourier` for an invertible fractional ideal. The multiplicative Poisson step uses the equality $\Delta^\perp=\Delta$ for the image of rational power classes in $\mathbb A^\times/\mathbb A^{\times n}$. The proof is described below.
+
+## Lemma B.3
+
+The adelic Hilbert pairing descends to the quotient of the ideles by powers. The rational power-class map is injective, and its image equals its orthogonal complement. For the reverse inclusion, enlarge a finite set of primes to Yamaguchi’s Kummer norm support and include every infinite place. On this set the image of the $S$-units is isotropic, and its order squared equals the order of the product of the local power-class groups. Finite character orthogonality therefore identifies the image with its annihilator. Rational prime generators outside the support detect the remaining integral-unit classes. The ideal class group supplies a sufficiently large support for every number field. [Adelic pairing](../../MetaplecticSummation/PowerClassPairing.lean) · [Finite support argument](../../MetaplecticSummation/PowerClassSupport.lean) · [Counting and annihilator equality](../../MetaplecticSummation/Hilbert/GlobalRadical.lean)
+
+At every place $v$, the order of the power-class group times $|n|_v$ equals $n^2$. The local transform in the paper, multiplied by $|n|_v^{1/2}$, is an involution. At tame primes the unnormalized transform fixes the indicator of the integral-unit classes, so the dual test family again satisfies the restricted-product condition. [Local Fourier inversion](../../MetaplecticSummation/PowerClassFourier.lean) · [Tame test factor](../../MetaplecticSummation/TamePowerClassFourier.lean)
+
+The theorem `Datum.powerClass_poisson` proves the stated equality of the two adelic sums. Outside the chosen support both tests are the integral-unit indicator. A rational class with a nonzero summand therefore has integral-unit classes at those places. Restricting these rational classes to the support gives a bijection onto the finite $S$-unit image. Its cardinality $n^{|S|}$ cancels the factors $1/n$ from the local transforms. The proof keeps the paper’s original normalization and the same public Lean statement. [Poisson summation on power classes](../../MetaplecticSummation/PowerClassPoisson.lean)
+
+## Proposition B.4
+
+For a local section with integrable axis, `powerClassTransform_axisClassIntegral` computes the finite Fourier transform of the function assigning to a power class $c$ the value $n$ times the additive integral of the axis over $c$. The transformed value at $a$ is the integral of the axis against the symbol $\{y,a\}_v$. The global theorem `axisClassIntegral_sum_eq_axisLine_zero` applies Lemma B.3 once the axes are integrable at every place and the class integral equals the integral-unit indicator at almost every finite place. Both proofs use only the standard Lean axioms. To conclude Proposition B.4 one still needs these hypotheses for the paper’s sections and the additive adelic Poisson and summation arguments for the two families of local functions. [Local integral](../../MetaplecticSummation/PowerClassIntegrals.lean) · [Global comparison](../../MetaplecticSummation/FourierCoefficients.lean)

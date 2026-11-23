@@ -60,10 +60,12 @@ theorem denseRange_diagonal_places (S : Finset (Place F)) :
     (continuous_pi fun v => (hc v.val).comp (continuous_apply v))
 
 
-private def unitDiagonal (S : Finset (Place F)) (x : Fˣ) (i : S) : (LocalField F i.val)ˣ :=
+/-- The diagonal units in a finite product of completions. -/
+def unitDiagonal (S : Finset (Place F)) (x : Fˣ) (i : S) : (LocalField F i.val)ˣ :=
   Units.map (diagonal F i.val).toMonoidHom x
 
-private theorem denseRange_unitDiagonal (S : Finset (Place F)) (j : S) :
+/-- Weak approximation for units at a nonempty finite set of places. -/
+theorem denseRange_unitDiagonal (S : Finset (Place F)) (j : S) :
     DenseRange (unitDiagonal S) := by
   classical
   let val (a : ∀ i : S, (LocalField F i.val)ˣ) := fun i => (a i).val

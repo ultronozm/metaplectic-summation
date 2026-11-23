@@ -1,5 +1,5 @@
 import MetaplecticSummation.Jacquet.Kernel
-import MetaplecticSummation.PowerSubgroup
+import MetaplecticSummation.LocalPowerClasses
 import Mathlib.Analysis.Calculus.BumpFunction.FiniteDimension
 import Mathlib.Topology.LocallyConstant.Algebra
 
@@ -11,34 +11,12 @@ open scoped Topology ContDiff
 open Classical
 variable {F : Type} [Field F] [NumberField F] {n : ℕ} [NeZero n]
 
-private abbrev nontrivialArchNorm (w : InfinitePlace F) : NontriviallyNormedField w.Completion where
-  non_trivial := by
-    refine ⟨algebraMap F w.Completion (2 : F), ?_⟩
-    have h := InfinitePlace.Completion.norm_coe w ((WithAbs.equiv w.1).symm (2 : F))
-    change 1 < ‖algebraMap F w.Completion (2 : F)‖
-    rw [show ‖algebraMap F w.Completion (2 : F)‖ = w (2 : F) from h]
-    simpa only [← Nat.cast_ofNat (R := F) (n := 2), w.map_natCast] using (by norm_num : (1:ℝ) < (2:ℕ))
-
 abbrev Weights (S : Finset (Place F)) := (v : S) → Weight v.val
 abbrev Admissible {S : Finset (Place F)} (W : Weights S) := ∀ v, TestWeight v.val (W v)
-abbrev PowerClass (n : ℕ) (v : Place F) := (LocalField F v)ˣ ⧸ (powMonoidHom n :
-  (LocalField F v)ˣ →* (LocalField F v)ˣ).range
 abbrev Classes (n : ℕ) (S : Finset (Place F)) := (v : S) → PowerClass n v.val
 
-theorem finite_power_classes (v : Place F) : Finite (PowerClass n v) := by
-  cases v with
-  | inl w =>
-    letI := nontrivialArchNorm w
-    letI : ProperSpace w.Completion := .of_nontriviallyNormedField_of_weaklyLocallyCompactSpace _
-    letI : CharZero w.Completion := charZero_of_injective_ringHom (algebraMap F w.Completion).injective
-    exact finite_unit_power_quotient (K := w.Completion) n (Nat.cast_ne_zero.mpr (NeZero.ne n))
-  | inr p =>
-    letI : NontriviallyNormedField (p.adicCompletion F) := FinitePlace.nontriviallyNormedCompletion p
-    letI : ProperSpace (p.adicCompletion F) := .of_nontriviallyNormedField_of_weaklyLocallyCompactSpace _
-    letI : CharZero (p.adicCompletion F) := charZero_of_injective_ringHom (algebraMap F (p.adicCompletion F)).injective
-    exact finite_unit_power_quotient (K := p.adicCompletion F) n (Nat.cast_ne_zero.mpr (NeZero.ne n))
-
-private theorem open_powerClass (v : Place F) (β : PowerClass n v) :
+/-- Each power class is open in the local multiplicative group. -/
+theorem open_powerClass (v : Place F) (β : PowerClass n v) :
     IsOpen {x : (LocalField F v)ˣ | QuotientGroup.mk x = β} := by
   let H := (powMonoidHom n : (LocalField F v)ˣ →* (LocalField F v)ˣ).range
   have hH : IsOpen (H : Set (LocalField F v)ˣ) := by

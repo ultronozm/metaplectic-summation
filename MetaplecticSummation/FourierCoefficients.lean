@@ -3,6 +3,8 @@ import MetaplecticSummation.AdeleLattice
 import MetaplecticSummation.MarginalDifference
 import MetaplecticSummation.LeadingAction
 import MetaplecticSummation.LineMoments
+import MetaplecticSummation.PowerClassPoisson
+import MetaplecticSummation.PowerClassIntegrals
 
 noncomputable section
 namespace MetaplecticPoisson.Datum
@@ -80,6 +82,26 @@ theorem axisLine_zero_product (Φ : ∀ v, d.schwartz v) (y : Fˣ) :
         d.axis v (Φ v) (Units.mk0 z hz) else 0 ∂(selfDual F d.character v) := by
   simp_rw [d.axisLine_zero]
   exact remove_normalization (d.axisLine_normalization y) _
+
+/-- The multiplicative Poisson comparison of the two remaining class sums
+in Proposition B.4, given integrability of the axes and the basic local factors. -/
+theorem axisClassIntegral_sum_eq_axisLine_zero (Φ : ∀ v, d.schwartz v)
+    (hi : ∀ v, Integrable (fun z : LocalField F v =>
+      if hz : z ≠ 0 then d.axis v (Φ v) (Units.mk0 z hz) else 0) (selfDual F d.character v))
+    (hβ : ∀ᶠ p : HeightOneSpectrum (𝓞 F) in cofinite,
+      d.axisClassIntegral (.inr p) (Φ (.inr p)) = unitClassTest p n) :
+    (∑' c : GlobalClass n F, ∏ᶠ v, d.axisClassIntegral v (Φ v) (QuotientGroup.mk (atPlace v c.out))) =
+      ∑' c : GlobalClass n F, ∏ᶠ v, d.axisLine v (Φ v) (atPlace v c.out) 0 := by
+  let β v := d.axisClassIntegral v (Φ v)
+  have H := d.powerClass_poisson β (hβ.mono fun p hp c => congrFun hp c)
+  apply H.trans
+  apply tsum_congr
+  intro c
+  rw [d.axisLine_zero_product]
+  apply finprod_congr
+  intro v
+  exact (d.powerClassTransform_representatives v (β v) (QuotientGroup.mk (atPlace v c.out))).symm.trans
+    (d.powerClassTransform_axisClassIntegral v (Φ v) (atPlace v c.out) (hi v))
 
 /-- The local densities at zero give exactly the global leading-term axis value. -/
 theorem axisDensity_zero_product (Φ : ∀ v, d.schwartz v) (x : Fˣ) :
@@ -270,20 +292,6 @@ theorem unfolding (Φ : ∀ v, d.schwartz v) (h : ∀ᶠ v in cofinite, Φ v = d
     d.coefficient Φ 0 = d.constantTerm Φ ∧
     Summable (fun c : Fˣ => ‖∏ᶠ v, d.jacquet v (Φ v) (atPlace v c)‖) ∧
     d.coefficient Φ 1 = ∑' c : Fˣ, ∏ᶠ v, d.jacquet v (Φ v) (atPlace v c) := by sorry
-
-abbrev GlobalClass (n : ℕ) (F : Type) [Field F] := Fˣ ⧸ (powMonoidHom n : Fˣ →* Fˣ).range
-
-/-- Appendix B's Poisson formula on multiplicative power classes. -/
-theorem powerClass_poisson (β : (v : Place F) → PowerClass n v → ℂ)
-    (hβ : ∀ᶠ p : HeightOneSpectrum (𝓞 F) in cofinite, ∀ c, β (.inr p) c =
-      if ∃ u : (LocalField F (.inr p))ˣ, ‖(u : LocalField F (.inr p))‖ = 1 ∧
-        QuotientGroup.mk u = c then 1 else 0) :
-    let eval := fun (v : Place F) (x : GlobalClass n F) =>
-      (QuotientGroup.mk (atPlace v x.out) : PowerClass n v)
-    let dual := fun (v : Place F) (y : PowerClass n v) =>
-      (n : ℂ)⁻¹ * ∑ᶠ c : PowerClass n v, d.symbol v c.out y.out * β v c
-    (∑' x : GlobalClass n F, ∏ᶠ v, β v (eval v x)) =
-      ∑' y : GlobalClass n F, ∏ᶠ v, dual v (eval v y) := by sorry
 
 def axisBoundary (Φ : ∀ v, d.schwartz v) :=
   (n : ℂ)⁻¹ * ∑ᶠ y : GlobalClass n F, ∏ᶠ v,

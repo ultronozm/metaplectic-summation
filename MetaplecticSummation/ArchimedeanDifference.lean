@@ -332,17 +332,7 @@ theorem complex_root_sum [NeZero n] (hw : w.IsComplex) {f ρ : K → ℂ}
     (∫ t, d.hat v ρ t * d.differenceIntegral v f a (t^n-a.val) ∂dx) =
       f 0 * ∑ r ∈ Polynomial.nthRootsFinset n a.val,
         d.lineIntegral v (fun μ => ρ μ.val * d.character.localValue F v (μ.val*r)) := by
-  let e := InfinitePlace.Completion.ringEquivComplexOfIsComplex hw
-  obtain ⟨z,hz⟩ := IsAlgClosed.exists_pow_nat_eq (e a.val) (NeZero.pos n)
-  have hne : z ≠ 0 := by
-    rintro rfl
-    exact ((map_ne_zero e).mpr a.ne_zero) (hz.symm.trans (zero_pow (NeZero.ne n)))
-  let b : Kˣ := Units.mk0 (e.symm z) ((map_ne_zero _).mpr hne)
-  have hb : b^n = a := by
-    apply Units.ext
-    apply e.injective
-    change e ((e.symm z)^n) = e a.val
-    rw [map_pow,e.apply_symm_apply,hz]
+  obtain ⟨b,hb⟩ := complex_unit_power (n := n) w hw a
   exact hb ▸ d.arch_root_contribution w hf hρ hk h₀ b
 
 /-- The root-sum identity for arbitrary nonzero coefficients at every infinite place. -/
