@@ -77,7 +77,7 @@ private theorem localMatrix_upper (v : Place F) (u : A) :
   ext i j
   fin_cases i <;> fin_cases j <;> simp [show Datum.component u v = Datum.componentHom v u from rfl]
 
-private theorem localMatrix_diagonal (v : Place F) (a : Aˣ) :
+theorem localMatrix_diagonal (v : Place F) (a : Aˣ) :
     localMatrix F v (diagonalSL a) = diagonalSL (Units.map (Datum.componentHom v).toMonoidHom a) := by
   apply Subtype.ext
   change (diagonalSL a).val.map (Datum.componentHom v) = _

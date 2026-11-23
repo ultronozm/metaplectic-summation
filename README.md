@@ -351,11 +351,21 @@ nonnegative measurable function on the rational quotient, the weighted Siegel
 integral bound holds with the factor $q_w^{-2k}$ and Haar measure restricted
 to one compact set. In particular the quotient has finite Haar volume.
 The two-sided local row-modulus comparison holds uniformly on compact sets,
-with equality at almost all places. The theta growth and decay estimates
-are still required. [Quotient integration](MetaplecticSummation/Reduction/FiberIntegral.lean) ·
+with equality at almost all places. [Quotient integration](MetaplecticSummation/Reduction/FiberIntegral.lean) ·
 [Nonnegative cusp exponents](MetaplecticSummation/Reduction/SiegelCover.lean) ·
 [Siegel integral bound](MetaplecticSummation/Reduction/SiegelIntegral.lean) ·
 [Uniform row bounds](MetaplecticSummation/Reduction/CompactBounds.lean)
+
+Lemma B.8 bounds the sum of absolute values for a pure tensor and its
+Fourier transform by a constant times $q_w^{3k}$ for every restricted
+lift of a cusp representative. The sum off the axis $x=0$ decays as
+$q_w^{-Nk}$ for every natural $N$. Both estimates are uniform over
+the adelic unipotent parameter and a fixed compact set of right factors.
+The axis terms are constant on each unipotent fiber. Subtracting them and
+using the zero mean gives $O(q_w^{-Rk})$ for the full theta difference
+under the two leading-term hypotheses of Lemma B.9, for every real $R\ge0$.
+[Theta growth](MetaplecticSummation/Cusp/ThetaGrowth.lean) ·
+[Theta difference decay](MetaplecticSummation/Cusp/Decay.lean)
 
 The global vanishing statement of Proposition B.6 remains admitted in
 `thetaDifference_vanishing`. Given this input, Lean constructs the boundary

@@ -45,6 +45,11 @@ assert_no_sorry MetaplecticPoisson.exists_siegel_integral_bound
 assert_no_sorry MetaplecticPoisson.finiteVolume_slQuotient
 assert_no_sorry MetaplecticPoisson.exists_compact_row_modulus_bounds
 
+assert_no_sorry MetaplecticPoisson.Datum.sectionNorm_of_projection
+assert_no_sorry MetaplecticPoisson.Datum.weighted_section_bounds
+assert_no_sorry MetaplecticPoisson.cusp_row_bounds_on_compact
+assert_no_sorry MetaplecticPoisson.Datum.cusp_majorant_sum
+
 open Lean Elab Command
 run_cmd do
   let env ← getEnv
@@ -99,6 +104,10 @@ run_cmd do
     ``MetaplecticPoisson.Datum.theta_coset_expansion,
     ``MetaplecticPoisson.Datum.exists_theta_coset_lifts,
     ``MetaplecticPoisson.Datum.powerClass_poisson,
+    ``MetaplecticPoisson.Datum.weighted_cusp_theta,
+    ``MetaplecticPoisson.Datum.cusp_theta_growth,
+    ``MetaplecticPoisson.Datum.cusp_offAxis_decay,
+    ``MetaplecticPoisson.Datum.cusp_thetaDifference_decay,
     ``MetaplecticPoisson.Datum.poisson,
     ``MetaplecticPoisson.Datum.lineSummation,
     ``MetaplecticPoisson.Datum.twistedGaussSummation]
@@ -266,3 +275,12 @@ run_cmd do
 #print axioms MetaplecticPoisson.exists_siegel_integral_bound
 #print axioms MetaplecticPoisson.finiteVolume_slQuotient
 #print axioms MetaplecticPoisson.exists_compact_row_modulus_bounds
+
+#print axioms MetaplecticPoisson.Datum.sectionNorm_of_projection
+#print axioms MetaplecticPoisson.Datum.weighted_section_bounds
+#print axioms MetaplecticPoisson.cusp_row_bounds_on_compact
+#print axioms MetaplecticPoisson.Datum.cusp_majorant_sum
+#print axioms MetaplecticPoisson.Datum.weighted_cusp_theta
+#print axioms MetaplecticPoisson.Datum.cusp_theta_growth
+#print axioms MetaplecticPoisson.Datum.cusp_offAxis_decay
+#print axioms MetaplecticPoisson.Datum.cusp_thetaDifference_decay

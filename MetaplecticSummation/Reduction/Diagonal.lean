@@ -91,16 +91,21 @@ private theorem equivAdeleRingUnits_finitePlace (w : IsDedekindDomain.HeightOneS
   · rw [IdeleGroup.finitePlaceIdele_finiteComponent_of_ne w v x he, GroundTheory.Global.IdeleGroup.finiteAdeleSingle_apply_of_ne he]
     rfl
 
+theorem chosenLocalUniformizer_norm (w : IsDedekindDomain.HeightOneSpectrum (𝓞 F)) :
+    ‖(FiniteIdeleGroup.chosenLocalOrderSection w 1).val‖ = (w.asIdeal.absNorm : ℝ)⁻¹ := by
+  let t := FiniteIdeleGroup.chosenLocalOrderSection w 1
+  change ‖t.val‖ = _
+  have hv : Valued.v t.val = WithZero.exp (-1 : ℤ) :=
+    Classical.choose_spec (IsDedekindDomain.HeightOneSpectrum.valuedAdicCompletion_surjective F w (WithZero.exp (-1 : ℤ)))
+  rw [NumberField.FinitePlace.norm_def,hv,WithZeroMulInt.toNNReal_neg_apply _ (WithZero.exp_ne_zero (a := (-1 : ℤ)))]
+  change (((w.asIdeal.absNorm : NNReal) ^ (-1 : ℤ) : NNReal) : ℝ) = _
+  simp
+
 theorem cuspIdele_haarModule (w : IsDedekindDomain.HeightOneSpectrum (𝓞 F)) :
     (GroundTheory.Global.IdeleGroup.ideleModule F (IdeleGroup.equivAdeleRingUnits (cuspIdele F w)) : ℝ) =
       w.asIdeal.absNorm := by
   let t := FiniteIdeleGroup.chosenLocalOrderSection w 1
-  have hv : Valued.v t.val = WithZero.exp (-1 : ℤ) :=
-    Classical.choose_spec (IsDedekindDomain.HeightOneSpectrum.valuedAdicCompletion_surjective F w (WithZero.exp (-1 : ℤ)))
-  have hnorm : ‖t.val‖ = (w.asIdeal.absNorm : ℝ)⁻¹ := by
-    rw [NumberField.FinitePlace.norm_def,hv,WithZeroMulInt.toNNReal_neg_apply _ (WithZero.exp_ne_zero (a := (-1 : ℤ)))]
-    change (((w.asIdeal.absNorm : NNReal) ^ (-1 : ℤ) : NNReal) : ℝ) = _
-    simp
+  have hnorm : ‖t.val‖ = (w.asIdeal.absNorm : ℝ)⁻¹ := chosenLocalUniformizer_norm F w
   change ((GroundTheory.Global.IdeleGroup.ideleModule F)
     (IdeleGroup.equivAdeleRingUnits ((IdeleGroup.finitePlaceIdele w t)⁻¹)) : ℝ) = _
   rw [map_inv, equivAdeleRingUnits_finitePlace, ← map_inv, GroundTheory.Global.IdeleGroup.ideleModule_finiteEmbedding]
