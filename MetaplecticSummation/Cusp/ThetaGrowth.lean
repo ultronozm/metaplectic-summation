@@ -56,6 +56,32 @@ private theorem row_ne_zero (p : RationalPoint F) (v : Place F) (m : G) :
   apply p.property
   exact Prod.ext ((map_eq_zero (diagonal F v)).mp (congrFun eqn 0)) ((map_eq_zero (diagonal F v)).mp (congrFun eqn 1))
 
+/-- On a compact set of matrices one summable majorant bounds the individual
+rational rows simultaneously, with their original indexing. -/
+theorem compact_theta_majorant (Φ : ∀ v, d.schwartz v) (hf : ∀ᶠ v in cofinite, Φ v = d.basic v)
+    {K : Set G} (hK : IsCompact K) :
+    ∃ b : RationalPoint F → ℝ, Summable b ∧ ∀ m ∈ K, ∀ g : ∀ v, d.cover v, ∀ hg : d.IsRestrictedCover g,
+      d.LiftsAdelicMatrix m g → ∀ p, ‖d.evaluation (d.coverAction g hg (d.pure Φ hf)) p‖ ≤ b p := by
+  obtain ⟨B,hB,b₁,rows⟩ := exists_compact_row_modulus_bounds F hK
+  obtain ⟨C,hC,c₁,localBound⟩ := d.weighted_section_bounds Φ hf 0
+  let a := fun v => (B v)⁻¹
+  have pos (v) : 0 < a v := inv_pos.mpr (zero_lt_one.trans_le (hB v))
+  have a₁ : ∀ᶠ v in cofinite, a v = 1 := b₁.mono fun v hv => by simp [a,hv]
+  obtain ⟨_,_,bounds⟩ := theta_majorant_bound (growthExponent_nonneg n) (growthExponent_le_one n)
+    C (fun v => zero_le_one.trans (hC v)) (fun p => hC (.inr p)) c₁
+  refine ⟨_,(bounds a pos a₁).1,fun m hm g hg pg p => ?_⟩
+  obtain ⟨co,eqn⟩ := d.translated_norm_factors Φ hf hg pg p
+  rw [eqn]
+  refine finprod_mono_real co (localThetaBound_cofinite (growthExponent n) c₁ a₁ p)
+    (fun v => by dsimp only [sectionNorm]; split <;> exact norm_nonneg _) ?_
+  intro v
+  let y := diagonalRow F v p ᵥ* (localMatrix F v m).val
+  have rad : a v * vectorModulus v p ≤ localRowModulus F v y :=
+    (inv_mul_le_iff₀ (zero_lt_one.trans_le (hB v))).mpr (rows m hm v (diagonalRow F v p)).2
+  exact (by simpa only [pow_zero,one_mul] using localBound v y (row_ne_zero p v m) :
+    d.sectionNorm v (Φ v) y ≤ _).trans (localThetaBound_antitone v (growthExponent_nonneg n)
+      (zero_le_one.trans (hC v)) (mul_pos (pos v) (vectorModulus_pos v p)) rad)
+
 /-- Multiplying each off-axis summand by the L-th power of the cusp height still
 gives a sum bounded by the cube of the height. -/
 theorem weighted_cusp_theta (Φ : ∀ v, d.schwartz v) (hf : ∀ᶠ v in cofinite, Φ v = d.basic v)

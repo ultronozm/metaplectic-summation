@@ -108,6 +108,19 @@ run_cmd do
     ``MetaplecticPoisson.Datum.cusp_theta_growth,
     ``MetaplecticPoisson.Datum.cusp_offAxis_decay,
     ``MetaplecticPoisson.Datum.cusp_thetaDifference_decay,
+    ``MetaplecticPoisson.Datum.exists_integral_lift,
+    ``MetaplecticPoisson.Datum.exists_restricted_lift,
+    ``MetaplecticPoisson.Datum.coverAction_scalar_of_same_projection,
+    ``MetaplecticPoisson.Datum.compact_theta_majorant,
+    ``MetaplecticPoisson.Datum.quotientThetaBounds_mk,
+    ``MetaplecticPoisson.Datum.quotientThetaBounds_bounded,
+    ``MetaplecticPoisson.Datum.arithmeticOrbitSum_thetaDifference,
+    ``MetaplecticPoisson.Datum.arithmeticOrbitSum_enorm_le,
+    ``MetaplecticPoisson.Datum.integral_thetaOrbitIntegrand_fiber,
+    ``MetaplecticPoisson.Datum.thetaDifference_eq_zero_of_quotient_regularity,
+    ``MetaplecticPoisson.Datum.thetaDifference_eq_zero_of_continuous_evaluation_products,
+    ``MetaplecticPoisson.Datum.local_evaluation_representatives,
+    ``MetaplecticPoisson.Datum.thetaDifference_eq_zero_of_local_evaluation_lifts,
     ``MetaplecticPoisson.Datum.poisson,
     ``MetaplecticPoisson.Datum.lineSummation,
     ``MetaplecticPoisson.Datum.twistedGaussSummation]
@@ -121,6 +134,9 @@ run_cmd do
       if seen.contains n then continue
       seen := seen.insert n
       let some c := env.find? n | continue
+      if root == ``MetaplecticPoisson.Datum.thetaDifference_eq_zero_of_local_evaluation_lifts &&
+          n == ``MetaplecticPoisson.Datum.thetaDifference_vanishing then
+        throwError "The reduction of Proposition B.6 uses its conclusion"
       let ds := c.getUsedConstantsAsSet
       if ds.contains ``sorryAx then logInfo m!"{n}"
       for k in ds do
@@ -284,3 +300,17 @@ run_cmd do
 #print axioms MetaplecticPoisson.Datum.cusp_theta_growth
 #print axioms MetaplecticPoisson.Datum.cusp_offAxis_decay
 #print axioms MetaplecticPoisson.Datum.cusp_thetaDifference_decay
+
+#print axioms MetaplecticPoisson.Datum.exists_integral_lift
+#print axioms MetaplecticPoisson.Datum.exists_restricted_lift
+#print axioms MetaplecticPoisson.Datum.coverAction_scalar_of_same_projection
+#print axioms MetaplecticPoisson.Datum.compact_theta_majorant
+#print axioms MetaplecticPoisson.Datum.quotientThetaBounds_mk
+#print axioms MetaplecticPoisson.Datum.quotientThetaBounds_bounded
+#print axioms MetaplecticPoisson.Datum.arithmeticOrbitSum_thetaDifference
+#print axioms MetaplecticPoisson.Datum.arithmeticOrbitSum_enorm_le
+#print axioms MetaplecticPoisson.Datum.integral_thetaOrbitIntegrand_fiber
+#print axioms MetaplecticPoisson.Datum.thetaDifference_eq_zero_of_quotient_regularity
+#print axioms MetaplecticPoisson.Datum.thetaDifference_eq_zero_of_continuous_evaluation_products
+#print axioms MetaplecticPoisson.Datum.local_evaluation_representatives
+#print axioms MetaplecticPoisson.Datum.thetaDifference_eq_zero_of_local_evaluation_lifts

@@ -9,7 +9,7 @@ open scoped Matrix MatrixGroups
 open Classical
 variable {F : Type} [Field F] [NumberField F] {n : ℕ} [NeZero n] (d : Datum F n)
 
-private theorem upperLift_projects (u : Adeles F) : d.LiftsAdelicMatrix (adelicUpper F u) (d.upperLift u) := by
+theorem upperLift_projects (u : Adeles F) : d.LiftsAdelicMatrix (adelicUpper F u) (d.upperLift u) := by
   intro v
   apply Subtype.ext
   rw [show (d.coverProjection v (d.upperLift u v)).val = _ from

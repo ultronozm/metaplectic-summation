@@ -270,7 +270,7 @@ the normalized axis density and reindexes the rational classes by $x ↦ -1/x$.
 Summing a convergent series over all rational power classes and power
 parameters gives exactly $n$ copies of the original sum.
 [Class integrals](MetaplecticSummation/PowerClassIntegrals.lean) ·
-[Global comparison](MetaplecticSummation/FourierCoefficients/Basic.lean) ·
+[Global comparison](MetaplecticSummation/FourierCoefficients/Integrands.lean) ·
 [Rational multiplicity](MetaplecticSummation/RationalPowerSums.lean)
 
 Ordinary additive Poisson now applies to both tensors in Proposition B.4 for
@@ -366,6 +366,20 @@ using the zero mean gives $O(q_w^{-Rk})$ for the full theta difference
 under the two leading-term hypotheses of Lemma B.9, for every real $R\ge0$.
 [Theta growth](MetaplecticSummation/Cusp/ThetaGrowth.lean) ·
 [Theta difference decay](MetaplecticSummation/Cusp/Decay.lean)
+
+Every adelic matrix has a restricted lift. Two lifts induce operators differing
+by a single scalar of absolute value one, so both absolute theta quantities
+descend to the rational quotient. The orbit expansion of the square of the
+theta difference and its zero unipotent fiber integral reduce B.6 to
+continuity of products of individual rational evaluations. It suffices at each
+place to choose lifts near the identity under which each local evaluation
+varies continuously. On each
+compact matrix set a single summable majorant bounds the original row index
+uniformly. [Restricted lifts](MetaplecticSummation/Cusp/Lifts.lean) ·
+[Quotient functions](MetaplecticSummation/Cusp/Quotient.lean) ·
+[Unfolding](MetaplecticSummation/Cusp/Orbit.lean) ·
+[Continuity reduction](MetaplecticSummation/Cusp/Regularity.lean) ·
+[Local lifting condition](MetaplecticSummation/Cusp/Localization.lean)
 
 The global vanishing statement of Proposition B.6 remains admitted in
 `thetaDifference_vanishing`. Given this input, Lean constructs the boundary

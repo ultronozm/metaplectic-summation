@@ -1,4 +1,4 @@
-import MetaplecticSummation.Poisson
+import MetaplecticSummation.Theta
 import MetaplecticSummation.LineIntegral
 
 noncomputable section

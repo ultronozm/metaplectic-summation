@@ -1,4 +1,4 @@
-import MetaplecticSummation.FourierCoefficients.Basic
+import MetaplecticSummation.FourierCoefficients.Integrands
 import GroundTheory.GlobalFields.TateThesis.AdeleMeasure
 import Mathlib.Topology.Covering.Quotient
 
