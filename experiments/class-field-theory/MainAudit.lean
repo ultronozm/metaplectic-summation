@@ -10,6 +10,13 @@ assert_no_sorry MetaplecticPoisson.Datum.reverse_marginal_finite
 assert_no_sorry MetaplecticPoisson.Datum.arch_root_sum
 assert_no_sorry MetaplecticPoisson.Datum.unfolding
 
+assert_no_sorry MetaplecticPoisson.rightCoset_map_restrict_eq
+assert_no_sorry MetaplecticPoisson.exists_rationalSL_domain
+assert_no_sorry MetaplecticPoisson.rationalUnipotentDomain_unique
+assert_no_sorry MetaplecticPoisson.lintegral_arithmeticOrbitSum
+assert_no_sorry MetaplecticPoisson.integral_arithmeticOrbitSum
+assert_no_sorry MetaplecticPoisson.integrable_iff_arithmeticOrbitSum_norm
+
 open Lean Elab Command
 run_cmd do
   let env ← getEnv
@@ -196,3 +203,10 @@ run_cmd do
 #print axioms MetaplecticPoisson.rationalBottomRowEquiv
 #print axioms MetaplecticPoisson.Datum.theta_coset_expansion
 #print axioms MetaplecticPoisson.Datum.exists_theta_coset_lifts
+
+#print axioms MetaplecticPoisson.exists_rationalSL_domain
+#print axioms MetaplecticPoisson.rationalUnipotentDomain_unique
+#print axioms MetaplecticPoisson.lintegral_arithmeticOrbitSum
+#print axioms MetaplecticPoisson.integral_arithmeticOrbitSum
+#print axioms MetaplecticPoisson.integrable_iff_arithmeticOrbitSum_norm
+#print axioms MetaplecticPoisson.rightCoset_map_restrict_eq
