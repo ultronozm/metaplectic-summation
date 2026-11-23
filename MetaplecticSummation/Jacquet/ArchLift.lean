@@ -139,11 +139,12 @@ private theorem arch_lift_test (hnorm : ∀ x : L, x ≠ 0 → ContDiffAt ℝ �
         apply Units.isEmbedding_val₀.tendsto_nhds_iff.mpr
         have h' := (map_ne_zero e.symm).mpr h
         change Tendsto (fun t => (u t).val) (𝓝 x) (𝓝 (u x).val)
-        rw [show (u x).val = e.symm x from by simp only [u,dif_pos h',Units.val_mk0]]
+        rw [show (u x).val = e.symm x from by simp only [u,dif_pos h']; rfl]
         apply (i.symm.continuous.tendsto x).congr'
         filter_upwards [eventually_ne_nhds h] with t ht
         change e.symm t = (u t).val
-        simp only [u,dif_pos ((map_ne_zero e.symm).mpr ht),Units.val_mk0]
+        simp only [u,dif_pos ((map_ne_zero e.symm).mpr ht)]
+        rfl
       have hs := ((hu hx).comp continuous_fst.continuousAt |>.prodMk
         ((hu hz).comp continuous_snd.continuousAt)).eventually
         ((d.locallyConstant_unitPairing vᵥ).eventually_eq (u z.1,u z.2))
@@ -161,7 +162,8 @@ private theorem arch_lift_test (hnorm : ∀ x : L, x ≠ 0 → ContDiffAt ℝ �
       rw [dif_pos htb,dif_pos hta]
       change (if h : e.symm t.1 ≠ 0 then _ else 0) = _
       rw [dif_pos hta]
-      simp only [u,dif_pos hta,dif_pos htb,f,jacquetLift,Units.val_mk0]
+      simp only [u,dif_pos hta,dif_pos htb,f,jacquetLift]
+      rfl
 
 end Arch
 

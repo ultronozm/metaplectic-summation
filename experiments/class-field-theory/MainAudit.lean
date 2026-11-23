@@ -16,6 +16,9 @@ run_cmd do
     ``MetaplecticPoisson.Datum.arch_root_contribution,
     ``MetaplecticPoisson.Datum.arch_root_sum_of_right_kernel,
     ``MetaplecticPoisson.Datum.complex_root_sum,
+    ``MetaplecticPoisson.Datum.arch_root_sum,
+    ``MetaplecticPoisson.Datum.marginal_root_formula_finite_on_test,
+    ``MetaplecticPoisson.Datum.marginal_root_formula_finite,
     ``MetaplecticPoisson.Datum.localRootsEquiv,
     ``MetaplecticPoisson.Datum.symbol_power_of_local_right_kernel,
     ``MetaplecticPoisson.Datum.finite_reverse_marginal_on_test,
@@ -58,3 +61,7 @@ run_cmd do
 #print axioms MetaplecticPoisson.Datum.reverse_marginal_on_test
 #print axioms MetaplecticPoisson.Datum.reverse_marginal_finite
 #print axioms MetaplecticPoisson.Datum.arch_root_sum
+
+#print axioms MetaplecticPoisson.Datum.marginal_root_formula_finite
+
+#print axioms MetaplecticPoisson.Datum.marginal_root_formula_finite_on_test

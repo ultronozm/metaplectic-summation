@@ -32,8 +32,7 @@ theorem arch_jacquet_majorant (Φ : d.schwartz vi) {m : ℝ} (hm : 0 < m) :
   have hmr : m ≤ r := hx.trans (le_max_left ..)
   have hr : 0 < r := hm.trans_le hmr
   have hz : (x.val,y) ≠ (0 : K × K) := fun h => x.ne_zero (congrArg Prod.fst h)
-  have h := (H (x.val,y) hz).1
-  rw [xChart_unit_eval] at h
+  have h := (congrArg norm (xChart_unit_eval Φ.val x y)).symm.trans_le ((H (x.val,y) hz).1)
   have bound : ‖Φ.val.1 x y‖ ≤ C * (r^3)⁻¹ := by
     apply h.trans
     apply mul_le_mul_of_nonneg_left _ hC

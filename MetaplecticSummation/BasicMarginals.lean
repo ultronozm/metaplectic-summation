@@ -57,7 +57,9 @@ theorem axisDensity_basic (p : Prime F) (hp : p.asIdeal.absNorm.Coprime n)
     obtain ⟨u,hu,hval,hsmall⟩ := Filter.nonempty_of_mem (f := 𝓝[≠] (0 : LocalField F v))
       (inter_mem (self_mem_nhdsWithin (s := {0}ᶜ)) (mem_nhdsWithin_of_mem_nhds ((hl.eventually_eq 0).and hlt)))
     have eqn := he (Units.mk0 u hu)
-    simpa only [Units.val_mk0,if_pos hsmall.le,hval,norm_zero,zero_le_one,if_true] using eqn
+    change d.axisDensity v (d.basic v) x u = if ‖u‖ ≤ 1 then 1 else 0 at eqn
+    rw [if_pos hsmall.le] at eqn
+    simpa only [norm_zero, if_pos zero_le_one] using hval.symm.trans eqn
   · exact he (Units.mk0 t ht)
 
 /-- On a unit vertical line the basic marginal is the self-dual volume of the integers. -/

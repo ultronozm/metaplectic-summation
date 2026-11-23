@@ -30,6 +30,16 @@ theorem finite_marginal_root_formula (p : HeightOneSpectrum (𝓞 F)) (Φ : d.sc
         ∂(selfDual F d.character v) := by
   simpa only [d.transformTest_eq_fourier] using d.finite_marginal_root_formula_on_test p Φ hΦ s μ hpow
 
+/-- The finite root formula for the integral transform on a test section. -/
+theorem marginal_root_formula_finite_on_test (p : HeightOneSpectrum (𝓞 F))
+    (Φ : d.schwartz (.inr p)) (hΦ : Φ.val ∈ d.testSet (.inr p)) (s μ : (LocalField F (.inr p))ˣ) :
+    let v : Place F := .inr p
+    (Real.sqrt (modulus F v (n : LocalField F v)) : ℂ) * d.marginal v (d.transformTest v Φ hΦ) (μ^n*s) =
+      ∫ y, (if hy : y ≠ 0 then d.axis v Φ (Units.mk0 y hy) else 0) *
+        ∑ a ∈ nthRootsFinset n (-(s.val*y)), d.character.localValue F v (μ.val*a)
+        ∂(selfDual F d.character v) :=
+  d.finite_marginal_root_formula_on_test p Φ hΦ s μ (d.finite_symbol_power p)
+
 /-- The reverse marginal expressed as a sum over roots at every finite place. -/
 theorem marginal_root_formula_finite (p : HeightOneSpectrum (𝓞 F))
     (Φ : d.schwartz (.inr p)) (hΦ : Φ.val ∈ d.testSet (.inr p)) (s μ : (LocalField F (.inr p))ˣ) :

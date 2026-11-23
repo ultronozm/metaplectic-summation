@@ -124,13 +124,13 @@ theorem basic_local_growth (p : Prime F) (z : RationalPoint F) :
       let a := Units.mk0 x hx
       rw [h₁ a rfl h,ef]
       change ‖(d.basicCharts p).1 a y‖ ≤ localThetaBound _ _ _ (max ‖x‖ ‖y‖)
-      simpa only [basicCharts,a,Units.val_mk0,if_pos h,mul_one,max_eq_left h] using
+      simpa only [basicCharts,a,Units.val_mk0,h,ite_true,mul_one,max_eq_left h] using
         basic_weight_bound (n := n) p ‖x‖ (norm_pos_iff.mpr hx)
     · have hy : y ≠ 0 := norm_pos_iff.mp (by simpa only [max_eq_right h] using hr')
       let b := Units.mk0 y hy
       rw [h₂ b rfl h,ef]
       change ‖(d.basicCharts p).2 x b‖ ≤ localThetaBound _ _ _ (max ‖x‖ ‖y‖)
-      simpa only [basicCharts,b,Units.val_mk0,if_pos h,mul_one,max_eq_right h] using
+      simpa only [basicCharts,b,Units.val_mk0,h,ite_true,mul_one,max_eq_right h] using
         basic_weight_bound (n := n) p ‖y‖ (norm_pos_iff.mpr hy)
   · have hf : (d.basic v).val = 0 := by simp [v,basic,hp]
     have he : d.localValue z v (d.basic v) = 0 := by simp [localValue,xChart,yChart,hf]

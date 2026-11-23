@@ -28,7 +28,7 @@ theorem exists_hilbertUnitChar (hp : p.asIdeal.absNorm.Coprime n) (χ : UnitChar
   have he : θ g = χ g := by
     apply Subtype.ext
     change (d.unitPairing v (π^k) U).val = _
-    rw [map_pow,MonoidHom.pow_apply,Units.val_pow_eq_pow_val]
+    rw [map_pow]
     exact hk
   refine ⟨π^k, MonoidHom.ext fun u => ?_⟩
   obtain ⟨l,z,hz,hu⟩ := gen u.val u.property

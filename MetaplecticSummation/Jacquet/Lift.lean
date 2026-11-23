@@ -41,8 +41,10 @@ theorem jacquetLift_support (W : Weight v) (hW : HasCompactSupport W) (β : K �
         simp [jacquetLiftX,image_eq_zero_of_notMem_tsupport hb]
       · simp [jacquetLiftX,image_eq_zero_of_notMem_tsupport hw]
     constructor
-    · by_cases hx : z.1 = 0 <;> simp [xChart,jacquetLift,hx,van]
-    · by_cases hx : z.1 = 0 <;> by_cases hy : z.2 = 0 <;> simp [yChart,jacquetLift,hx,hy,van]
+    · by_cases hx : z.1 = 0 <;> simp [xChart,jacquetLift,hx]
+      exact van _ rfl
+    · by_cases hx : z.1 = 0 <;> by_cases hy : z.2 = 0 <;> simp [yChart,jacquetLift,hx,hy]
+      exact Or.inr (van _ rfl)
 
 theorem jacquet_jacquetLift (W : Weight v) (β : K → ℂ)
     (hβ : (∫ x, β x * d.character.localValue F v (-x) ∂selfDual F d.character v) = 1)

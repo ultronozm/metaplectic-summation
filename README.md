@@ -160,11 +160,10 @@ At a finite place of norm q prime to n, the symbol of a uniformizer and a unit u
 reduces to u^((q−1)/n). Bimultiplicativity, continuity and global reciprocity,
 together with the tame normalization, characterize the symbol family. Weak
 approximation isolates each exceptional place modulo n-th powers. The
-existence and uniqueness theorem for this characterization is admitted.
-This keeps the statement on Mathlib. A future class-field-theoretic proof can
-compare Tau Ceti's Kummer-cup invariant to the tame normalization.
-Tau Ceti proves the Steinberg relation for its local symbol in
-`TauCeti.ClassFieldTheory.localSymbol_kummerClass_eq_zero_of_add_eq_one`.
+existence proof transports Yamaguchi’s coherent Hilbert pairing from
+ClassFieldTheory and takes its inverse to match the uniformizer convention.
+The primitive global root identifies the global and local groups of roots of
+unity. The explicit infinite factors complete the product formula.
 This project's proof of Steinberg uses the arithmetic characterization directly.
 Hensel lifting treats principal units at tame places. At the remaining finite
 places weak approximation and reciprocity isolate the desired symbol.

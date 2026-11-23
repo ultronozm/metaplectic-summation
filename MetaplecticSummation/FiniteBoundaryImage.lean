@@ -22,7 +22,7 @@ theorem finite_leading_range (p : HeightOneSpectrum (𝓞 F)) :
     change B Φ ∈ V
     refine Submodule.span_induction (p := fun f hf => B ⟨f,hf⟩ ∈ V) ?_ ?_ ?_ ?_ Φ.property
     · rintro f (hf | ⟨g,hg,rfl⟩)
-      · rw [show B ⟨f,_⟩ = 0 from d.leading_finiteTest_eq_zero p _ hf]
+      · erw [show B ⟨f,_⟩ = 0 from d.leading_finiteTest_eq_zero p _ hf]
         exact V.zero_mem
       · let Ψ : d.schwartz v := ⟨g,Submodule.subset_span (Or.inl hg)⟩
         exact ⟨Ψ,d.leading_finiteTest_eq_zero p Ψ hg,
@@ -90,6 +90,14 @@ private theorem locallyConstant_dilated_charts {K : Type} [NontriviallyNormedFie
   simpa only [Function.comp_def,G,if_neg (Units.ne_zero _),liftUnit,dif_pos (Units.ne_zero _),Units.mk0_val] using
     slices.comp (fun r : K → ℂ => fun a : Kˣ => r a.val)
 
+private theorem xChart_unit_eval {K : Type} [Field K] (f : Charts K) (x : Kˣ) (y : K) :
+    xChart f (x.val,y) = f.1 x y := by
+  simp only [xChart, dif_pos x.ne_zero, Units.mk0_val]
+
+private theorem yChart_unit_eval {K : Type} [Field K] (f : Charts K) (x : Kˣ) (y : K) :
+    yChart f (y,x.val) = f.2 y x := by
+  simp only [yChart, dif_pos x.ne_zero, Units.mk0_val]
+
 omit [NeZero n] in
 /-- At finite places both charts of the power average are locally constant,
 including on the coordinate axes. -/
@@ -106,7 +114,7 @@ theorem locallyConstant_powerAverage (p : HeightOneSpectrum (𝓞 F)) {f : Chart
   obtain ⟨hX,hY,C,hC,h0,ho⟩ := hf
   constructor
   · have hout (x : Kˣ) (y : K) (hx : (x.val,y) ∉ C) : f.1 x y = 0 := by
-      simpa [xChart,x.ne_zero] using (ho (x.val,y) hx).1
+      exact (xChart_unit_eval f x y).symm.trans (ho (x.val,y) hx).1
     exact (locallyConstant_dilated_charts (K := p.adicCompletion F) (f := f.1) hX hC h0 hout).comp avg
   · have hswap : (0 : K × K) ∉ Prod.swap '' C := by
       rintro ⟨⟨x,y⟩,hxy,e⟩
@@ -118,7 +126,7 @@ theorem locallyConstant_powerAverage (p : HeightOneSpectrum (𝓞 F)) {f : Chart
       (hY.comp_continuous continuous_swap) (hC.image continuous_swap) hswap (by
         intro x y hx
         have ho' : (y,x.val) ∉ C := fun hh => hx ⟨_,hh,rfl⟩
-        simpa [yChart,x.ne_zero] using (ho (y,x.val) ho').2)
+        exact (yChart_unit_eval f x y).symm.trans (ho (y,x.val) ho').2)
     have LL : IsLocallyConstant (fun z : Kˣ × K => avg (fun a => f.2 (a.val*z.2) (a*z.1))) := L.comp avg
     have hy := LL.comp_continuous (continuous_swap : Continuous (Prod.swap : K × Kˣ → Kˣ × K))
     exact hy
@@ -320,7 +328,7 @@ theorem finite_exists_powerAverage (p : HeightOneSpectrum (𝓞 F)) (f : Charts 
       d.lineIntegral v (fun a => if ∃ u : Kˣ, a=u^n then ((‖a.val‖^e : ℝ) : ℂ)*r a else 0) = z := by
     calc
       _ = z * d.lineIntegral v (fun a : Kˣ => if ∃ u : Kˣ, a=u^n then W (a*x) else 0) := by
-        rw [← d.lineIntegral_const_mul]
+        erw [← d.lineIntegral_const_mul v z]
         congr 1
         apply funext
         intro a

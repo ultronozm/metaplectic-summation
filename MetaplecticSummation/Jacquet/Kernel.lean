@@ -141,11 +141,12 @@ private theorem arch_amplitude_coordinates {L : Type} [NormedField L] [NormedAlg
     · have hu : ContinuousAt U z := by
         apply Units.isEmbedding_val₀.tendsto_nhds_iff.mpr
         change Tendsto (fun t => (U t).val) (𝓝 z) (𝓝 (U z).val)
-        rw [show (U z).val = e.symm z from by simp only [U,dif_pos ((map_ne_zero e.symm).mpr hz),Units.val_mk0]]
+        rw [show (U z).val = e.symm z from by simp only [U,dif_pos ((map_ne_zero e.symm).mpr hz)]; rfl]
         apply (i.symm.continuous.tendsto z).congr'
         filter_upwards [eventually_ne_nhds hz] with t ht
         change e.symm t = (U t).val
-        simp only [U,dif_pos ((map_ne_zero e.symm).mpr ht),Units.val_mk0]
+        simp only [U,dif_pos ((map_ne_zero e.symm).mpr ht)]
+        rfl
       have near := (hu.inv.prodMk (continuousAt_const (y := -c))).eventually
         (((d.locallyConstant_unitPairing vi).comp Units.val).eventually_eq ((U z)⁻¹,-c))
       have hw : ContDiffAt ℝ ∞ W₀ z⁻¹ := (hsW z⁻¹ (inv_ne_zero hz)).contDiffAt
@@ -165,7 +166,7 @@ private theorem arch_amplitude_coordinates {L : Type} [NormedField L] [NormedAlg
       simp only [U,W₀,dif_pos ht',dif_pos ((map_ne_zero e.symm).mpr (inv_ne_zero ht)),modulus,div_eq_mul_inv]
       exact congrArg₂ (fun (a : L₀ˣ) (r : ℝ) => W a * d.symbol vi (Units.mk0 (e.symm t) ht')⁻¹ (-c) *
         ((r^w.mult : ℝ) : ℂ)⁻¹) ha hn
-  exact ⟨hc.toSchwartzMap smooth,fun x => by change _ = d.kernelAmplitude vi W c (e.symm (e x)); rw [e.symm_apply_apply]⟩
+  exact ⟨hc.toSchwartzMap smooth,fun x => congrArg (d.kernelAmplitude vi W c) (e.symm_apply_apply x).symm⟩
 
 theorem arch_kernelAmplitude_bruhat {W : Weight vi} (hw : TestWeight vi W) (c : L₀ˣ) :
     Bruhat vi (d.kernelAmplitude vi W c) := by

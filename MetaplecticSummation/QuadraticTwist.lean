@@ -60,7 +60,7 @@ def quadraticTwist (b : Datum F 2) {S : Finset (Place F)} (setting : d.Classical
       exponent := fun _ => 1
       positive := fun _ => Nat.one_pos
       conductor := fun p => by
-        rw [d.twist_pow b odd]
+        erw [d.twist_pow b odd p.val (t p.val)]
         exact quadratic_level_one b _ (awayTwo _ ((mem_modulusPrimes h p.val).mp p.property).1) _ (hgen p)
       generator := fun p => by simpa only [pow_one] using! hgen p
       unit_elsewhere := fun p hp he => by

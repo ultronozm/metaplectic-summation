@@ -27,14 +27,15 @@ private def dualUnitChar (p : Prime F) (χ : UnitChar p) (c : (LocalField F (.in
 
 private theorem dualUnitChar_pow (p : Prime F) (χ : UnitChar p) (c : (LocalField F (.inr p))ˣ) :
     (d.dualUnitChar p χ c)^n = (χ^n)⁻¹ := by
-  rw [dualUnitChar,mul_pow,d.hilbertUnitChar_pow,mul_one,inv_pow]
+  erw [dualUnitChar,mul_pow,d.hilbertUnitChar_pow p c,mul_one,inv_pow]
 
 private theorem charWeight_dualUnitChar (p : Prime F) (χ : UnitChar p) (c : (LocalField F (.inr p))ˣ) :
     charWeight (d.dualUnitChar p χ c) = fun x => conj (charWeight χ x) * d.symbol (.inr p) c x := by
   funext x
   by_cases hx : x ∈ integralUnits p
   · simp only [charWeight,dif_pos hx,dualUnitChar,MonoidHom.mul_apply,MonoidHom.inv_apply,Circle.coe_mul,
-      Circle.coe_inv_eq_conj,hilbertUnitChar,MonoidHom.coe_mk,OneHom.coe_mk]
+      Circle.coe_inv_eq_conj]
+    rfl
   · simp only [charWeight,dif_neg hx,map_zero,zero_mul]
 
 /-- Multiplication of the conjugate character by the tame Hilbert symbol

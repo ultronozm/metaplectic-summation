@@ -6,13 +6,33 @@ The original project at `30f6008` uses Lean v4.32.2 and Mathlib `905b95818eb32af
 
 * **ClassFieldTheory on v4.32.2.** Building the three imports in [Audit.lean](Audit.lean) fails. The first independent failures include the import of `Mathlib.Basic.Denumerable` in `DiscreteValuationField/IwasawaIndexing.lean` and `MonoidHom.domRestrict` in `DiscreteValuationField/Units.lean`, line 698.
 * **ClassFieldTheory on v4.35.0-rc2.** The two Kummer modules build as vendored. The global import also traverses files the parent project edited for rc3. On rc2, `LiesOver.continuous_completionMap` has implicit place arguments, and `HeightOneSpectrum.valuation_liesOver` uses `ramificationIdx'`. The four-file [compatibility patch](class-field-theory-rc2.patch) restores the rc2 proof steps in the scratch copy.
-* **MetaplecticSummation on v4.35.0-rc2.** Starting at `30f6008`, a [four-file patch](metaplectic-arithmetic-rc2.patch) builds `MetaplecticSummation.Arithmetic`. This lets the experiment use the actual project types `LocalField`, `diagonal`, and `Mu`. A full forward build still fails, including in `LocalCharacterScaling.lean` at lines 50–51 and `ArchimedeanFourierDecay.lean` at line 48.
+* **MetaplecticSummation on v4.35.0-rc2.** Starting at `30f6008`, a [four-file patch](metaplectic-arithmetic-rc2.patch) builds `MetaplecticSummation.Arithmetic`. This lets the experiment use the actual project types `LocalField`, `diagonal`, and `Mu`. The initial full forward build exposed further compatibility errors, including in `LocalCharacterScaling.lean` at lines 50–51 and `ArchimedeanFourierDecay.lean` at line 48.
 
 ## Integrated rc2 results
 
+The project pins the unmodified public ClassFieldTheory archive at `58370e628052f54159c1eac913de908e360059d6` on Lean v4.35.0-rc2. This revision supplies the same declarations tested in the vendored copy without a local patch. From the project root, run the following checks.
+
+```sh
+lake build
+lake env lean experiments/class-field-theory/Audit.lean
+lake env lean experiments/class-field-theory/MainAudit.lean
+```
+
+The external audit prints the axioms of the pairing, both kernels, the tame and residue comparisons, and the product formulas for the existential and concrete families. The 15 declarations each use only `propext`, `Classical.choice`, and `Quot.sound`. [External audit](Audit.lean)
+
 The project theorem `MetaplecticPoisson.existsUnique_hilbert` now combines the constructed family with weak approximation. The proof of uniqueness imports only the local arithmetic and the definition of a normalized family. [Arithmetic.lean](../../MetaplecticSummation/Arithmetic.lean) · [HilbertUniqueness.lean](../../MetaplecticSummation/HilbertUniqueness.lean)
 
-For the project's chosen symbol, `Datum.finite_symbol_power` identifies its right radical using the injective complex embedding. The unconditional theorem `Datum.reverse_marginal_finite` proves Lemma A.2 for arbitrary finite primes, including wild ones. The all-place statement specializes to that theorem at finite places. On the vendored rc2 build Lean reports only the standard axioms for existence and uniqueness and for the unconditional finite marginal. At infinite places the proof of the full reverse marginal is still open. [RootSum.lean](../../MetaplecticSummation/Marginals/RootSum.lean) · [FiniteTestInversion.lean](../../MetaplecticSummation/Marginals/FiniteTestInversion.lean) · [TestInversion.lean](../../MetaplecticSummation/Marginals/TestInversion.lean)
+For the project's chosen symbol, `Datum.finite_symbol_power` identifies its right radical using the injective complex embedding. The unconditional theorem `Datum.reverse_marginal_finite` proves Lemma A.2 for arbitrary finite primes, including wild ones. The all-place statement specializes to that theorem at finite places. On the vendored rc2 build Lean reports only the standard axioms for existence and uniqueness and for the unconditional finite marginal. At every real and complex place, `Datum.arch_root_sum` now proves the root-sum identity for every nonzero coefficient, including the empty sum for a real nonpower. The passage from that identity for Schwartz frequency tests to the full pointwise two-chart marginal remains open. [RootSum.lean](../../MetaplecticSummation/Marginals/RootSum.lean) · [FiniteTestInversion.lean](../../MetaplecticSummation/Marginals/FiniteTestInversion.lean) · [TestInversion.lean](../../MetaplecticSummation/Marginals/TestInversion.lean)
+
+The full build completed on the pinned archive. The direct project admissions reachable from each theorem are
+
+| Main theorem | Reachable admissions |
+| --- | --- |
+| `Datum.poisson` | `arch_reverse_marginal_on_test`, `thetaDifference_vanishing` |
+| `Datum.lineSummation` | The same two and `unfolding` |
+| `Datum.twistedGaussSummation` | The same two and `unfolding` |
+
+There are 11 direct admissions in the library. The eight outside those three dependency chains are listed in the original audit below. At finite places, the defining-integral version of the root formula uses the proved right-kernel theorem directly. The version stated with `d.fourier` also references the construction of the all-place Fourier endomorphism, whose axiom audit still reaches the Archimedean marginal. [Finite root formulas](../../MetaplecticSummation/MarginalRootFormula.lean)
 
 ## The arithmetic comparison
 

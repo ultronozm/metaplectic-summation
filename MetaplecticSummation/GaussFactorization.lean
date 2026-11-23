@@ -88,7 +88,8 @@ private theorem gauss_term_factorization (hS : d.GoodOutside S)
   · change d.symbol (loc c p) (modulusUnit c p) _ = d.symbol (loc c p) (modulusUnit c p) _
     apply congrArg
     exact Units.ext rfl
-  · rw [d.scaled_localValue]
+  · dsimp only [db]
+    erw [d.scaled_localValue]
     apply congrArg
     change -(diagonal F (loc c p) (((b.val : F)*a)/c.val)) =
       diagonal F (loc c p) (b.val : F) * (-(diagonal F (loc c p) (a : F))/diagonal F (loc c p) c.val)
