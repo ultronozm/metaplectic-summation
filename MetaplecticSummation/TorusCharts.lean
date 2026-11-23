@@ -1,4 +1,4 @@
-import MetaplecticSummation.Cover
+import MetaplecticSummation.ArchimedeanShears
 import MetaplecticSummation.FiniteFourierInversion
 
 /-! From ordinary Fourier inversion and the marginal identities to inversion
@@ -105,11 +105,6 @@ theorem bijective_of_torus_square (L : d.schwartz v →ₗ[ℂ] d.schwartz v)
     use L (L (L (z⁻¹ • f)))
     rw [h4,smul_smul,mul_inv_cancel₀ hz,one_smul]
 
-theorem fourier_bijective_of_square
-    (hinv : ∀ Φ : d.schwartz v, (d.fourier v (d.fourier v Φ)).val =
-      d.torusCharts v ((-1)^(n+1)) Φ.val) : Function.Bijective (d.fourier v) :=
-  d.bijective_of_torus_square v (d.fourier v) hinv
-
 /-- On the axis only the reverse marginal identity for the given section and
 ordinary inversion of its density at frequency one are needed. -/
 theorem integralTransform_axis_of_marginal (Φ Ψ : d.schwartz v) (y : (LocalField F v)ˣ)
@@ -169,17 +164,6 @@ theorem integralTransform_axis_of_marginal (Φ Ψ : d.schwartz v) (y : (LocalFie
   change _ * (d.symbol v (-1) y / (modulus F v y.val : ℂ) * _ * ((m : ℂ) * _ * _)) = _
   rw [← hk]
   field_simp
-
-theorem fourier_square_axis_of_marginal (Φ : d.schwartz v) (y : (LocalField F v)ˣ)
-    (hrev : ∀ t : (LocalField F v)ˣ, d.marginal v (d.fourier v Φ) (t^n*y⁻¹) =
-      (Real.sqrt (modulus F v (n : LocalField F v)) : ℂ)⁻¹ * d.hat v (d.axisDensity v Φ y⁻¹) t)
-    (hinv : d.hat v (d.hat v (d.axisDensity v Φ y⁻¹)) 1 = d.axisDensity v Φ y⁻¹ (-1)) :
-    let e : (LocalField F v)ˣ := (-1)^(n+1)
-    d.axis v (d.fourier v (d.fourier v Φ)) y = d.symbol v e y * d.axis v Φ (y/e) := by
-  dsimp only
-  unfold axis
-  rw [d.fourier_apply]
-  exact d.integralTransform_axis_of_marginal v Φ _ y _ (d.axisDensity_unit v Φ y⁻¹ (-1)) hrev hinv
 
 /-- Lift the square formula on the vertical axis of test sections to both charts,
 using the two unipotent shears and chart compatibility. -/

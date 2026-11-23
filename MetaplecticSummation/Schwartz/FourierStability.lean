@@ -1,5 +1,5 @@
 import MetaplecticSummation.ArchimedeanDiagonal
-import MetaplecticSummation.FiniteInversion
+import MetaplecticSummation.Marginals.TestInversion
 import MetaplecticSummation.RadonDecay
 
 /-! Construction of the local Fourier endomorphism from inversion on test sections. -/

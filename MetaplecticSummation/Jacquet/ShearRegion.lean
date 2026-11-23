@@ -1,3 +1,4 @@
+import MetaplecticSummation.Jacquet.Convergence
 import MetaplecticSummation.RadonDecay
 
 /-! The two regions of absolute convergence in the shear estimate that

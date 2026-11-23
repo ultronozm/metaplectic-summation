@@ -1,3 +1,4 @@
+import MetaplecticSummation.LocalCharacterScaling
 import MetaplecticSummation.MultiplicativeMeasure
 
 /-! Integrability of weights with power decay on local units. -/

@@ -135,14 +135,6 @@ theorem axis_integralTransform (v : Place F) (Φ : d.schwartz v) (y u : (LocalFi
   field_simp [hm]
   simpa only [hat,axisLine,div_eq_mul_inv,mul_comm] using h
 
-theorem axis_fourier (v : Place F) (Φ : d.schwartz v) (y u : (LocalField F v)ˣ) :
-    d.axis v (d.fourier v Φ) (u^n*y) =
-      (Real.sqrt (modulus F v (n : LocalField F v)) : ℂ)⁻¹ *
-      (modulus F v u : ℂ)^(1-(n : ℤ)) * d.hat v (d.axisLine v Φ y) u := by
-  unfold axis
-  rw [d.fourier_apply]
-  exact d.axis_integralTransform v Φ y u
-
 /-- At frequency zero the Fourier transform of the vertical line integral gives
 the leading term of the transformed section on the axis. -/
 theorem axisLine_hat_zero_of_charts (v : Place F) (Φ Ψ : d.schwartz v)
@@ -165,12 +157,6 @@ theorem axisLine_hat_zero_of_charts (v : Place F) (Φ Ψ : d.schwartz v)
   intro u
   simpa only [axisLine,hat,Function.comp_apply,hΨ] using
     (d.transform_pow_ray v Φ.val u).2 0 y
-
-theorem axisLine_hat_zero (v : Place F) (Φ : d.schwartz v) (y : (LocalField F v)ˣ)
-    (hi : Integrable (d.axisLine v Φ y) (selfDual F d.character v)) :
-    (Real.sqrt (modulus F v (n : LocalField F v)) : ℂ)⁻¹ * d.hat v (d.axisLine v Φ y) 0 =
-      (d.leading v (d.fourier v Φ)).2 0 y :=
-  d.axisLine_hat_zero_of_charts v Φ _ (d.fourier_apply v Φ) y hi
 
 theorem bruhat_finite_slice {P : Type*} [TopologicalSpace P] {p : HeightOneSpectrum (𝓞 F)}
     {g : P → LocalField F (.inr p) → ℂ} (hg : SmoothFiniteFamily g) (q : P) :
@@ -236,9 +222,5 @@ theorem axisDensity_finite_bruhat (p : HeightOneSpectrum (𝓞 F)) (Φ : d.schwa
 the Schwartz space before stability of the space under iteration is known. -/
 def transformTest (v : Place F) (Φ : d.schwartz v) (hΦ : Φ.val ∈ d.testSet v) : d.schwartz v :=
   ⟨d.integralTransform v Φ.val, Submodule.subset_span (Or.inr ⟨Φ.val,hΦ,rfl⟩)⟩
-
-theorem transformTest_eq_fourier (v : Place F) (Φ : d.schwartz v) (hΦ : Φ.val ∈ d.testSet v) :
-    d.transformTest v Φ hΦ = d.fourier v Φ :=
-  Subtype.ext (d.fourier_apply v Φ).symm
 
 end MetaplecticPoisson.Datum

@@ -1,4 +1,5 @@
-import MetaplecticSummation.MarginalDifference
+import MetaplecticSummation.LineIntegral
+import MetaplecticSummation.Marginals.Basic
 import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
 
 /-! The measure dx/|x| on the units of a completion. -/

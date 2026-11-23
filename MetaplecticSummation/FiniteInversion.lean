@@ -1,5 +1,5 @@
-import MetaplecticSummation.DiagonalTransform
-import MetaplecticSummation.Marginals.Density
+import MetaplecticSummation.Cover
+import MetaplecticSummation.Marginals.Fourier
 
 noncomputable section
 namespace MetaplecticPoisson.Datum
@@ -8,22 +8,21 @@ open Classical
 variable {F : Type} [Field F] [NumberField F] {n : ℕ} [NeZero n] (d : Datum F n)
 variable (v : Place F)
 
-/-- The converse marginal Fourier identity on test sections (Appendix A). -/
-theorem reverse_marginal_on_test (v : Place F) (Φ : d.schwartz v) (hΦ : Φ.val ∈ d.testSet v) (x : (LocalField F v)ˣ) :
-    ∀ u : (LocalField F v)ˣ, d.marginal v (d.transformTest v Φ hΦ) (u^n*x) =
-      (Real.sqrt (modulus F v (n : LocalField F v)) : ℂ)⁻¹ * d.hat v (d.axisDensity v Φ x) u := by sorry
+theorem fourier_bijective_of_square
+    (hinv : ∀ Φ : d.schwartz v, (d.fourier v (d.fourier v Φ)).val =
+      d.torusCharts v ((-1)^(n+1)) Φ.val) : Function.Bijective (d.fourier v) :=
+  d.bijective_of_torus_square v (d.fourier v) hinv
 
-/-- The double integral on a test section is the indicated diagonal translate.
-This deduction from the reverse test identity does not use a Fourier endomorphism. -/
-theorem integralTransform_square_on_test
-    (hFourier : ∀ f : LocalField F v → ℂ, Bruhat v f → d.hat v (d.hat v f) 1 = f (-1))
-    {f : Charts (LocalField F v)} (hf : f ∈ d.testSet v) :
-    d.integralTransform v (d.integralTransform v f) = d.torusCharts v ((-1)^(n+1)) f := by
-  apply d.integralTransform_square_of_test_axis v _ hf
-  intro Φ hΦ y
-  exact d.integralTransform_axis_of_marginal v Φ (d.transformTest v Φ hΦ) y _
-    (d.axisDensity_unit v Φ y⁻¹ (-1)) (d.reverse_marginal_on_test v Φ hΦ y⁻¹)
-    (hFourier _ (d.axisDensity_bruhat v Φ y⁻¹))
+theorem fourier_square_axis_of_marginal (Φ : d.schwartz v) (y : (LocalField F v)ˣ)
+    (hrev : ∀ t : (LocalField F v)ˣ, d.marginal v (d.fourier v Φ) (t^n*y⁻¹) =
+      (Real.sqrt (modulus F v (n : LocalField F v)) : ℂ)⁻¹ * d.hat v (d.axisDensity v Φ y⁻¹) t)
+    (hinv : d.hat v (d.hat v (d.axisDensity v Φ y⁻¹)) 1 = d.axisDensity v Φ y⁻¹ (-1)) :
+    let e : (LocalField F v)ˣ := (-1)^(n+1)
+    d.axis v (d.fourier v (d.fourier v Φ)) y = d.symbol v e y * d.axis v Φ (y/e) := by
+  dsimp only
+  unfold axis
+  rw [d.fourier_apply]
+  exact d.integralTransform_axis_of_marginal v Φ _ y _ (d.axisDensity_unit v Φ y⁻¹ (-1)) hrev hinv
 
 /-- Fourier inversion on ordinary Schwartz functions and the reverse identity
 on test sections imply the square formula on the entire local Schwartz space. -/

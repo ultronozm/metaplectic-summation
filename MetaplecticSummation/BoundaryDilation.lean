@@ -1,3 +1,4 @@
+import MetaplecticSummation.Schwartz.Local
 import MetaplecticSummation.Dilations
 import MetaplecticSummation.FiniteGerms
 

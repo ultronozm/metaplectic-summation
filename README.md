@@ -18,7 +18,7 @@ products and rational evaluations all depend on these inputs.
 | [Places](MetaplecticSummation/Places.lean), [Arithmetic](MetaplecticSummation/Arithmetic.lean) | Completions, local characters, normalized modulus, self-dual measures and the Hilbert symbol |
 | [ArchimedeanPlancherel](MetaplecticSummation/ArchimedeanPlancherel.lean), [ArchimedeanSelfDual](MetaplecticSummation/ArchimedeanSelfDual.lean) | Construction of the self-dual Haar measure for the specified additive character at each real or complex place |
 | [Core](MetaplecticSummation/Core.lean) | The two chart integrals in Definition 4.4, normalized ray limits and maps of restricted tensor products |
-| [Schwartz/Local](MetaplecticSummation/Schwartz/Local.lean) | Local test functions, their transforms, the Schwartz space they span, and the explicit basic charts |
+| [Schwartz/Charts](MetaplecticSummation/Schwartz/Charts.lean) and [Schwartz/Local](MetaplecticSummation/Schwartz/Local.lean) | Local test functions, the Schwartz space they span with their transforms, the basic charts, and the Fourier endomorphism |
 | [Schwartz/Basic](MetaplecticSummation/Schwartz/Basic.lean) | Choice of the reference vector for the restricted tensor product and its Fourier invariance at almost every place |
 | [Schwartz](MetaplecticSummation/Schwartz.lean) | The leading-term map and its values on both types of generator at every place |
 | [SymbolOnLines](MetaplecticSummation/SymbolOnLines.lean) | Equality of the two integrands up to the chart multiplier on every line, from the Steinberg relation |
@@ -190,7 +190,7 @@ The defining integral gives a linear map to pairs of chart functions at every pl
 The reverse marginal identity on tests and ordinary Fourier inversion identify the
 second transform of each test with its diagonal translate. The diagonal preserves
 tests at every place, giving an endomorphism by restriction to the span. The
-earlier definition of the chosen Fourier operator still uses `exists_fourier`. At
+chosen Fourier operator `fourier` uses this construction at every place. At
 tame finite places `tame_schwartz_inversion` constructs the Fourier
 automorphism independently. At finite places the normalized rays extend to bounded Schwartz–Bruhat families over compact
 sets of chart vectors. A compact annulus meets every power ray, so uniform
@@ -327,7 +327,7 @@ then identifies their Fourier coefficients. The difference of the two sums
 therefore descends to a multilinear form on the moment vectors. Evaluation
 on products of the normalized tests determines its coefficients uniquely.
 The remaining project admissions used by this deduction are the normalized
-Hilbert symbol, the local Fourier endomorphism, Proposition B.6 on the theta
+Hilbert symbol, the reverse marginal identity on tests, Proposition B.6 on the theta
 difference, and Fourier coefficient unfolding.
 For any covering degree, the original summand has finite support on those
 elements. The local tests at S give bounded radii, the basic factors outside S
@@ -337,7 +337,7 @@ argument. The same identity holds for the basic Jacquet factor at every finite
 conductor. Reindexing the finite sum by inversion proves `line_degree_one`
 with zero main term independently of `lineSummation`. The project dependencies
 that still contain admissions are the normalized Hilbert symbols and the
-endomorphism defined by the local Fourier integral.
+reverse marginal identity on tests used to construct the local Fourier operator.
 `twistedGaussSummation` assumes the S-integers form a PID and sums over their
 nonzero **elements**. Only the inner divisor sum in `normalizedGauss` runs over
 associates. Multiplying the modulus by the n-th power of an S-unit preserves
@@ -405,8 +405,8 @@ supported away from zero give the same pointwise identity for sections
 with integrable X-chart. In particular, the explicit lift of every test
 weight W satisfies both $J\Phi = W$ and $J(\mathcal F\Phi) = W^\vee$ at every
 place, with the explicit kernel formula for $W^\vee$. The finite-place formulas and the all-place lift
-use the admitted existence of the normalized Hilbert symbols, together with stability of the local Schwartz space under
-the defining Fourier integral.
+use the normalized Hilbert symbols and the Fourier endomorphism constructed
+from the reverse marginal identity on tests.
 
 For an arbitrary section at a real or complex place, the weak and pointwise
 formulas still use `arch_integrableOn_shear_vertical`. This is the open

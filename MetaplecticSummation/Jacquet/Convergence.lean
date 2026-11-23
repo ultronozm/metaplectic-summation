@@ -16,37 +16,6 @@ variable (w : InfinitePlace F)
 local notation "vi" => (Sum.inl w : Place F)
 local notation "K" => LocalField F vi
 
-theorem continuous_arch_schwartz_charts (Φ : d.schwartz vi) :
-    Continuous (Function.uncurry Φ.val.1) ∧ Continuous (Function.uncurry Φ.val.2) := by
-  refine Submodule.span_induction (p := fun g _ =>
-    Continuous (Function.uncurry g.1) ∧ Continuous (Function.uncurry g.2)) ?_ ?_ ?_ ?_ Φ.property
-  · rintro g (hg | ⟨f,hf,rfl⟩)
-    · obtain ⟨hx,hy⟩ := d.arch_test_lineCharts w hg
-      exact ⟨hx.1,hy.1.comp (f := Prod.swap) continuous_swap⟩
-    · have hc := (d.arch_radon_hat_bounded w hf).1.comp
-        (continuous_id.prodMk (continuous_const (y := (1:K))))
-      let s : ℂ := (Real.sqrt (modulus F vi (n : K)) : ℂ)⁻¹
-      constructor
-      · apply ((continuous_const (y := s)).mul hc.fst).congr
-        intro z
-        change s * d.hat vi _ 1 = s * _
-        simp only [hat,one_mul]
-        congr 1
-        apply integral_congr_ae
-        filter_upwards with t using mul_comm _ _
-      · apply ((continuous_const (y := s)).mul (hc.snd.comp continuous_swap)).congr
-        intro z
-        change s * d.hat vi _ 1 = s * _
-        simp only [hat,one_mul]
-        congr 1
-        apply integral_congr_ae
-        filter_upwards with t using mul_comm _ _
-  · exact ⟨continuous_const,continuous_const⟩
-  · intro f g _ _ hf hg
-    exact ⟨hf.1.add hg.1,hf.2.add hg.2⟩
-  · intro c g _ hg
-    exact ⟨continuous_const.mul hg.1,continuous_const.mul hg.2⟩
-
 theorem continuous_arch_schwartz_X (Φ : d.schwartz vi) : Continuous (Function.uncurry Φ.val.1) :=
   (d.continuous_arch_schwartz_charts w Φ).1
 

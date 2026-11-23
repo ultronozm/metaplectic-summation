@@ -1,3 +1,4 @@
+import MetaplecticSummation.Marginals.Fourier
 import MetaplecticSummation.LinearFactor
 import MetaplecticSummation.FiniteGerms
 

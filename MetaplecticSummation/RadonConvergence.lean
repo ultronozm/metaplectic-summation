@@ -1,6 +1,6 @@
 import MetaplecticSummation.Jacquet.WeightIntegrability
 import MetaplecticSummation.TransformLinearity
-import MetaplecticSummation.Jacquet.Convergence
+import MetaplecticSummation.Schwartz.ChartGrowth
 
 /-! Absolute convergence and joint continuity in Lemma 4.2(i). -/
 noncomputable section

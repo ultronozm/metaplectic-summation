@@ -1,3 +1,4 @@
+import MetaplecticSummation.Schwartz.Local
 import MetaplecticSummation.BasicMembership
 import MetaplecticSummation.AdelicConductor
 
