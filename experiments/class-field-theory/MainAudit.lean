@@ -38,6 +38,9 @@ run_cmd do
     ``MetaplecticPoisson.Datum.rationalClassMap_injective,
     ``MetaplecticPoisson.Datum.powerClass_poisson_finite_support,
     ``MetaplecticPoisson.Datum.axisClassIntegral_sum_eq_axisLine_zero,
+    ``MetaplecticPoisson.Datum.adelicTensor_axisLine,
+    ``MetaplecticPoisson.Datum.axisLine_poisson,
+    ``MetaplecticPoisson.Datum.axisDensity_poisson,
     ``MetaplecticPoisson.Datum.powerClass_poisson,
     ``MetaplecticPoisson.Datum.poisson,
     ``MetaplecticPoisson.Datum.lineSummation,
@@ -125,3 +128,21 @@ run_cmd do
 #print axioms MetaplecticPoisson.Datum.finiteTensor_axisLine
 #print axioms MetaplecticPoisson.Datum.finiteTensor_axisDensity
 #print axioms MetaplecticPoisson.Datum.hasSum_axis_powerClasses
+#print axioms MetaplecticPoisson.Character.localValue_trace_finite
+#print axioms MetaplecticPoisson.Character.localValue_trace_infinite
+#print axioms MetaplecticPoisson.Character.finite_trace_annihilator
+#print axioms MetaplecticPoisson.Datum.selfDual_volume_trace
+#print axioms MetaplecticPoisson.Datum.finite_selfDual_volume_product
+#print axioms MetaplecticPoisson.Datum.integral_finiteTensor
+#print axioms MetaplecticPoisson.Datum.finite_character_eq_finprod
+#print axioms MetaplecticPoisson.Datum.finiteFourier_factorization
+#print axioms MetaplecticPoisson.schwartzProduct
+#print axioms MetaplecticPoisson.exists_schwartz_tensor
+#print axioms MetaplecticPoisson.Datum.exists_infiniteSchwartzTensor
+#print axioms MetaplecticPoisson.Datum.adelicTensor_axisLine
+#print axioms MetaplecticPoisson.Datum.adelicTensor_axisDensity
+#print axioms MetaplecticPoisson.Character.adelicHat_square
+#print axioms MetaplecticPoisson.Datum.adelicHat_tensor
+#print axioms MetaplecticPoisson.Datum.additivePoisson_tensor
+#print axioms MetaplecticPoisson.Datum.axisLine_poisson
+#print axioms MetaplecticPoisson.Datum.axisDensity_poisson

@@ -273,15 +273,18 @@ parameters gives exactly $n$ copies of the original sum.
 [Global comparison](MetaplecticSummation/FourierCoefficients.lean) ·
 [Rational multiplicity](MetaplecticSummation/RationalPowerSums.lean)
 
-Ordinary additive Poisson over the number field, with absolute convergence
-on both sides, is proved for every adelic Schwartz–Bruhat function and
-every character allowed by the paper. Applying it in Proposition B.4
-uses two tests whose finite-adelic factors are now proved Schwartz–Bruhat.
-The infinite-place tensor construction and the identification of the adelic
-Fourier integrals with products of local transforms are still open.
-[Additive Poisson](MetaplecticSummation/AdditivePoisson.lean) ·
-[Finite adelic tests](MetaplecticSummation/FiniteAdelicTests.lean) ·
-[GroundTheory sources](vendor/ground-theory/README.md)
+Ordinary additive Poisson now applies to both tensors in Proposition B.4 for
+each rational power-class representative. The normalized adelic Fourier
+integral is the product of the local self-dual integrals at every adelic
+frequency. Both diagonal series converge absolutely. The axis-line
+specialization uses the Archimedean marginal identity in its local
+Schwartz regularity proof. The last summation over rational classes still
+requires absolute convergence of the marginal series and regrouping the
+boundary terms.
+[Product Poisson](MetaplecticSummation/AdelicFourierIntegrals.lean) ·
+[Real and complex tensors](MetaplecticSummation/AdelicTests.lean) ·
+[Finite-adelic Fourier integrals](MetaplecticSummation/FiniteAdelicIntegrals.lean) ·
+[Conductor and finite volumes](MetaplecticSummation/TraceConductor.lean)
 
 The global product calculations cancel the normalizing constants at rational arguments
 and identify the leading-term contributions at zero. The unfolding identities
