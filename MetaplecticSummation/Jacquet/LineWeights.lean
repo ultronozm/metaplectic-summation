@@ -1,4 +1,4 @@
-import MetaplecticSummation.FourierCoefficients
+import MetaplecticSummation.FourierCoefficients.Basic
 import MetaplecticSummation.Jacquet.ArchWeak
 import MetaplecticSummation.Jacquet.DegreeOne
 import MetaplecticSummation.Jacquet.PowerAverage

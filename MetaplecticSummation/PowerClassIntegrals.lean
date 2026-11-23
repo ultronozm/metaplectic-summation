@@ -131,6 +131,27 @@ theorem axisClassIntegral_eq_integral_density (Φ : d.schwartz v) (a : Kˣ) :
   dsimp only [m,N]
   ring
 
+/-- The tame basic axis is supported on classes represented by integral units. -/
+theorem axis_basic_zero_of_not_unitClass (p : Prime F) (hp : p.asIdeal.absNorm.Coprime n)
+    (u : (LocalField F (.inr p))ˣ) (h : (QuotientGroup.mk u : PowerClass n (.inr p)) ∉ integralUnitClasses p n) :
+    d.axis (.inr p) (d.basic (.inr p)) u = 0 := by
+  rw [d.axis_basic p hp]
+  let q := QuotientGroup.mk' (powMonoidHom n : (LocalField F (.inr p))ˣ →* _).range
+  obtain ⟨π,hπ⟩ : ∃ π : (LocalField F (.inr p))ˣ, ‖π.val‖ = (p.asIdeal.absNorm : ℝ)⁻¹ := FinitePlace.exists_norm_uniformizer p
+  apply (tsum_congr (g := fun _ => (0 : ℂ)) ?_).trans tsum_zero
+  intro k
+  apply ite_eq_right
+  intro he
+  apply h
+  refine ⟨u / (π^k)^n,?_,?_⟩
+  · change ‖(u / (π^k)^n).val‖ = 1
+    rw [Units.val_div_eq_div_val,Units.val_pow_eq_pow_val,Units.val_pow_eq_pow_val,
+      norm_div,norm_pow,norm_pow,hπ,inv_pow,inv_pow,← pow_mul,Nat.mul_comm k,he,div_self]
+    have hq : 0 < (p.asIdeal.absNorm : ℝ) := by exact_mod_cast (Nat.zero_lt_one.trans (NumberField.HeightOneSpectrum.one_lt_absNorm p))
+    positivity
+  · change q (u/(π^k)^n) = q u
+    rw [map_div,show q ((π^k)^n) = 1 from (QuotientGroup.eq_one_iff _).mpr ⟨π^k,rfl⟩,div_one]
+
 /-- At a tame place with unramified character, all basic axis class integrals
 are the indicator of the integral-unit classes. -/
 theorem axisClassIntegral_basic (p : Prime F) (hp : p.asIdeal.absNorm.Coprime n)
@@ -155,23 +176,8 @@ theorem axisClassIntegral_basic (p : Prime F) (hp : p.asIdeal.absNorm.Coprime n)
     suffices H : ∀ y ∈ classFiber (.inr p) c, (if hy : y ≠ 0 then d.axis w B (Units.mk0 y hy) else 0) = 0 by
       rw [setIntegral_eq_zero_of_forall_eq_zero H,mul_zero]
     rintro y ⟨u,hu,rfl⟩
-    rw [dif_pos u.ne_zero,Units.mk0_val,d.axis_basic p hp]
-    obtain ⟨π,hπ⟩ : ∃ π : (LocalField F (.inr p))ˣ, ‖π.val‖ = (p.asIdeal.absNorm : ℝ)⁻¹ :=
-      FinitePlace.exists_norm_uniformizer p
-    apply (tsum_congr (g := fun _ => (0 : ℂ)) ?_).trans tsum_zero
-    intro k
-    apply if_neg
-    intro he
-    apply h
-    refine ⟨u / (π^k)^n,?_,?_⟩
-    · change ‖(u / (π^k)^n).val‖ = 1
-      rw [Units.val_div_eq_div_val,Units.val_pow_eq_pow_val,Units.val_pow_eq_pow_val,
-        norm_div,norm_pow,norm_pow,hπ,inv_pow,inv_pow,← pow_mul,Nat.mul_comm k,he,div_self]
-      have hq : 0 < (p.asIdeal.absNorm : ℝ) := by exact_mod_cast (Nat.zero_lt_one.trans (NumberField.HeightOneSpectrum.one_lt_absNorm p))
-      positivity
-    · change q (u/(π^k)^n) = c
-      rw [map_div,show q ((π^k)^n) = 1 from (QuotientGroup.eq_one_iff _).mpr ⟨π^k,rfl⟩,div_one]
-      exact hu
+    rw [dif_pos u.ne_zero,Units.mk0_val]
+    exact d.axis_basic_zero_of_not_unitClass p hp u (hu ▸ h)
 
 /-- The reference factor for the multiplicative Poisson step of Proposition B.4. -/
 theorem eventually_axisClassIntegral_basic (Φ : ∀ w, d.schwartz w)

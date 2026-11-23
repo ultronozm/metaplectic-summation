@@ -270,7 +270,7 @@ the normalized axis density and reindexes the rational classes by $x ↦ -1/x$.
 Summing a convergent series over all rational power classes and power
 parameters gives exactly $n$ copies of the original sum.
 [Class integrals](MetaplecticSummation/PowerClassIntegrals.lean) ·
-[Global comparison](MetaplecticSummation/FourierCoefficients.lean) ·
+[Global comparison](MetaplecticSummation/FourierCoefficients/Basic.lean) ·
 [Rational multiplicity](MetaplecticSummation/RationalPowerSums.lean)
 
 Ordinary additive Poisson now applies to both tensors in Proposition B.4 for
@@ -278,9 +278,14 @@ each rational power-class representative. The normalized adelic Fourier
 integral is the product of the local self-dual integrals at every adelic
 frequency. Both diagonal series converge absolutely. The axis-line
 specialization uses the Archimedean marginal identity in its local
-Schwartz regularity proof. The last summation over rational classes still
-requires absolute convergence of the marginal series and regrouping the
-boundary terms.
+Schwartz regularity proof. At almost all primes, the basic marginal vanishes
+outside classes represented by integral units. Only finitely many rational
+classes can contribute. Absolute convergence on each class then gives
+absolute convergence over all rational units. Summing the second identity
+at the representative $-1/y'$ yields the boundary evaluated at $y'$
+in the definition of $T$.
+[Constant-term identity](MetaplecticSummation/ConstantTermPoisson.lean) ·
+[Support on rational classes](MetaplecticSummation/ConstantTermSupport.lean) ·
 [Product Poisson](MetaplecticSummation/AdelicFourierIntegrals.lean) ·
 [Real and complex tensors](MetaplecticSummation/AdelicTests.lean) ·
 [Finite-adelic Fourier integrals](MetaplecticSummation/FiniteAdelicIntegrals.lean) ·
@@ -288,7 +293,7 @@ boundary terms.
 
 The global product calculations cancel the normalizing constants at rational arguments
 and identify the leading-term contributions at zero. The unfolding identities
-at frequencies zero and one and the global constant-term identity remain admitted.
+at frequencies zero and one remain admitted.
 
 For Theorem 9.1, `theta_idele_bound` proves Lemma B.1 over number fields.
 The sum of the majorant over nonzero rational vectors is bounded by a

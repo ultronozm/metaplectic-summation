@@ -41,6 +41,9 @@ run_cmd do
     ``MetaplecticPoisson.Datum.adelicTensor_axisLine,
     ``MetaplecticPoisson.Datum.axisLine_poisson,
     ``MetaplecticPoisson.Datum.axisDensity_poisson,
+    ``MetaplecticPoisson.Datum.summable_rational_marginal,
+    ``MetaplecticPoisson.Datum.constantTerm_identity,
+    ``MetaplecticPoisson.Datum.translated_constant_coefficients_eq,
     ``MetaplecticPoisson.Datum.powerClass_poisson,
     ``MetaplecticPoisson.Datum.poisson,
     ``MetaplecticPoisson.Datum.lineSummation,
@@ -146,3 +149,10 @@ run_cmd do
 #print axioms MetaplecticPoisson.Datum.additivePoisson_tensor
 #print axioms MetaplecticPoisson.Datum.axisLine_poisson
 #print axioms MetaplecticPoisson.Datum.axisDensity_poisson
+
+#print axioms MetaplecticPoisson.Datum.rational_marginal_supported_on_finite_classes
+#print axioms MetaplecticPoisson.Datum.summable_rational_marginal
+#print axioms MetaplecticPoisson.Datum.constantTerm_identity
+
+#print axioms MetaplecticPoisson.Datum.axisBoundary_eq_zero_of_local
+#print axioms MetaplecticPoisson.Datum.translated_constant_coefficients_eq
