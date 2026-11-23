@@ -8,6 +8,8 @@ assert_no_sorry MetaplecticPoisson.Datum.finite_symbol_power
 assert_no_sorry MetaplecticPoisson.Datum.marginal_root_formula_finite_on_test
 assert_no_sorry MetaplecticPoisson.Datum.reverse_marginal_finite
 assert_no_sorry MetaplecticPoisson.Datum.arch_root_sum
+assert_no_sorry MetaplecticPoisson.ChartFamilyContinuousAt.upper
+assert_no_sorry MetaplecticPoisson.ChartFamilyContinuousAt.lower
 assert_no_sorry MetaplecticPoisson.Datum.unfolding
 
 assert_no_sorry MetaplecticPoisson.rightCoset_map_restrict_eq
@@ -121,6 +123,8 @@ run_cmd do
     ``MetaplecticPoisson.Datum.thetaDifference_eq_zero_of_continuous_evaluation_products,
     ``MetaplecticPoisson.Datum.local_evaluation_representatives,
     ``MetaplecticPoisson.Datum.thetaDifference_eq_zero_of_local_evaluation_lifts,
+    ``MetaplecticPoisson.Datum.hasLocalEvaluationLifts,
+    ``MetaplecticPoisson.Datum.thetaDifference_vanishing,
     ``MetaplecticPoisson.Datum.poisson,
     ``MetaplecticPoisson.Datum.lineSummation,
     ``MetaplecticPoisson.Datum.twistedGaussSummation]
@@ -138,7 +142,15 @@ run_cmd do
           n == ``MetaplecticPoisson.Datum.thetaDifference_vanishing then
         throwError "The reduction of Proposition B.6 uses its conclusion"
       let ds := c.getUsedConstantsAsSet
-      if ds.contains ``sorryAx then logInfo m!"{n}"
+      if ds.contains ``sorryAx then
+        if n == ``MetaplecticPoisson.Datum.thetaDifference_vanishing then
+          throwError "The proof of Proposition B.6 contains an admission"
+        if [``MetaplecticPoisson.Datum.poisson, ``MetaplecticPoisson.Datum.lineSummation,
+            ``MetaplecticPoisson.Datum.twistedGaussSummation].contains root &&
+            !([``MetaplecticPoisson.Datum.kubota_projection,
+              ``MetaplecticPoisson.Datum.arch_reverse_marginal_on_test].contains n) then
+          throwError "Unexpected admission {n} in {root}"
+        logInfo m!"{n}"
       for k in ds do
         if (k.toString.contains "MetaplecticPoisson") then todo := k :: todo
 
@@ -314,3 +326,6 @@ run_cmd do
 #print axioms MetaplecticPoisson.Datum.thetaDifference_eq_zero_of_continuous_evaluation_products
 #print axioms MetaplecticPoisson.Datum.local_evaluation_representatives
 #print axioms MetaplecticPoisson.Datum.thetaDifference_eq_zero_of_local_evaluation_lifts
+
+#print axioms MetaplecticPoisson.Datum.hasLocalEvaluationLifts
+#print axioms MetaplecticPoisson.Datum.thetaDifference_vanishing

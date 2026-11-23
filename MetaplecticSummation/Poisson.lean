@@ -1,5 +1,5 @@
 import MetaplecticSummation.BoundaryConstruction
-import MetaplecticSummation.Theta
+import MetaplecticSummation.Cusp.LocalContinuity
 
 noncomputable section
 namespace MetaplecticPoisson
@@ -65,7 +65,8 @@ theorem poisson_boundary_unique {B C : d.Boundary →ₗ[ℂ] ℂ}
 
 /-- Proposition B.6. The theta difference vanishes when a local leading term
 and a (possibly different) transformed local leading term vanish. -/
-theorem thetaDifference_vanishing : d.VanishesOnLocalKernels d.thetaDifference := by sorry
+theorem thetaDifference_vanishing : d.VanishesOnLocalKernels d.thetaDifference :=
+  d.thetaDifference_eq_zero_of_local_evaluation_lifts d.hasLocalEvaluationLifts
 
 /-- Existence and absolute convergence in Theorem 9.1. -/
 theorem exists_poisson_boundary : ∃ B, d.IsPoissonBoundary B := by

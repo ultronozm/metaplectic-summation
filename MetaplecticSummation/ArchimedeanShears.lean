@@ -1,5 +1,5 @@
 import MetaplecticSummation.RapidCharts
-import MetaplecticSummation.SmoothFiniteLines
+import MetaplecticSummation.Schwartz.ChartFamilies
 
 /-! Preservation of rapid test sections by the archimedean shear operators. -/
 
@@ -16,29 +16,6 @@ private theorem archTest_swap (e : K ≃+* L) {f : Charts K} (hf : archTest e f)
     archTest e (swapCharts f) :=
   ⟨rapidChart_comp_equiv hf.2 (ContinuousLinearEquiv.prodComm ℝ L L),
     rapidChart_comp_equiv hf.1 (ContinuousLinearEquiv.prodComm ℝ L L)⟩
-
-omit [CompleteSpace K] in
-/-- On the overlap the symbol introduced by an upper shear cancels wherever
-the ratio of the new and old second coordinates is an n-th power. -/
-private theorem upperShear_on_powers (H : LineSymbol K n) {f : Charts K}
-    (gl : Glues (fun a b => H.pairing a b) f) (u x : K) (y : Kˣ)
-    (hw : y.val+u*x ≠ 0) (hp : (y.val+u*x)/y.val ∈ range (fun a : Kˣ => a.val^n)) :
-    (upperShear (fun a b => H.pairing a b) u f).2 x y = f.2 x (Units.mk0 _ hw) := by
-  by_cases hx : x = 0
-  · subst x
-    simp [upperShear]
-  · let X := Units.mk0 x hx
-    let W := Units.mk0 (y.val+u*x) hw
-    obtain ⟨a,ha⟩ := hp
-    have he : W = y * a^n := Units.ext (by
-      simp only [W,Units.val_mk0,Units.val_mul,Units.val_pow_eq_pow_val,ha]
-      field_simp)
-    have hs : H.pairing X W = H.pairing X y := by rw [he,map_mul,H.pow_right,mul_one]
-    have h := gl X W
-    change f.1 X (y.val+u*x) = (H.pairing X W : ℂ)*f.2 x W at h
-    rw [hs] at h
-    simp only [upperShear,dif_pos hx]
-    exact (div_eq_iff (H.pairing X y).ne_zero).mpr (h.trans (mul_comm ..))
 
 private theorem archTest_upperShear (e : K ≃+* L) (hc : Continuous e.symm)
     (H : LineSymbol K n) (hn : (n : K) ≠ 0)

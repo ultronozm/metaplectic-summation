@@ -373,17 +373,19 @@ descend to the rational quotient. The orbit expansion of the square of the
 theta difference and its zero unipotent fiber integral reduce B.6 to
 continuity of products of individual rational evaluations. It suffices at each
 place to choose lifts near the identity under which each local evaluation
-varies continuously. On each
+varies continuously. For a matrix with bottom row $(c,d)$, four shears give
+such a lift on the neighborhood $c+d\ne0$ of the identity. On each
 compact matrix set a single summable majorant bounds the original row index
 uniformly. [Restricted lifts](MetaplecticSummation/Cusp/Lifts.lean) ·
 [Quotient functions](MetaplecticSummation/Cusp/Quotient.lean) ·
 [Unfolding](MetaplecticSummation/Cusp/Orbit.lean) ·
 [Continuity reduction](MetaplecticSummation/Cusp/Regularity.lean) ·
-[Local lifting condition](MetaplecticSummation/Cusp/Localization.lean)
+[Local lifting condition](MetaplecticSummation/Cusp/Localization.lean) ·
+[Local lifts in both charts](MetaplecticSummation/Cusp/LocalContinuity.lean)
 
-The global vanishing statement of Proposition B.6 remains admitted in
-`thetaDifference_vanishing`. Given this input, Lean constructs the boundary
-functional. Modifying a single finite factor gives a functional that descends
+This proves `thetaDifference_vanishing` (Proposition B.6) using two
+remaining local inputs, the Kubota projection and the Archimedean reverse
+marginal. Lean uses the vanishing to construct the boundary functional. Modifying a single finite factor gives a functional that descends
 through the adelic leading-term map (Lemma B.10). Reindexing the theta sum
 under the square of Fourier transformation yields the boundary identity.
 The same local modification determines the boundary functional uniquely.
