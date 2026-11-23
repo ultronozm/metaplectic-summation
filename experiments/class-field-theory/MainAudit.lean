@@ -38,6 +38,9 @@ assert_no_sorry MetaplecticPoisson.exists_integral_local_iwasawa
 assert_no_sorry MetaplecticPoisson.isCompact_boundedAdelicMatrices
 assert_no_sorry MetaplecticPoisson.exists_adelic_iwasawa
 assert_no_sorry MetaplecticPoisson.exists_integer_cusp_cover
+assert_no_sorry MetaplecticPoisson.measurePreserving_triangularRow
+assert_no_sorry MetaplecticPoisson.exists_uniform_small_row
+assert_no_sorry MetaplecticPoisson.exists_natural_cusp_cover
 
 open Lean Elab Command
 run_cmd do
@@ -254,3 +257,6 @@ run_cmd do
 #print axioms MetaplecticPoisson.isCompact_boundedAdelicMatrices
 #print axioms MetaplecticPoisson.exists_adelic_iwasawa
 #print axioms MetaplecticPoisson.exists_integer_cusp_cover
+#print axioms MetaplecticPoisson.measurePreserving_triangularRow
+#print axioms MetaplecticPoisson.exists_uniform_small_row
+#print axioms MetaplecticPoisson.exists_natural_cusp_cover

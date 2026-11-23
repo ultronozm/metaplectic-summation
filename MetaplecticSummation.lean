@@ -17,4 +17,4 @@ import MetaplecticSummation.RationalLifts
 import MetaplecticSummation.TranslatedConstantTerm
 import MetaplecticSummation.FiniteAdelicTests
 import MetaplecticSummation.Reduction.Vanishing
-import MetaplecticSummation.Reduction.AdelicIwasawa
+import MetaplecticSummation.Reduction.SiegelCover

@@ -347,11 +347,11 @@ hypotheses. [Rational lifts](MetaplecticSummation/RationalLifts.lean) ·
 For Proposition B.6, Lean proves the quotient integration formula from the rational
 SL₂ quotient to the adelic unipotent quotient with compact fiber $\mathbb A/F$.
 It also proves the compact-representative theorem for the split torus and the
-Haar factor $q_w^{-2k}$ for the change of unipotent parameter. All adelic
-matrices admit the cusp factorization with $k\in\mathbb Z$. The restriction
-to $k\ge 0$, the Siegel integral bound, and the estimates for the theta
-majorant remain open. [Quotient integration](MetaplecticSummation/Reduction/FiberIntegral.lean) ·
-[Split torus](MetaplecticSummation/Reduction/Diagonal.lean)
+Haar factor $q_w^{-2k}$ for the change of unipotent parameter. Every adelic matrix admits the cusp
+factorization with $k\ge 0$. The Siegel integral bound and the estimates for
+the theta majorant remain open. [Quotient integration](MetaplecticSummation/Reduction/FiberIntegral.lean) ·
+[Split torus](MetaplecticSummation/Reduction/Diagonal.lean) ·
+[Nonnegative cusp exponents](MetaplecticSummation/Reduction/SiegelCover.lean)
 
 The global vanishing statement of Proposition B.6 remains admitted in
 `thetaDifference_vanishing`. Given this input, Lean constructs the boundary
