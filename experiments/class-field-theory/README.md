@@ -31,10 +31,10 @@ The full build completed on the pinned archive. The direct project admissions re
 | Main theorem | Reachable admissions |
 | --- | --- |
 | `Datum.poisson` | `arch_reverse_marginal_on_test`, `thetaDifference_vanishing` |
-| `Datum.lineSummation` | The same two and `unfolding` |
-| `Datum.twistedGaussSummation` | The same two and `unfolding` |
+| `Datum.lineSummation` | The same two |
+| `Datum.twistedGaussSummation` | The same two |
 
-After proving Lemma B.3 and Proposition B.4 there are nine direct admissions in the library. Six lie outside these three dependency chains: `kubota_projection`, `fourier_mass`, `fourier_root_kernel`, `arch_integrableOn_shear_vertical`, `mellin_dual`, and `boundary_degree_one`. At finite places, the defining-integral version of the root formula uses the proved right-kernel theorem directly. The version stated with `d.fourier` also references the construction of the all-place Fourier endomorphism, whose axiom audit still reaches the Archimedean marginal. [Finite root formulas](../../MetaplecticSummation/MarginalRootFormula.lean)
+After proving Lemmas B.2 and B.3 and Proposition B.4 there are eight direct admissions in the library. Six lie outside these three dependency chains: `kubota_projection`, `fourier_mass`, `fourier_root_kernel`, `arch_integrableOn_shear_vertical`, `mellin_dual`, and `boundary_degree_one`. At finite places, the defining-integral version of the root formula uses the proved right-kernel theorem directly. The version stated with `d.fourier` also references the construction of the all-place Fourier endomorphism, whose axiom audit still reaches the Archimedean marginal. [Finite root formulas](../../MetaplecticSummation/MarginalRootFormula.lean)
 
 ## The arithmetic comparison
 
@@ -85,6 +85,10 @@ lake env sh -ec '
   done'
 ```
 
+## Lemma B.5
+
+For each matrix $\gamma\in\mathrm{SL}_2(F)$ there is a restricted family of local lifts that sends evaluation at each nonzero rational row vector $v$ to evaluation at $v\gamma$.  For an upper shear this follows in the $X$ chart and for a lower shear in the $Y$ chart.  Reciprocity identifies the two chart products.  Induction on transvections gives the lift for every rational matrix, and the permutation of the rational vectors gives invariance of the theta series.  The projection to the matrix group uses the local `kubota_projection` statement. [Rational lifts](../../MetaplecticSummation/RationalLifts.lean)
+
 ## Proposition B.6
 
 Put $G=\mathrm{SL}_2$, $\Gamma=G(F)$, and let $N$ be the upper unipotent subgroup. Fix the idele $z$ with $z_w=\varpi_w^{-1}$ at one finite place and $1$ elsewhere. Equation `eq:siegel` in the paper needs a compact $\Omega\subset G(\mathbb A)$, a finite measure $\nu$ on $\Omega$, and a constant $C$ with both of the following properties.
@@ -97,6 +101,8 @@ Put $G=\mathrm{SL}_2$, $\Gamma=G(F)$, and let $N$ be the upper unipotent subgrou
    $$
    The exponent comes from the action of $h(z^k)$ on upper unipotents. A covering alone gives no measure bound.
 
+The bottom row identifies the rational right cosets $N(F)\backslash G(F)$ with $F^2-\{0\}$.  The proof constructs a determinant-one matrix for each nonzero row and identifies matrices with the same row up to left multiplication by an upper unipotent.  This gives the absolutely convergent orbit expansion of $\Theta$.  Lemma B.5 realizes each summand as evaluation at $(0,1)$ of a lifted translate. [Bottom-row equivalence](../../MetaplecticSummation/RationalOrbits.lean) · [Lifted orbit sum](../../MetaplecticSummation/RationalLifts.lean)
+
 The second required quotient statement unfolds the orbit of $(0,1)$, whose rational stabilizer is $N(F)$. For $D=\Theta-\Theta\circ\mathcal F$, after proving absolute integrability of the majorant $\theta\,\delta$, the identity is
 
 $$
@@ -106,11 +112,17 @@ $$
  (g\Psi)(0,1)\int_{\mathbb A/F}\overline{D(n(u)g\Phi)}\,du\,dm .
 $$
 
-For a restricted family of local lifts, `translated_constant_coefficients_eq` proves equality of the two frequency-zero coefficients under the vanishing hypotheses of B.6. This uses B.4, equivariance of the Fourier operator, and preservation of a zero leading term under the cover. Its audit reaches the Archimedean marginal and the frequency-zero part of the admitted unfolding statement. [Translated constant coefficients](../../MetaplecticSummation/TranslatedConstantTerm.lean)
+For a restricted family of local lifts, `translated_constant_coefficients_eq` proves equality of the two frequency-zero coefficients under the vanishing hypotheses of B.6. This uses B.4, equivariance of the Fourier operator, and preservation of a zero leading term under the cover. Absolute integrability of both quotient functions gives the integral of their difference in Lemma B.7. The proof reaches the Archimedean marginal through B.4. [Translated constant coefficients](../../MetaplecticSummation/TranslatedConstantTerm.lean)
 
 Here $g$ is any lift of $m$. The two quotient integrations must use compatible measures. The first unfolding is to $N(F)\backslash G(\mathbb A)$, followed by integration along $N(F)\backslash N(\mathbb A)$. The inner integral is the translated constant term.
 
 Yamaguchi's `Idele/NormOneCompact.lean` gives `compactNormOneClassCover` and its image in the idele class group. AutomorphicLean's `LocalGL2.exists_iwasawa` factors a local $\mathrm{GL}_2$ matrix as upper triangular times integral. Tau Ceti's `CanonicalEmbedding/PoissonSummation.lean` proves `tsum_idealLattice_eq_tsum_mixedDual_mixedFourier` for an invertible fractional ideal. The multiplicative Poisson step uses the equality $\Delta^\perp=\Delta$ for the image of rational power classes in $\mathbb A^\times/\mathbb A^{\times n}$. The proof is described below.
+
+## Lemma B.2
+
+The quotient probability measure is the pushforward of the adelic Haar measure restricted to a fundamental domain of mass one.  The terms on the fixed axis survive at frequency zero.  For each nonzero first coordinate, integration of the periodized function of the slope gives an integral on the adeles.  Integral finite shears preserve the maximum norm, and the bounded infinite components of the fundamental domain give a uniform comparison of norms there.  Lemma B.1 therefore supplies one summable majorant for all these translates.  This proves absolute convergence before exchanging the sum and the integral. [Periodization](../../MetaplecticSummation/FourierCoefficients/Periodization.lean) · [Summable majorant](../../MetaplecticSummation/FourierCoefficients/SliceBounds.lean)
+
+The adelic integral factors with the local self-dual measures.  The factors from changing variables on each vertical line cancel by the product formula.  At frequencies zero and one this proves the original statement of `Datum.unfolding`, including absolute convergence of the Jacquet series. [Fourier coefficients](../../MetaplecticSummation/FourierCoefficients/Unfolding.lean) · [Local integrals](../../MetaplecticSummation/FourierCoefficients/LocalFactors.lean)
 
 ## Lemma B.3
 
@@ -130,4 +142,4 @@ The trace character has a unique rational multiplier $b$ for the paper's additiv
 
 At infinity, real and complex one-place tests give Schwartz functions on the full mixed space. The complex external product adapts the derivative estimates from Tau Ceti's `Analysis/Distribution/SchwartzSpace/Prod.lean` and `Analysis/Calculus/IteratedFDeriv/CompLinear.lean` at `5751803d`. A finite product follows by induction and continuous linear changes of coordinates. Both complete tensors in B.4 belong to GroundTheory's adelic Schwartz–Bruhat space. [Schwartz products](../../MetaplecticSummation/SchwartzTensor.lean) · [Adelic tests](../../MetaplecticSummation/AdelicTests.lean)
 
-Haar uniqueness at infinity and the finite-place calculation compare the adelic transform to the tensor of local transforms up to a single positive scalar. Applying both inversion theorems twice to a tensor equal to one at the origin shows that the scalar is one. The theorem `additivePoisson_tensor` gives absolute convergence and equality of the two rational sums with the actual local self-dual transforms. The project audit finds only the standard three axioms for this theorem and for `adelicHat_tensor`. Substitution gives `axisLine_poisson` and `axisDensity_poisson` for each nonzero rational representative, including the leading terms at frequency zero. The basic marginal and the density at zero vanish outside the integral-unit classes at almost all primes. Lemma B.3 bounds their rational support by finitely many classes. Absolute summability on each marginal class follows from adelic Poisson. Applying the second identity at $-1/y'$ expresses the two boundary contributions in the representatives used by $T$. The two resulting sums over rational classes give `constantTerm_identity`. Its remaining local dependency is the Archimedean reverse marginal. [Fourier normalization and Poisson](../../MetaplecticSummation/AdelicFourierIntegrals.lean) · [The two identities](../../MetaplecticSummation/ConstantTermPoisson.lean)
+Haar uniqueness at infinity and the finite-place calculation compare the adelic transform to the tensor of local transforms up to a single positive scalar. Applying both inversion theorems twice to a tensor equal to one at the origin shows that the scalar is one. The theorem `additivePoisson_tensor` gives absolute convergence and equality of the two rational sums with the actual local self-dual transforms. The project audit finds only the standard three axioms for this theorem and for `adelicHat_tensor`. Substitution gives `axisLine_poisson` and `axisDensity_poisson` for each nonzero rational representative, including the leading terms at frequency zero. The basic marginal and the density at zero vanish outside the integral-unit classes at almost all primes. Lemma B.3 bounds their rational support by finitely many classes. Absolute summability of the rational marginal series follows from the orbit estimate in B.2. Applying the second identity at $-1/y'$ expresses the two boundary contributions in the representatives used by $T$. The two resulting sums over rational classes give `constantTerm_identity`. Its remaining local dependency is the Archimedean reverse marginal. [Fourier normalization and Poisson](../../MetaplecticSummation/AdelicFourierIntegrals.lean) · [The two identities](../../MetaplecticSummation/ConstantTermPoisson.lean)

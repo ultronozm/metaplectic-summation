@@ -1,4 +1,4 @@
-import MetaplecticSummation.FourierCoefficients.Basic
+import MetaplecticSummation.FourierCoefficients.LocalFactors
 import MetaplecticSummation.ConstantTermSupport
 import MetaplecticSummation.AdelicFourierIntegrals
 
@@ -47,50 +47,6 @@ theorem axisDensity_poisson (Φ : ∀ v, d.schwartz v) (hΦ : ∀ᶠ v in cofini
   change (∏ᶠ v, f v 0) + (∑' t : Fˣ, ∏ᶠ v, f v (atPlace v t)) =
     (∏ᶠ v, d.hat v (f v) 0) + ∑' t : Fˣ, ∏ᶠ v, d.hat v (f v) (atPlace v t) at eqn
   simpa only [f,d.axisDensity_zero_product,d.axisDensity_product,d.axisDensity_hat_product] using eqn
-
-/-- Absolute convergence of the rational marginal series in the constant term. -/
-theorem summable_rational_marginal (Φ : ∀ v, d.schwartz v) (hΦ : ∀ᶠ v in cofinite, Φ v = d.basic v) :
-    Summable (fun a : Fˣ => ‖∏ᶠ v, d.marginal v (Φ v) (atPlace v a)‖) := by
-  let M (a : Fˣ) := ∏ᶠ v, d.marginal v (Φ v) (atPlace v a)
-  let Q : Fˣ →* GlobalClass n F := QuotientGroup.mk' (powMonoidHom n : Fˣ →* Fˣ).range
-  obtain ⟨C,hC⟩ := d.rational_marginal_supported_on_finite_classes Φ hΦ
-  have fiber (c : GlobalClass n F) : Summable (fun a : {a : Fˣ | Q a = c} => ‖M a.val‖) := by
-    let I := {a : Fˣ | Q a = c}
-    let y := c.out⁻¹
-    have roots (a : I) : ∃ t : Fˣ, t^n / y = a.val := by
-      have he : Q (a.val/c.out) = 1 := by
-        rw [map_div,a.property,show Q c.out = c from Quotient.out_eq c]
-        exact div_self' c
-      obtain ⟨t,ht⟩ := (QuotientGroup.eq_one_iff _).mp he
-      change t^n = a.val / c.out at ht
-      exact ⟨t,by rw [ht]; simp [y]⟩
-    choose root hroot using roots
-    have inj : Function.Injective root := fun x z h =>
-      Subtype.ext ((hroot x).symm.trans ((congrArg (fun t => t^n / y) h).trans (hroot z)))
-    let f (v : Place F) := d.axisLine v (Φ v) (atPlace v y)
-    have ha := (d.additivePoisson_tensor f (fun v => d.axisLine_bruhat v _ _)
-      (d.eventually_axisLine_basic Φ hΦ y)).1
-    apply ((ha.comp_injective (Units.val_injective.comp inj))).congr
-    intro a
-    exact congrArg norm ((d.axisLine_product Φ y (root a)).trans (congrArg M (hroot a)))
-  let g (c : GlobalClass n F) := {a : Fˣ | Q a = c}.indicator (fun a => ‖M a‖)
-  have hg (c : GlobalClass n F) : Summable (g c) := summable_subtype_iff_indicator.mp (fiber c)
-  apply (summable_sum (s := C) fun c _ => hg c).congr
-  intro a
-  by_cases h : Q a ∈ C
-  · rw [Finset.sum_eq_single (Q a)]
-    · simp [g,M]
-    · intro b _ hb
-      simp [g,Ne.symm hb]
-    · exact fun hn => (hn h).elim
-  · have hz : M a = 0 := not_ne_iff.mp fun hn => h (hC a hn)
-    change (∑ c ∈ C, g c a) = ‖M a‖
-    rw [hz,norm_zero]
-    apply Finset.sum_eq_zero
-    intro c hc
-    have hne : Q a ≠ c := fun he => h (he ▸ hc)
-    simp [g,hne]
-
 
 private theorem hasSum_leading_classes (Φ : ∀ v, d.schwartz v) (hΦ : ∀ᶠ v in cofinite, Φ v = d.basic v) :
     HasSum (fun c : GlobalClass n F => ∏ᶠ v, (d.leading v (Φ v)).2 0 (atPlace v c.out))

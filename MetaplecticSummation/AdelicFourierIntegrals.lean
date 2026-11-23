@@ -68,7 +68,7 @@ theorem exists_infinite_integral_factor :
 
 private theorem exists_adelicHat_factor :
     ∃ c : ℝ, 0 < c ∧ ∀ (f : (v : Place F) → LocalField F v → ℂ)
-      (_ : ∀ v, Bruhat v (f v))
+      (_ : ∀ p : Prime F, Bruhat (.inr p) (f (.inr p)))
       (_ : ∀ᶠ p : Prime F in cofinite, ∀ t, f (.inr p) t = if ‖t‖ ≤ 1 then 1 else 0)
       (y : Adeles F), d.character.adelicHat (adelicTensor f) y =
         (c : ℂ) * adelicTensor (fun v => d.hat v (f v)) y := by
@@ -90,7 +90,7 @@ private theorem exists_adelicHat_factor :
     simp only [Pi.mul_apply,Finset.prod_mul_distrib]
     ac_rfl
   have arch := harch (fun w t => f (.inl w) t * d.character.localValue F (.inl w) (y.1 w * t))
-  have finite := d.finiteFourier_factorization b hb (fun p => f (.inr p)) (fun p => hf (.inr p)) h y.2
+  have finite := d.finiteFourier_factorization b hb (fun p => f (.inr p)) hf h y.2
   change (∫ x, U x ∂infiniteAdeleMeasure F) = (a : ℂ) * ∏ w, d.hat (.inl w) (f (.inl w)) (y.1 w) at arch
   change ((∏ᶠ p, r p : ℝ) : ℂ) * (∫ x, V x ∂finiteAdeleMeasure F) = _ at finite
   unfold Character.adelicHat
@@ -124,7 +124,7 @@ private theorem exists_arch_test_one_at_zero (w : W) :
     simp only [Bruhat,dite_eq_right hw]
     exact ⟨φ,fun _ => rfl⟩
 
-private theorem hat_tensor_basic (f : (v : Place F) → LocalField F v → ℂ)
+theorem hat_tensor_basic (f : (v : Place F) → LocalField F v → ℂ)
     (h : ∀ᶠ p : Prime F in cofinite, ∀ t, f (.inr p) t = if ‖t‖ ≤ 1 then 1 else 0) :
     ∀ᶠ p : Prime F in cofinite, ∀ t, d.hat (.inr p) (f (.inr p)) t = if ‖t‖ ≤ 1 then 1 else 0 := by
   filter_upwards [h,d.eventually_unramified] with p hp hu
@@ -135,8 +135,8 @@ private theorem hat_tensor_basic (f : (v : Place F) → LocalField F v → ℂ)
 
 /-- The ordinary adelic Fourier integral of a tensor is exactly the product
 of the local self-dual Fourier integrals. -/
-theorem adelicHat_tensor (f : (v : Place F) → LocalField F v → ℂ)
-    (hf : ∀ v, Bruhat v (f v))
+theorem adelicHat_tensor_of_finite_bruhat (f : (v : Place F) → LocalField F v → ℂ)
+    (hf : ∀ p : Prime F, Bruhat (.inr p) (f (.inr p)))
     (h : ∀ᶠ p : Prime F in cofinite, ∀ t, f (.inr p) t = if ‖t‖ ≤ 1 then 1 else 0) (y : Adeles F) :
     d.character.adelicHat (adelicTensor f) y = adelicTensor (fun v => d.hat v (f v)) y := by
   obtain ⟨c,hc,compare⟩ := d.exists_adelicHat_factor
@@ -158,10 +158,7 @@ theorem adelicHat_tensor (f : (v : Place F) → LocalField F v → ℂ)
     change (∏ w : W, k (.inl w) 0) * ∏ᶠ p : Prime F, k (.inr p) 0 = 1
     simp only [hz,Finset.prod_const_one,finprod_one,one_mul]
   let l := fun v => d.hat v (k v)
-  have hl (v : Place F) : Bruhat v (l v) := by
-    cases v with
-    | inl w => exact d.arch_hat_bruhat w (hk _)
-    | inr p => exact d.hat_finite_bruhat p (hk _)
+  have hl (p : Prime F) : Bruhat (.inr p) (l (.inr p)) := d.hat_finite_bruhat p (hk _)
   have hh (v : Place F) : d.hat v (l v) 0 = 1 := by
     cases v with
     | inl w => exact (congrFun (d.arch_hat_hat w _ (hk _)) 0).trans (by rw [neg_zero]; exact hz (.inl w))
@@ -170,7 +167,7 @@ theorem adelicHat_tensor (f : (v : Place F) → LocalField F v → ℂ)
     change (∏ w : W, d.hat (.inl w) (l (.inl w)) 0) * ∏ᶠ p : Prime F, d.hat (.inr p) (l (.inr p)) 0 = 1
     simp only [hh,Finset.prod_const_one,finprod_one,one_mul]
   have eq1 : d.character.adelicHat (adelicTensor k) = fun x => (c : ℂ) * adelicTensor l x :=
-    funext (compare k hk hbase)
+    funext (compare k (fun p => hk (.inr p)) hbase)
   have eq2 := compare l hl (d.hat_tensor_basic k hbase) 0
   rw [hz',mul_one] at eq2
   have sq := d.character.adelicHat_square (adelicTensor_mem_schwartzBruhat k hk hbase) 0
@@ -183,12 +180,20 @@ theorem adelicHat_tensor (f : (v : Place F) → LocalField F v → ℂ)
   nlinarith
 
 
-private theorem adelicTensor_diagonal (f : (v : Place F) → LocalField F v → ℂ)
-    (h : ∀ᶠ p : Prime F in cofinite, ∀ t, f (.inr p) t = if ‖t‖ ≤ 1 then 1 else 0) (t : F) :
-    adelicTensor f (algebraMap F (Adeles F) t) = ∏ᶠ v, f v (diagonal F v t) := by
-  let g (v : Place F) := f v (diagonal F v t)
+/-- The ordinary adelic Fourier integral of a tensor is exactly the product
+of the local self-dual Fourier integrals. -/
+theorem adelicHat_tensor (f : (v : Place F) → LocalField F v → ℂ)
+    (hf : ∀ v, Bruhat v (f v))
+    (h : ∀ᶠ p : Prime F in cofinite, ∀ t, f (.inr p) t = if ‖t‖ ≤ 1 then 1 else 0) (y : Adeles F) :
+    d.character.adelicHat (adelicTensor f) y = adelicTensor (fun v => d.hat v (f v)) y :=
+  d.adelicHat_tensor_of_finite_bruhat f (fun p => hf (.inr p)) h y
+
+theorem adelicTensor_eq_finprod (f : (v : Place F) → LocalField F v → ℂ)
+    (h : ∀ᶠ p : Prime F in cofinite, ∀ t, f (.inr p) t = if ‖t‖ ≤ 1 then 1 else 0) (t : Adeles F) :
+    adelicTensor f t = ∏ᶠ v, f v (component t v) := by
+  let g (v : Place F) := f v (component t v)
   have hf : ∀ᶠ p : Prime F in cofinite, g (.inr p) = 1 := by
-    filter_upwards [h,(algebraMap F (Adeles F) t).2.2] with p hp ht
+    filter_upwards [h,t.2.2] with p hp ht
     exact (hp _).trans (ite_eq_left ((mem_localIntegers_iff p _).mp ht))
   have hm := eventually_cofinite.mp (eventually_place_of_finite (F := F) (P := fun v => g v = 1) hf)
   have hr : Function.HasFiniteMulSupport (g ∘ Sum.inr) := eventually_cofinite.mp hf
@@ -196,6 +201,12 @@ private theorem adelicTensor_diagonal (f : (v : Place F) → LocalField F v → 
   rw [← tprod_eq_finprod (L := SummationFilter.unconditional _) hm,
     Multipliable.tprod_sum (f := g) (hasProd_fintype _).multipliable (multipliable_of_hasFiniteMulSupport hr),
     tprod_fintype,tprod_eq_finprod (f := fun p => g (.inr p)) hr]
+
+private theorem adelicTensor_diagonal (f : (v : Place F) → LocalField F v → ℂ)
+    (h : ∀ᶠ p : Prime F in cofinite, ∀ t, f (.inr p) t = if ‖t‖ ≤ 1 then 1 else 0) (t : F) :
+    adelicTensor f (algebraMap F (Adeles F) t) = ∏ᶠ v, f v (diagonal F v t) := by
+  rw [adelicTensor_eq_finprod f h]
+  exact finprod_congr fun v => by cases v <;> rfl
 
 /-- Additive Poisson on a restricted tensor with the actual local self-dual Haar measures.
 Both diagonal series converge absolutely. -/

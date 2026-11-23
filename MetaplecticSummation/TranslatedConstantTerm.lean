@@ -1,9 +1,10 @@
 import MetaplecticSummation.ConstantTermPoisson
+import MetaplecticSummation.RationalLifts
 
 /-! The translated constant terms in the proof of Proposition B.6. -/
 noncomputable section
 namespace MetaplecticPoisson.Datum
-open NumberField Filter
+open NumberField Filter MeasureTheory
 open Classical
 variable {F : Type} [Field F] [NumberField F] {n : ℕ} [NeZero n] (d : Datum F n)
 
@@ -48,5 +49,43 @@ theorem translated_constant_coefficients_eq (Φ : ∀ v, d.schwartz v) (g : ∀ 
   rw [h₁,d.axisBoundary_eq_zero_of_local dual hd w h₂,add_zero,add_zero] at eqn
   rw [← he]
   exact (d.unfolding Ψ hg).1.trans (eqn.trans (d.unfolding dual hd).1.symm)
+
+local instance : MeasurableSpace (AdeleQuotient F) := borel _
+local instance : BorelSpace (AdeleQuotient F) := ⟨rfl⟩
+
+private theorem quotientIntegrand_zero_theta (Φ : ∀ v, d.schwartz v)
+    (hf : ∀ᶠ v in cofinite, Φ v = d.basic v) (u : Adeles F) :
+    d.quotientIntegrand Φ 0 (QuotientAddGroup.mk u) =
+      d.theta (d.coverAction (d.upperLift u) (d.upperLift_restricted u) (d.pure Φ hf)) := by
+  rw [d.quotientIntegrand_mk,d.coverAction_pure]
+  simp only [map_zero,zero_mul,neg_zero,AddChar.map_zero_eq_one,Circle.coe_one,mul_one]
+  exact d.translatedTheta_eq_upper u (fun v => (d.upperLift u v).val) (d.upperLift_isUpper u) Φ _
+
+/-- On a representative of the additive quotient, the difference of the zero-frequency
+integrands is the theta difference evaluated at the corresponding upper translate. -/
+theorem quotient_thetaDifference_mk (Φ : ∀ v, d.schwartz v)
+    (hf : ∀ᶠ v in cofinite, Φ v = d.basic v) (u : Adeles F) :
+    d.quotientIntegrand Φ 0 (QuotientAddGroup.mk u) -
+        d.quotientIntegrand (fun v => d.fourier v (Φ v)) 0 (QuotientAddGroup.mk u) =
+      d.thetaDifference (d.coverAction (d.upperLift u) (d.upperLift_restricted u) (d.pure Φ hf)) := by
+  have hd : ∀ᶠ v in cofinite, d.fourier v (Φ v) = d.basic v :=
+    (hf.and d.eventually_fourier_basic).mono fun _ h => h.1 ▸ h.2
+  rw [d.quotientIntegrand_zero_theta Φ hf,d.quotientIntegrand_zero_theta _ hd]
+  change _ = d.theta _ - d.theta (d.adelicFourier _)
+  rw [d.coverAction_fourier,d.adelicFourier_pure]
+
+/-- The translated theta difference has zero integral over the upper unipotent quotient. -/
+theorem translated_constantTerm_difference (Φ : ∀ v, d.schwartz v) (g : ∀ v, d.cover v)
+    (hg : ∀ᶠ v in cofinite, (g v).val (Φ v) = d.basic v) (v w : Place F)
+    (hv : d.leading v (Φ v) = 0) (hw : d.leading w (d.fourier w (Φ w)) = 0) :
+    (∫ q : AdeleQuotient F, d.quotientIntegrand (fun i => (g i).val (Φ i)) 0 q -
+      d.quotientIntegrand (fun i => (g i).val (d.fourier i (Φ i))) 0 q
+      ∂(exists_quotient_measure (F := F)).exists.choose) = 0 := by
+  have hd : ∀ᶠ q in cofinite, (g q).val (d.fourier q (Φ q)) = d.basic q := by
+    filter_upwards [hg,d.eventually_fourier_basic] with q h h'
+    rw [← d.fourier_equivariant,h,h']
+  rw [MeasureTheory.integral_sub (d.coefficient_eq_slope_integrals _ hg 0).1
+    (d.coefficient_eq_slope_integrals _ hd 0).1]
+  exact sub_eq_zero.mpr (d.translated_constant_coefficients_eq Φ g hg v w hv hw)
 
 end MetaplecticPoisson.Datum

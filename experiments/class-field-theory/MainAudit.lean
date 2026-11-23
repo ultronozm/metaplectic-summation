@@ -8,6 +8,7 @@ assert_no_sorry MetaplecticPoisson.Datum.finite_symbol_power
 assert_no_sorry MetaplecticPoisson.Datum.marginal_root_formula_finite_on_test
 assert_no_sorry MetaplecticPoisson.Datum.reverse_marginal_finite
 assert_no_sorry MetaplecticPoisson.Datum.arch_root_sum
+assert_no_sorry MetaplecticPoisson.Datum.unfolding
 
 open Lean Elab Command
 run_cmd do
@@ -53,6 +54,15 @@ run_cmd do
     ``MetaplecticPoisson.Datum.summable_rational_marginal,
     ``MetaplecticPoisson.Datum.constantTerm_identity,
     ``MetaplecticPoisson.Datum.translated_constant_coefficients_eq,
+    ``MetaplecticPoisson.Datum.coefficient_eq_slope_integrals,
+    ``MetaplecticPoisson.Datum.slope_integral_factorization,
+    ``MetaplecticPoisson.Datum.unfolding,
+    ``MetaplecticPoisson.Datum.translated_constantTerm_difference,
+    ``MetaplecticPoisson.Datum.exists_rational_lift,
+    ``MetaplecticPoisson.Datum.coverAction_fourier,
+    ``MetaplecticPoisson.Datum.quotient_thetaDifference_mk,
+    ``MetaplecticPoisson.Datum.theta_coset_expansion,
+    ``MetaplecticPoisson.Datum.exists_theta_coset_lifts,
     ``MetaplecticPoisson.Datum.powerClass_poisson,
     ``MetaplecticPoisson.Datum.poisson,
     ``MetaplecticPoisson.Datum.lineSummation,
@@ -165,3 +175,24 @@ run_cmd do
 
 #print axioms MetaplecticPoisson.Datum.axisBoundary_eq_zero_of_local
 #print axioms MetaplecticPoisson.Datum.translated_constant_coefficients_eq
+
+#print axioms MetaplecticPoisson.Datum.quotient_measure_fundamental
+#print axioms MetaplecticPoisson.Datum.measurable_of_quotientLift
+#print axioms MetaplecticPoisson.Datum.integral_periodization
+#print axioms MetaplecticPoisson.Datum.lintegral_enorm_periodization_le
+#print axioms MetaplecticPoisson.Datum.translatedTheta_orbit_sum
+#print axioms MetaplecticPoisson.Datum.measurable_adelicSlopeSlice
+#print axioms MetaplecticPoisson.Datum.integral_quotientFrequency
+#print axioms MetaplecticPoisson.Datum.coefficient_eq_slope_integrals
+
+#print axioms MetaplecticPoisson.Datum.summable_slope_integrals
+#print axioms MetaplecticPoisson.Datum.slope_integral_factorization
+#print axioms MetaplecticPoisson.Datum.unfolding
+#print axioms MetaplecticPoisson.Datum.translated_constantTerm_difference
+
+#print axioms MetaplecticPoisson.Datum.exists_rational_lift
+#print axioms MetaplecticPoisson.Datum.coverAction_fourier
+#print axioms MetaplecticPoisson.Datum.quotient_thetaDifference_mk
+#print axioms MetaplecticPoisson.rationalBottomRowEquiv
+#print axioms MetaplecticPoisson.Datum.theta_coset_expansion
+#print axioms MetaplecticPoisson.Datum.exists_theta_coset_lifts

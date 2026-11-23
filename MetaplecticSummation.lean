@@ -13,5 +13,6 @@ import MetaplecticSummation.LeadingAction
 import MetaplecticSummation.ArchimedeanDifference
 import MetaplecticSummation.HilbertUniqueness
 import MetaplecticSummation.AdditivePoisson
+import MetaplecticSummation.RationalLifts
 import MetaplecticSummation.TranslatedConstantTerm
 import MetaplecticSummation.FiniteAdelicTests

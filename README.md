@@ -280,8 +280,7 @@ frequency. Both diagonal series converge absolutely. The axis-line
 specialization uses the Archimedean marginal identity in its local
 Schwartz regularity proof. At almost all primes, the basic marginal vanishes
 outside classes represented by integral units. Only finitely many rational
-classes can contribute. Absolute convergence on each class then gives
-absolute convergence over all rational units. Summing the second identity
+classes can contribute. Summing the second identity
 at the representative $-1/y'$ yields the boundary evaluated at $y'$
 in the definition of $T$.
 [Constant-term identity](MetaplecticSummation/ConstantTermPoisson.lean) ·
@@ -292,8 +291,13 @@ in the definition of $T$.
 [Conductor and finite volumes](MetaplecticSummation/TraceConductor.lean)
 
 The global product calculations cancel the normalizing constants at rational arguments
-and identify the leading-term contributions at zero. The unfolding identities
-at frequencies zero and one remain admitted.
+and identify the leading-term contributions at zero. For Lemma B.2, the
+points with nonzero first coordinate have rational slopes. Periodizing
+each slope over the additive quotient and integrating unfolds the series
+to adelic integrals. A single summable majorant on the fundamental domain
+gives absolute convergence. Substitution in the local integrals and the
+product formula give the marginal at frequency zero and the Jacquet
+integral at frequency one. [Unfolding and local factors](MetaplecticSummation/FourierCoefficients/LocalFactors.lean)
 
 For Theorem 9.1, `theta_idele_bound` proves Lemma B.1 over number fields.
 The sum of the majorant over nonzero rational vectors is bounded by a
@@ -333,6 +337,13 @@ ordinary Fourier transform of a pure tensor's axis density is the indicator
 of the local integers at every frequency. The basic-vector identity supplies
 the compatibility required to form the adelic Fourier operator.
 
+For Lemma B.5, a single restricted lift of a rational matrix acts by right
+multiplication on rational evaluations for every adelic section. For
+Lemma B.7 the integral of the translated theta difference over the
+upper unipotent quotient vanishes under the two local leading-term
+hypotheses. [Rational lifts](MetaplecticSummation/RationalLifts.lean) ·
+[Translated constant term](MetaplecticSummation/TranslatedConstantTerm.lean)
+
 The global vanishing statement of Proposition B.6 remains admitted in
 `thetaDifference_vanishing`. Given this input, Lean constructs the boundary
 functional. Modifying a single finite factor gives a functional that descends
@@ -357,8 +368,8 @@ then identifies their Fourier coefficients. The difference of the two sums
 therefore descends to a multilinear form on the moment vectors. Evaluation
 on products of the normalized tests determines its coefficients uniquely.
 The remaining project admissions used by this deduction are the Archimedean
-reverse marginal identity on tests, Proposition B.6 on the theta
-difference, and Fourier coefficient unfolding.
+reverse marginal identity on tests and Proposition B.6 on the theta
+difference.
 For any covering degree, the original summand has finite support on those
 elements. The local tests at S give bounded radii, the basic factors outside S
 vanish on nonintegral elements, and the rational box count applies.

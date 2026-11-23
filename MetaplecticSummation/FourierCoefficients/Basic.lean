@@ -266,11 +266,14 @@ theorem exists_quotient_measure :
   rintro ν ⟨hH,hP⟩
   exact Measure.isAddHaarMeasure_eq_of_isProbabilityMeasure ν μ
 
+/-- The summand at one rational point after an adelic upper unipotent translation. -/
+def translatedValue (Φ : ∀ v, d.schwartz v) (u : Adeles F) (p : RationalPoint F) : ℂ :=
+  ∏ᶠ v, let z := diagonalPoint p v
+    if p.val.1 ≠ 0 then xChart (Φ v) (z.1, z.2 + component u v * z.1) else yChart (Φ v) z
+
 /-- The theta series at an upper unipotent translate, written in the common rational chart. -/
 def translatedTheta (Φ : ∀ v, d.schwartz v) (u : Adeles F) : ℂ :=
-  ∑' p : RationalPoint F, ∏ᶠ v,
-    let z := diagonalPoint p v
-    if p.val.1 ≠ 0 then xChart (Φ v) (z.1, z.2 + component u v * z.1) else yChart (Φ v) z
+  ∑' p : RationalPoint F, d.translatedValue Φ u p
 
 private def rationalShear (t : F) (p : RationalPoint F) : RationalPoint F :=
   ⟨(p.val.1,p.val.2+t*p.val.1),fun h => p.property (by
@@ -336,13 +339,12 @@ theorem eventually_upper_basic (u : Adeles F) (g : (v : Place F) → d.Operators
   apply Subtype.ext
   exact e.trans (by simpa only [v,basic,dif_pos hp] using (d.basicCharts_shear p hp _ hu).1)
 
-/-- The translated theta integrand is the ordinary theta series of the translated pure tensor. -/
-theorem translatedTheta_eq_upper (u : Adeles F) (g : (v : Place F) → d.Operators v)
+/-- The common rational chart computes the individual summand of the translated tensor. -/
+theorem translatedValue_eq_upper (u : Adeles F) (g : (v : Place F) → d.Operators v)
     (hg : ∀ v, d.IsUpper v (component u v) (g v)) (Φ : (v : Place F) → d.schwartz v)
-    (hf : ∀ᶠ v in cofinite, g v (Φ v) = d.basic v) :
-    d.translatedTheta Φ u = d.theta (d.pure (fun v => g v (Φ v)) hf) := by
-  apply tsum_congr
-  intro p
+    (hf : ∀ᶠ v in cofinite, g v (Φ v) = d.basic v) (p : RationalPoint F) :
+    d.translatedValue Φ u p = d.evaluation (d.pure (fun v => g v (Φ v)) hf) p := by
+  unfold translatedValue
   rw [d.evaluation_pure]
   apply finprod_congr
   intro v
@@ -354,6 +356,13 @@ theorem translatedTheta_eq_upper (u : Adeles F) (g : (v : Place F) → d.Operato
   · have hz := not_ne_iff.mp hx
     simp only [hz,ne_eq,not_true_eq_false,if_false,yChart,map_zero]
     split <;> first | exact ((hg v (Φ v)).2 _).symm | rfl
+
+/-- The translated theta integrand is the ordinary theta series of the translated pure tensor. -/
+theorem translatedTheta_eq_upper (u : Adeles F) (g : (v : Place F) → d.Operators v)
+    (hg : ∀ v, d.IsUpper v (component u v) (g v)) (Φ : (v : Place F) → d.schwartz v)
+    (hf : ∀ᶠ v in cofinite, g v (Φ v) = d.basic v) :
+    d.translatedTheta Φ u = d.theta (d.pure (fun v => g v (Φ v)) hf) := by
+  exact tsum_congr (d.translatedValue_eq_upper u g hg Φ hf)
 
 /-- Two vanishing local leading terms make the theta series agree under
 every adelic upper unipotent translation, hence also after taking a Fourier coefficient. -/
@@ -384,11 +393,6 @@ theorem coefficient_eq_fourier_of_local_vanishing (Φ : (v : Place F) → d.schw
 def constantTerm (Φ : ∀ v, d.schwartz v) :=
   (∑' y : Fˣ, ∏ᶠ v, d.axis v (Φ v) (atPlace v y)) +
     ∑' x : Fˣ, ∏ᶠ v, d.marginal v (Φ v) (atPlace v x)
-
-theorem unfolding (Φ : ∀ v, d.schwartz v) (h : ∀ᶠ v in cofinite, Φ v = d.basic v) :
-    d.coefficient Φ 0 = d.constantTerm Φ ∧
-    Summable (fun c : Fˣ => ‖∏ᶠ v, d.jacquet v (Φ v) (atPlace v c)‖) ∧
-    d.coefficient Φ 1 = ∑' c : Fˣ, ∏ᶠ v, d.jacquet v (Φ v) (atPlace v c) := by sorry
 
 def axisBoundary (Φ : ∀ v, d.schwartz v) :=
   (n : ℂ)⁻¹ * ∑ᶠ y : GlobalClass n F, ∏ᶠ v,
