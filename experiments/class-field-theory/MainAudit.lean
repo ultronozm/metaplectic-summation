@@ -1,5 +1,14 @@
 import MetaplecticSummation
+import Mathlib.Util.AssertNoSorry
 import Lean
+
+-- The defining integral at a finite place is independent of Archimedean inversion.
+assert_no_sorry MetaplecticPoisson.existsUnique_hilbert
+assert_no_sorry MetaplecticPoisson.Datum.finite_symbol_power
+assert_no_sorry MetaplecticPoisson.Datum.marginal_root_formula_finite_on_test
+assert_no_sorry MetaplecticPoisson.Datum.reverse_marginal_finite
+assert_no_sorry MetaplecticPoisson.Datum.arch_root_sum
+
 open Lean Elab Command
 run_cmd do
   let env ← getEnv
