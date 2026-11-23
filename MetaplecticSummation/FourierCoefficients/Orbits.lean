@@ -81,7 +81,7 @@ theorem translatedTheta_orbit_sum (Φ : ∀ v, d.schwartz v) (hΦ : ∀ᶠ v in 
   · exact tsum_congr (d.translated_axis Φ u)
   · exact tsum_congr fun x => tsum_congr fun t => d.translated_slope Φ u x t
 
-private theorem places_countable (F : Type) [Field F] [NumberField F] : Countable (Place F) := by
+theorem places_countable (F : Type) [Field F] [NumberField F] : Countable (Place F) := by
   let := GroundTheory.Global.countable_numberField F
   let : Countable (𝓞 F) := (show Function.Injective (fun a : 𝓞 F => (a : F)) from fun _ _ h => Subtype.ext h).countable
   have hI : Function.Surjective (fun s : Finset (𝓞 F) => Ideal.span (s : Set (𝓞 F))) :=

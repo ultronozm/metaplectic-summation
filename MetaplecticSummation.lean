@@ -16,4 +16,5 @@ import MetaplecticSummation.AdditivePoisson
 import MetaplecticSummation.RationalLifts
 import MetaplecticSummation.TranslatedConstantTerm
 import MetaplecticSummation.FiniteAdelicTests
-import MetaplecticSummation.Reduction.OrbitIntegral
+import MetaplecticSummation.Reduction.Vanishing
+import MetaplecticSummation.Reduction.AdelicIwasawa

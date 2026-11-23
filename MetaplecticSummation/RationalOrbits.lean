@@ -37,7 +37,7 @@ theorem rationalRowPerm_val (A : SL(2,F)) (z : RationalPoint F) :
     (rationalRowPerm A z).val =
       (z.val.1*A.val 0 0 + z.val.2*A.val 1 0,z.val.1*A.val 0 1 + z.val.2*A.val 1 1) := rfl
 
-theorem upperTransvection_matrix (t : F) :
+theorem upperTransvection_matrix {F : Type} [CommRing F] (t : F) :
     (Matrix.SpecialLinearGroup.transvection (show (0 : Fin 2) ≠ 1 from zero_ne_one) t).val = !![1,t;0,1] := by
   ext i j
   fin_cases i <;> fin_cases j <;> simp [Matrix.SpecialLinearGroup.transvection_coe]
@@ -46,12 +46,12 @@ theorem lowerTransvection_matrix (t : F) :
   ext i j
   fin_cases i <;> fin_cases j <;> simp [Matrix.SpecialLinearGroup.transvection_coe]
 
-def upperUnipotentParam : Multiplicative F →* SL(2,F) where
+def upperUnipotentParam {F : Type} [CommRing F] : Multiplicative F →* SL(2,F) where
   toFun t := Matrix.SpecialLinearGroup.transvection (show (0 : Fin 2) ≠ 1 from zero_ne_one) t.toAdd
   map_one' := Matrix.SpecialLinearGroup.transvection_coeff_zero _
   map_mul' _ _ := Matrix.SpecialLinearGroup.transvection_add _ _ _
 
-def upperUnipotent (F : Type) [Field F] : Subgroup SL(2,F) := (upperUnipotentParam (F := F)).range
+def upperUnipotent (F : Type) [CommRing F] : Subgroup SL(2,F) := (upperUnipotentParam (F := F)).range
 
 private theorem upperParam_matrix (t : Multiplicative F) :
     (upperUnipotentParam t).val = !![1,t.toAdd;0,1] := upperTransvection_matrix t.toAdd

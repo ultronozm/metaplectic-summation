@@ -88,7 +88,7 @@ theorem rationalPeriodization_mk (f : A → ℂ) (u : A) :
   exact (e.tsum_eq (fun γ => f (u + γ.val.unop))).symm
 
 /-- Measurability on the compact adelic quotient can be checked upstairs. -/
-theorem measurable_of_quotientLift {g : X → ℂ} (hg : Measurable (g ∘ (QuotientAddGroup.mk : A → X))) :
+theorem measurable_of_quotientLift {E : Type*} [MeasurableSpace E] {g : X → E} (hg : Measurable (g ∘ (QuotientAddGroup.mk : A → X))) :
     Measurable g := by
   let π : A → X := QuotientAddGroup.mk
   let L := AdeleRing.principalSubgroup (𝓞 F) F
