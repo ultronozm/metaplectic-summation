@@ -41,6 +41,9 @@ assert_no_sorry MetaplecticPoisson.exists_integer_cusp_cover
 assert_no_sorry MetaplecticPoisson.measurePreserving_triangularRow
 assert_no_sorry MetaplecticPoisson.exists_uniform_small_row
 assert_no_sorry MetaplecticPoisson.exists_natural_cusp_cover
+assert_no_sorry MetaplecticPoisson.exists_siegel_integral_bound
+assert_no_sorry MetaplecticPoisson.finiteVolume_slQuotient
+assert_no_sorry MetaplecticPoisson.exists_compact_row_modulus_bounds
 
 open Lean Elab Command
 run_cmd do
@@ -260,3 +263,6 @@ run_cmd do
 #print axioms MetaplecticPoisson.measurePreserving_triangularRow
 #print axioms MetaplecticPoisson.exists_uniform_small_row
 #print axioms MetaplecticPoisson.exists_natural_cusp_cover
+#print axioms MetaplecticPoisson.exists_siegel_integral_bound
+#print axioms MetaplecticPoisson.finiteVolume_slQuotient
+#print axioms MetaplecticPoisson.exists_compact_row_modulus_bounds
