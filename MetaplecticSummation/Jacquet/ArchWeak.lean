@@ -1,5 +1,6 @@
 import MetaplecticSummation.Jacquet.Weak
 import MetaplecticSummation.Jacquet.ShearRegion
+import MetaplecticSummation.Jacquet.ArchShearBound
 
 /-! Testing the weak Jacquet identity away from zero at an infinite place. -/
 noncomputable section
@@ -145,13 +146,15 @@ theorem exists_jacquet_lift_dual (v₀ : Place F) {W : Weight v₀} (hw : TestWe
   exact ⟨_,ht W hw,d.jacquet_jacquetLift v₀ W β hβ (ht W hw),
     d.jacquetLift_dual v₀ hw (β := β) ⟨hβ,ht⟩⟩
 
-/-- Remaining part of the archimedean shear estimate in the vertical region. -/
+/-- The archimedean shear estimate in the vertical region, from the bound of
+order three on the far part of the vertical cone. -/
 theorem arch_integrableOn_shear_vertical (u : K) {g : d.Operators v} (hg : d.IsUpper v u g)
     (Φ : d.schwartz v) :
     let Ξ := (d.jacquetDifference v u g)^[3] Φ
     IntegrableOn (Function.uncurry Ξ.val.1)
       {z : Kˣ × K | modulus F v z.1.val < 1 ∧ ‖z.1.val‖ < ‖z.2‖} ((d.lineMeasure v).prod dx) := by
-  sorry
+  obtain ⟨C₀,B,hB,h⟩ := d.shearVerticalBound_arch w u hg Φ
+  exact d.integrableOn_vertical_of_bound v _ hB h
 
 /-- Absolute integrability for the third archimedean shear difference. -/
 theorem integrable_arch_shear (u : K) {g : d.Operators v} (hg : d.IsUpper v u g)

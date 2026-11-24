@@ -76,7 +76,7 @@ products and rational evaluations all depend on these inputs.
 | [Jacquet/PowerAverage](MetaplecticSummation/Jacquet/PowerAverage.lean) | Power averages of Jacquet lifts, including vanishing for a zero moment vector, and the proof of the local leading-term formula (Lemma 8.3) |
 | [Jacquet/LineWeights](MetaplecticSummation/Jacquet/LineWeights.lean), [Jacquet](MetaplecticSummation/Jacquet.lean) | The explicit dual weight (Proposition 10.8), lifting and unfolding of both adelic sums, and the deduction of the line formula with its unique power-class coefficients (Theorem 10.16) |
 | [Jacquet/Kernel](MetaplecticSummation/Jacquet/Kernel.lean), [ArchimedeanFourierSchwartz](MetaplecticSummation/ArchimedeanFourierSchwartz.lean) | Schwartz–Bruhat regularity of the kernel in Proposition 10.8 and absolute convergence of its Fourier integral at every frequency |
-| [Jacquet/Weak](MetaplecticSummation/Jacquet/Weak.lean), [Jacquet/ArchWeak](MetaplecticSummation/Jacquet/ArchWeak.lean), [Jacquet/ShearRegion](MetaplecticSummation/Jacquet/ShearRegion.lean) | Weak and pointwise Jacquet identities, their finite-place proofs, and reduction at infinite places to the vertical part of the shear estimate |
+| [Jacquet/Weak](MetaplecticSummation/Jacquet/Weak.lean), [Jacquet/ArchWeak](MetaplecticSummation/Jacquet/ArchWeak.lean), [Jacquet/ShearRegion](MetaplecticSummation/Jacquet/ShearRegion.lean), [Jacquet/ArchShearBound](MetaplecticSummation/Jacquet/ArchShearBound.lean) | Weak and pointwise Jacquet identities, their finite-place proofs, and absolute integrability of the third shear difference at infinite places |
 | [Jacquet/FiniteShear](MetaplecticSummation/Jacquet/FiniteShear.lean), [Jacquet/WeightIntegrability](MetaplecticSummation/Jacquet/WeightIntegrability.lean) | The finite-place shear estimate, decay and absolute integrability of Jacquet weights, and the Radon identity on a shear representative |
 | [Jacquet/Convergence](MetaplecticSummation/Jacquet/Convergence.lean), [Jacquet/Lines](MetaplecticSummation/Jacquet/Lines.lean) | Absolute convergence, continuity, unipotent equivariance, and the fixed-parameter Radon identity for integrable X-charts |
 | [SArithmetic](MetaplecticSummation/SArithmetic.lean) | Finiteness of residue rings, power residue symbols, independence of Gauss sums from residue representatives, and the divisor sum over S-integers |
@@ -487,11 +487,16 @@ place, with the explicit kernel formula for $W^\vee$. The finite-place formulas 
 use the normalized Hilbert symbols and the Fourier endomorphism constructed
 from the reverse marginal identity on tests.
 
-For an arbitrary section at a real or complex place, the weak and pointwise
-formulas still use `arch_integrableOn_shear_vertical`. This is the open
-estimate for the third shear difference on |x|ᵥ < 1 and ‖y‖ > ‖x‖.
-The chart growth bound proves absolute integrability on the complementary
-region. Together these give an integrable representative with the same
+For an arbitrary section at a real or complex place, the third shear
+difference is absolutely integrable on |x|ᵥ < 1 and ‖y‖ > ‖x‖. Near the
+diagonal the chart growth bound suffices. Farther out, for a test section, the
+X-chart is smooth along each vertical line with rapidly decaying third
+derivatives. For a transformed test section, the power-ray formula turns the
+third difference into the Fourier integral of a third difference of Y-chart
+Radon slices in the second output coordinate. After the substitution y = βw
+these slices depend smoothly on that coordinate. Both cases give the bound
+|x|ᵥ^(−(n−1)/n) (‖x‖/‖y‖)³. The chart growth bound proves absolute
+integrability on the complementary region. Together these give an integrable representative with the same
 two Jacquet weights. Applied to a difference with zero Jacquet integral,
 Proposition 10.8 gives descent to the full Jacquet image. The local square
 formula then gives inversion and bijectivity on that image.
