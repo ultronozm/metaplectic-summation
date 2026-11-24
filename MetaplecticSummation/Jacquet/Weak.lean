@@ -1,5 +1,5 @@
 import MetaplecticSummation.Jacquet.FiniteShear
-import MetaplecticSummation.RadonDecay
+import MetaplecticSummation.Marginals.FrequencyTest
 import Mathlib.Topology.LocallyConstant.Algebra
 
 /-! The tested Jacquet identity of §10. The two exchanges of integrals use
@@ -14,84 +14,18 @@ local notation "dx" => selfDual F d.character v
 local notation "ψ" => d.character.localValue F v
 local notation "m" => modulus F v
 
-private theorem radon_frequency_bound (Φ : d.schwartz v) (c : Kˣ) :
-    ∃ D : Kˣ → ℝ, Continuous D ∧ ∀ u y,
-      ‖d.hat v (fun t => (d.radonAt v Φ.val t).1 c y) u.val‖ ≤ D u*((1+‖y‖)^3)⁻¹ := by
-  let s : ℂ := Real.sqrt (m (n:K))
-  let Ψ := d.fourier v Φ
-  obtain ⟨C,hC,H⟩ := d.schwartz_chart_growth v Ψ 3 (by decide)
-  let A := 2+2/(m c.val)
-  have pos (u : Kˣ) : 0 < m u.val := by cases v <;> simp [modulus,norm_pos_iff,u.ne_zero,pow_pos]
-  have hA : 0 ≤ A := by dsimp [A]; positivity [pos c]
-  let D (u : Kˣ) := ‖s‖*(m u.val)^(n-1)*C*A^3 / ((m u.val)^n)^3
-  have cm : Continuous fun u : Kˣ => m u.val := by
-    cases v <;> first | exact Units.continuous_val.norm.pow _ | exact Units.continuous_val.norm
-  have cD : Continuous D := (((continuous_const.mul (cm.pow _)).mul continuous_const).mul continuous_const).div
-    ((cm.pow _).pow 3) (fun u => pow_ne_zero _ (pow_ne_zero _ (pos u).ne'))
-  refine ⟨D,cD,fun u y => ?_⟩
-  let r := max (m c.val) (m y)
-  let k := (m u.val)^n
-  have hr : 0 < r := (pos c).trans_le (le_max_left ..)
-  have hk : 0 < k := pow_pos (pos u) _
-  have hy : 1+‖y‖ ≤ A*r := by
-    have h := mul_le_mul_of_nonneg_left (le_max_left (m c.val) (m y)) (show 0 ≤ 2/(m c.val) by positivity [pos c])
-    rw [div_mul_cancel₀ _ (pos c).ne'] at h
-    change 2 ≤ (2/m c.val)*r at h
-    by_cases hy : ‖y‖ ≤ 1
-    · dsimp only [A]; nlinarith
-    · have hmy : ‖y‖ ≤ m y := by
-        cases v with
-        | inr p => exact le_rfl
-        | inl w => exact le_self_pow₀ (le_of_not_ge hy) w.mult_ne_zero
-      have h' : ‖y‖ ≤ r := hmy.trans (le_max_right ..)
-      dsimp only [A]; nlinarith
-  let a := u^n*c
-  let z := u.val^n*y
-  have radius : max (m a.val) (m z) = k*r := by
-    rw [show m a.val = k*m c.val by cases v <;> simp [a,k,modulus,mul_pow,pow_right_comm],
-      show m z = k*m y by cases v <;> simp [z,k,modulus,mul_pow,pow_right_comm],mul_max_of_nonneg _ _ hk.le]
-  have h := (H (a.val,z) (fun h => a.ne_zero (congrArg Prod.fst h))).1
-  have hb : ‖Ψ.val.1 a z‖ ≤ C*((k*r)^3)⁻¹ := by
-    apply (show ‖Ψ.val.1 a z‖ ≤ _ from by simpa only [xChart,dif_pos a.ne_zero,Units.mk0_val,radius] using h).trans
-    apply mul_le_mul_of_nonneg_left _ hC
-    exact (min_le_right ..).trans_eq (by rw [Real.rpow_neg (mul_nonneg hk.le hr.le),Real.rpow_natCast])
-  have h' : ‖Ψ.val.1 a z‖*(1+‖y‖)^3 ≤ C*A^3/k^3 := by
-    calc
-      _ ≤ C*((k*r)^3)⁻¹ * (A*r)^3 := mul_le_mul hb (pow_le_pow_left₀ (by positivity) hy 3) (by positivity)
-          (mul_nonneg hC (by positivity))
-      _ = _ := by rw [mul_pow,mul_pow]; field_simp
-  rw [d.hat_radon_scaled,norm_mul,norm_mul,norm_pow,show ‖(m u.val : ℂ)‖ = ‖m u.val‖ from Complex.norm_real _,Real.norm_of_nonneg (pos u).le,
-    ← div_eq_mul_inv,le_div_iff₀ (by positivity),mul_assoc]
-  exact (mul_le_mul_of_nonneg_left h' (mul_nonneg (norm_nonneg s) (pow_nonneg (pos u).le _))).trans_eq
-    (by dsimp only [D,k]; ring)
-
 private theorem integrable_tested_radon_frequency (Φ : d.schwartz v) (c : Kˣ) {ρ : K → ℂ}
     (hc : Continuous ρ) (hs : HasCompactSupport ρ) (hz : 0 ∉ tsupport ρ) :
     let R (y t : K) := (d.radonAt v Φ.val t).1 c y
     Integrable (fun z : K × K => (d.hat v (R z.1) z.2 * ρ z.2) * ψ (-z.1/c.val)) ((dx).prod dx) := by
   intro R
-  letI : (dx).IsAddHaarMeasure := (existsUnique_selfDual F d.character v).exists.choose_spec.1
-  have hR : RapidRadonValues R := (d.schwartz_radon_rapid v Φ).1.comp (fun y : K => (c,y))
-    (continuous_const.prodMk continuous_id)
-  have chat := (hR.fourier dx (d.integrable_local_inv_cube v) (d.character.continuous_localValue v)
-    (d.character.norm_localValue v)).1
-  obtain ⟨D,cD,hD⟩ := d.radon_frequency_bound v Φ c
-  let S := (Units.val : Kˣ → K) ⁻¹' tsupport ρ
-  have hS : IsCompact S := Units.isEmbedding_val₀.isInducing.isCompact_preimage' hs (fun x hx =>
-    ⟨Units.mk0 x (fun h => hz (h ▸ hx)),rfl⟩)
-  obtain ⟨B,hB⟩ := hS.bddAbove_image cD.continuousOn
-  have meas : Continuous fun z : K × K => (d.hat v (R z.1) z.2*ρ z.2)*ψ (-z.1/c.val) :=
-    (chat.mul (hc.comp continuous_snd)).mul ((d.character.continuous_localValue v).comp (continuous_fst.neg.div_const _))
-  apply (((d.integrable_local_inv_cube v).const_mul B).mul_prod (hc.integrable_of_hasCompactSupport (μ := dx) hs).norm).mono'
-    meas.aestronglyMeasurable
-  filter_upwards with z
-  simp only [norm_mul,d.character.norm_localValue,mul_one]
-  by_cases h : z.2 ∈ tsupport ρ
-  · let u := Units.mk0 z.2 (fun h' => hz (h' ▸ h))
-    have hu : u ∈ S := h
-    exact mul_le_mul_of_nonneg_right ((hD u z.1).trans (mul_le_mul_of_nonneg_right (hB (mem_image_of_mem D hu))
-      (by positivity))) (norm_nonneg _)
-  · simp only [image_eq_zero_of_notMem_tsupport h,norm_zero,mul_zero,le_refl]
+  let f := fun z : K × K => d.hat v (R z.1) z.2 * ρ z.2
+  have hi : Integrable f ((dx).prod dx) :=
+    d.integrable_radon_frequency_test v Φ (d.fourier v Φ) (d.fourier_apply v Φ) c hc hs hz
+  have hp : Continuous (fun z : K × K => ψ (-z.1/c.val)) :=
+    (d.character.continuous_localValue v).comp (continuous_fst.neg.div_const _)
+  apply hi.norm.mono' (hi.aestronglyMeasurable.mul hp.aestronglyMeasurable)
+  exact .of_forall fun z => by simp [f,norm_mul,d.character.norm_localValue]
 
 /-- The weak Jacquet identity for a section satisfying the transverse line
 identity and its uniform L¹ bound. The test is extended by zero across zero. -/
