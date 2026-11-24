@@ -10,6 +10,8 @@ assert_no_sorry MetaplecticPoisson.Datum.reverse_marginal_finite
 assert_no_sorry MetaplecticPoisson.Datum.arch_root_sum
 assert_no_sorry MetaplecticPoisson.Datum.tested_marginal_slice_on_test
 assert_no_sorry MetaplecticPoisson.Datum.arch_integral_chartDifference_bound
+assert_no_sorry MetaplecticPoisson.Datum.kubota_projection
+assert_no_sorry MetaplecticPoisson.Datum.hasLocalEvaluationLifts
 assert_no_sorry MetaplecticPoisson.ChartFamilyContinuousAt.upper
 assert_no_sorry MetaplecticPoisson.ChartFamilyContinuousAt.lower
 assert_no_sorry MetaplecticPoisson.Datum.unfolding
@@ -149,8 +151,7 @@ run_cmd do
           throwError "The proof of Proposition B.6 contains an admission"
         if [``MetaplecticPoisson.Datum.poisson, ``MetaplecticPoisson.Datum.lineSummation,
             ``MetaplecticPoisson.Datum.twistedGaussSummation].contains root &&
-            !([``MetaplecticPoisson.Datum.kubota_projection,
-              ``MetaplecticPoisson.Datum.arch_reverse_marginal_on_test].contains n) then
+            n != ``MetaplecticPoisson.Datum.arch_reverse_marginal_on_test then
           throwError "Unexpected admission {n} in {root}"
         logInfo m!"{n}"
       for k in ds do
@@ -329,5 +330,6 @@ run_cmd do
 #print axioms MetaplecticPoisson.Datum.local_evaluation_representatives
 #print axioms MetaplecticPoisson.Datum.thetaDifference_eq_zero_of_local_evaluation_lifts
 
+#print axioms MetaplecticPoisson.Datum.kubota_projection
 #print axioms MetaplecticPoisson.Datum.hasLocalEvaluationLifts
 #print axioms MetaplecticPoisson.Datum.thetaDifference_vanishing

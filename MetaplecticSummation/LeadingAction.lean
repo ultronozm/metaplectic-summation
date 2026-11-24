@@ -1,4 +1,4 @@
-import MetaplecticSummation.Cover
+import MetaplecticSummation.Cover.Operators
 
 /-! Homogeneity and equivariance of the leading term in §8. -/
 noncomputable section

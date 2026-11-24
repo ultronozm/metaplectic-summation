@@ -1,4 +1,4 @@
-import MetaplecticSummation.Cover
+import MetaplecticSummation.Cover.Operators
 import MetaplecticSummation.FiniteMarginal
 import MetaplecticSummation.DiagonalTransform
 import MetaplecticSummation.TransformLinearity

@@ -1,3 +1,4 @@
+import MetaplecticSummation.Cover
 import MetaplecticSummation.RationalOrbits
 
 /-! Restricted lifts and the action of rational matrices in Lemma B.5. -/

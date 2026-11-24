@@ -1,4 +1,4 @@
-import MetaplecticSummation.Cover
+import MetaplecticSummation.Cover.Operators
 import MetaplecticSummation.Marginals.Fourier
 
 noncomputable section

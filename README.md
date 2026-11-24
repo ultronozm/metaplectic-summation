@@ -62,7 +62,7 @@ products and rational evaluations all depend on these inputs.
 | [Shears](MetaplecticSummation/Shears.lean) | Proved chart gluing, additive composition and the two Radon and Fourier identities of Lemma 5.2 |
 | [RapidCharts](MetaplecticSummation/RapidCharts.lean) | Rapid derivative estimates under real-linear changes of variables and local changes of chart |
 | [ArchimedeanShears](MetaplecticSummation/ArchimedeanShears.lean) | Preservation of the real and complex test spaces by both shear operators |
-| [Cover](MetaplecticSummation/Cover.lean) | Construction of the unique upper and lower shear automorphisms of the full local Schwartz space, equivariance, and the statement of the Kubota projection |
+| [Cover/Operators](MetaplecticSummation/Cover/Operators.lean), [Cover/Projection](MetaplecticSummation/Cover/Projection.lean) | Upper and lower shear automorphisms of the local Schwartz space, equivariance, and the surjective Kubota projection with scalar kernel |
 | [FourierOrthogonality](MetaplecticSummation/FourierOrthogonality.lean) | Fourier transform of additive subgroup indicators and the volume of the annihilator of a compact open subgroup |
 | [FinitePlancherel](MetaplecticSummation/FinitePlancherel.lean), [DualBallVolumes](MetaplecticSummation/DualBallVolumes.lean) | Haar normalization by dual balls, Fourier inversion with frequency cutoffs and Plancherel on every continuous compactly supported test at finite places |
 | [FiniteFourierInversion](MetaplecticSummation/FiniteFourierInversion.lean) | Ordinary Fourier inversion on finite completions with the chosen self-dual measure, and the affine pairing from Appendix A |
@@ -383,9 +383,8 @@ uniformly. [Restricted lifts](MetaplecticSummation/Cusp/Lifts.lean) ·
 [Local lifting condition](MetaplecticSummation/Cusp/Localization.lean) ·
 [Local lifts in both charts](MetaplecticSummation/Cusp/LocalContinuity.lean)
 
-This proves `thetaDifference_vanishing` (Proposition B.6) using two
-remaining local inputs, the Kubota projection and the Archimedean reverse
-marginal. Lean uses the vanishing to construct the boundary functional. Modifying a single finite factor gives a functional that descends
+This proves `thetaDifference_vanishing` (Proposition B.6) using the remaining
+Archimedean reverse marginal identity. Lean uses the vanishing to construct the boundary functional. Modifying a single finite factor gives a functional that descends
 through the adelic leading-term map (Lemma B.10). Reindexing the theta sum
 under the square of Fourier transformation yields the boundary identity.
 The same local modification determines the boundary functional uniquely.
@@ -406,9 +405,8 @@ there. The Poisson vanishing criterion applied to upper unipotent translates
 then identifies their Fourier coefficients. The difference of the two sums
 therefore descends to a multilinear form on the moment vectors. Evaluation
 on products of the normalized tests determines its coefficients uniquely.
-The remaining project admissions used by this deduction are the Archimedean
-reverse marginal identity on tests and Proposition B.6 on the theta
-difference.
+The only remaining admission used by this deduction is the Archimedean
+reverse marginal identity on tests.
 For any covering degree, the original summand has finite support on those
 elements. The local tests at S give bounded radii, the basic factors outside S
 vanish on nonintegral elements, and the rational box count applies.
