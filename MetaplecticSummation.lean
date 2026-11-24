@@ -4,6 +4,7 @@ import MetaplecticSummation.Jacquet.FiniteShear
 import MetaplecticSummation.LocalWeights
 import MetaplecticSummation.BasicMarginals
 import MetaplecticSummation.FourierCoefficients
+import MetaplecticSummation.DegreeOneBoundary
 import MetaplecticSummation.FiniteLines
 import MetaplecticSummation.Schwartz.FourierStability
 import MetaplecticSummation.WildSymbols

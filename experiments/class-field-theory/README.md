@@ -34,7 +34,7 @@ The full build completed on the pinned archive. The direct project admissions re
 | `Datum.lineSummation` | `arch_reverse_marginal_on_test` |
 | `Datum.twistedGaussSummation` | `arch_reverse_marginal_on_test` |
 
-After proving Proposition B.6 and the local Kubota projection there are six direct admissions in the library. The five outside these three dependency chains are `fourier_mass`, `fourier_root_kernel`, `arch_integrableOn_shear_vertical`, `mellin_dual`, and `boundary_degree_one`. At finite places, the defining-integral version of the root formula uses the proved right-kernel theorem directly. The version stated with `d.fourier` also references the construction of the all-place Fourier endomorphism, whose axiom audit still reaches the Archimedean marginal. [Finite root formulas](../../MetaplecticSummation/MarginalRootFormula.lean)
+After proving Proposition B.6, the local Kubota projection and the degree-one boundary value there are five direct admissions in the library. The four outside these three dependency chains are `fourier_mass`, `fourier_root_kernel`, `arch_integrableOn_shear_vertical`, and `mellin_dual`. Like `Datum.poisson`, whose functional it evaluates, `boundary_degree_one` reaches only `arch_reverse_marginal_on_test`. At finite places, the defining-integral version of the root formula uses the proved right-kernel theorem directly. The version stated with `d.fourier` also references the construction of the all-place Fourier endomorphism, whose axiom audit still reaches the Archimedean marginal. [Finite root formulas](../../MetaplecticSummation/MarginalRootFormula.lean)
 
 ## The arithmetic comparison
 

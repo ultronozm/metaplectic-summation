@@ -106,12 +106,5 @@ theorem poisson_pure_of_local_vanishing (f : ∀ v, d.schwartz v) (hf) (v w : Pl
     (∑' p, d.evaluation (d.pure f hf) p) = ∑' p, d.evaluation (d.adelicFourier (d.pure f hf)) p := by
   exact sub_eq_zero.mp (d.thetaDifference_vanishing f hf v w hv hw)
 
-/-- The paragraph following Theorem 9.1. In degree one the leading term
-in the direction (1,0) gives the local Schwartz function's value at zero. -/
-theorem boundary_degree_one (a : Datum F 1) (f : ∀ v, a.schwartz v)
-    (hf : ∀ᶠ v in cofinite, f v = a.basic v) :
-    a.poisson.exists.choose (a.adelicLeading (a.pure f hf)) =
-      ∏ᶠ v, ((a.leading v) (f v)).1 1 0 := by sorry
-
 end Datum
 end MetaplecticPoisson

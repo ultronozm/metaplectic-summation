@@ -58,7 +58,7 @@ products and rational evaluations all depend on these inputs.
 | [LocalGrowth](MetaplecticSummation/LocalGrowth.lean) | Local bounds for the theta series, including the finite-place estimate and the archimedean reduction to transforms of test functions |
 | [ThetaSquare](MetaplecticSummation/ThetaSquare.lean), [Theta](MetaplecticSummation/Theta.lean) | Absolute convergence of the theta series from local growth and invariance of its sum under the square of the adelic transform |
 | [TensorDescent](MetaplecticSummation/TensorDescent.lean), [BoundaryConstruction](MetaplecticSummation/BoundaryConstruction.lean) | Descent of a functional through a restricted tensor product of surjections, Lemma B.10, and construction of the boundary functional from Proposition B.6 |
-| [Poisson](MetaplecticSummation/Poisson.lean) | Theorem 9.1, Corollary 9.2 including its local vanishing criterion, and the degree-one boundary value |
+| [Poisson](MetaplecticSummation/Poisson.lean) | Theorem 9.1 and Corollary 9.2 including its local vanishing criterion |
 | [Shears](MetaplecticSummation/Shears.lean) | Proved chart gluing, additive composition and the two Radon and Fourier identities of Lemma 5.2 |
 | [RapidCharts](MetaplecticSummation/RapidCharts.lean) | Rapid derivative estimates under real-linear changes of variables and local changes of chart |
 | [ArchimedeanShears](MetaplecticSummation/ArchimedeanShears.lean) | Preservation of the real and complex test spaces by both shear operators |
@@ -128,6 +128,7 @@ products and rational evaluations all depend on these inputs.
 | [SchwartzStability](MetaplecticSummation/SchwartzStability.lean) | Absolute convergence of the outer integral, the Fourier automorphism of the full tame Schwartz space, and its square |
 | [BasicMarginals](MetaplecticSummation/BasicMarginals.lean) | The basic axis density at almost all places, its ordinary Fourier transform for an unramified character, and the basic marginal at a unit |
 | [FourierCoefficients](MetaplecticSummation/FourierCoefficients.lean) | Rational products of the marginal kernels, unfolding at frequencies zero and one, Poisson on power classes and the constant-term identity |
+| [DegreeOneBoundary](MetaplecticSummation/DegreeOneBoundary.lean) | Constancy of the local leading terms in degree one and the boundary value after Theorem 9.1, from the constant-term identity on unipotent translates |
 
 ## Conventions and proof status
 
