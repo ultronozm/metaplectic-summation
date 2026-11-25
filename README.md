@@ -178,5 +178,5 @@ belong upstream.
 from that repository:
 
 ```sh
-git subtree pull --prefix=lean ~/work/lean/MetaplecticSummation main
+git subtree pull --prefix=lean <path-to-the-Lean-repository> main
 ```
