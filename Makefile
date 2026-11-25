@@ -1,7 +1,7 @@
 # The paper's own builds are latexmk and convert.sh (see README.md); these targets build the sketches.
 PAPER := schwartz-space-n-fold-cover-sl2
 
-.PHONY: all paper sketched figures html audit-html clean
+.PHONY: all paper sketched figures html check-html audit-html clean
 PYTHON ?= python3
 all: paper
 paper:
@@ -14,6 +14,8 @@ sketched:
 	cp build/sketched/sketched.pdf output/pdf/sketched.pdf
 html:
 	$(PYTHON) portable/build.py
+check-html: html
+	PYTHON=$(PYTHON) node portable/check/check.mjs
 audit-html:
 	$(PYTHON) portable/audit.py status
 figures:
