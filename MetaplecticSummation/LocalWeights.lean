@@ -3,6 +3,7 @@ import MetaplecticSummation.Gauss
 import MetaplecticSummation.FiniteBoundaryImage
 import MetaplecticSummation.Inversion
 import MetaplecticSummation.Jacquet.Convergence
+import MetaplecticSummation.TateLocal
 import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 
 noncomputable section
@@ -105,17 +106,6 @@ theorem jacquetSpaceTransform_bijective (v : Place F) : Function.Bijective (d.ja
   · rintro ⟨W,Φ,rfl⟩
     obtain ⟨Ψ,rfl⟩ := (d.fourier_bijective_of_square v (d.schwartz_fourier_square v)).surjective Φ
     exact ⟨⟨_,Set.mem_range_self Ψ⟩,Subtype.ext (d.jacquetSpaceTransform_apply v Ψ)⟩
-
-def mellin (v : Place F) (W ω : Weight v) (s : ℂ) :=
-  d.lineIntegral v fun x => W x * ω x * (modulus F v x : ℂ) ^ s
-
-/-- Tate's normalization on the open strip. Smooth compact tests supported
-away from zero suffice to determine the scalar at each point of the strip. -/
-def TateEquation (v : Place F) (ω : Weight v) (s γ : ℂ) : Prop :=
-  ∀ g : Weight v, TestWeight v g →
-    let ĝ : Weight v := fun y => d.lineIntegral v fun x =>
-      (modulus F v x : ℂ) * g x * d.character.localValue F v ((x : LocalField F v) * y)
-    d.mellin v ĝ (fun x => (ω x)⁻¹) (1-s) = γ * d.mellin v g ω s
 
 /-- Proposition 10.20, with both gamma factors specified by Tate's equation. -/
 theorem mellin_dual (v : Place F) (W : Weight v) (hw : TestWeight v W) (β : (LocalField F v)ˣ)
