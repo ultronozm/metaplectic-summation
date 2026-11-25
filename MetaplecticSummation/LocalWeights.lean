@@ -3,7 +3,7 @@ import MetaplecticSummation.Gauss
 import MetaplecticSummation.FiniteBoundaryImage
 import MetaplecticSummation.Inversion
 import MetaplecticSummation.Jacquet.Convergence
-import MetaplecticSummation.TateLocal
+import MetaplecticSummation.MellinDual
 import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 
 noncomputable section
@@ -117,6 +117,7 @@ theorem mellin_dual (v : Place F) (W : Weight v) (hw : TestWeight v W) (β : (Lo
       d.TateEquation v η (1+s) γ₂ ∧
       d.mellin v (d.dualWeight v W) (fun x => ω x) s =
         (Real.sqrt (modulus F v (n : LocalField F v)) : ℂ)⁻¹ * η (-1) * γ₁ * γ₂ *
-          d.mellin v W (fun x => (ω x : ℂ)⁻¹) (-s) := by sorry
+          d.mellin v W (fun x => (ω x : ℂ)⁻¹) (-s) :=
+  d.zeta_dualWeight v W hw β support ω hω s lo hi
 
 end MetaplecticPoisson.Datum
