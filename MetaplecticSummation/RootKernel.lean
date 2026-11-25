@@ -107,7 +107,7 @@ theorem modulus_add_le (a b : Kv) : m (a+b) ≤ 4 * max (m a) (m b) := by
             _ = 4 := by norm_num
 
 omit [NumberField F] [NeZero n] in
-private theorem aesm_of_continuousOn {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
+theorem aesm_of_continuousOn {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
     [OpensMeasurableSpace X] [SecondCountableTopology X] {G : X → ℂ} {s : Set X} (hs : IsOpen s)
     (hG : ContinuousOn G s) (h0 : ∀ z ∉ s, G z = 0) (μ : Measure X) : AEStronglyMeasurable G μ := by
   have he : s.indicator G = G := indicator_eq_self.mpr fun z hz => by
