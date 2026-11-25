@@ -1,6 +1,29 @@
 \documentclass[reqno]{amsart} \input{common.tex}
 \setlength{\emergencystretch}{3em}
 
+% Links to the Lean formalization in lean/ (Appendix~\ref{sec:lean}).
+% \lean{Decl} follows the syntax of leanblueprint.  In the PDF it links to the
+% source line of Decl at commit \leancommit; in the HTML version it links to the
+% row of Decl in Appendix C, which carries the same link.  The rows
+% \leanentry{Decl}{file}{line} are kept current by scripts/lean-links.py.
+\newcommand{\leanrepo}{https://github.com/ultronozm/metaplectic-summation}
+\newcommand{\leancommit}{bb7a00e61a93eb965732f789169c38f216907566}
+\newcommand{\leanurl}[2]{\leanrepo/blob/\leancommit/lean/#1\#L#2}
+\newcommand{\leanmark}{\textsuperscript{\textsf{Lean}}}
+\newcommand{\lean}[1]{\hyperlink{lean:#1}{\leanmark}}
+\newcommand{\leanentry}[3]{\hypertarget{lean:#1}{\href{\leanurl{#2}{#3}}{\texttt{#1}}}}
+\makeatletter
+\newcommand{\leandecl}[3]{\global\@namedef{leanloc@#1}{{#2}{#3}}}
+\AtBeginDocument{%
+  \newcommand{\leanlink}[2]{\href{\leanurl{#1}{#2}}{\leanmark}}%
+  \renewcommand{\lean}[1]{%
+    \@ifundefined{leanloc@#1}{\leanmark\PackageWarning{lean}{Unknown declaration #1}}%
+      {\expandafter\expandafter\expandafter\leanlink\csname leanloc@#1\endcsname}}%
+  \renewcommand{\leanentry}[3]{%
+    \immediate\write\@auxout{\string\leandecl{#1}{#2}{#3}}%
+    \href{\leanurl{#2}{#3}}{\nolinkurl{#1}}}}
+\makeatother
+
 \numberwithin{equation}{section}
 \numberwithin{theorem}{section}
 
@@ -214,12 +237,12 @@ the punctured plane, with coordinates $(x, y)$, and by $U_X$ and $U_Y$ the open 
 
 Deligne's $\mu_n$-torsor over $U$ is obtained by gluing the trivial torsors on $U_X$ and $U_Y$ via the Hilbert symbol \cite[\S\S1.12, 3.7]{SB_1978-1979__21__244_0}.  We describe sections of the associated line bundle, or equivalently functions on the torsor equivariant for $\mu_n \hookrightarrow \mathbb{C}^\times$, in these two charts.
 
-\begin{definition}
+\begin{definition}\lean{NFoldCover.Glues}
   By a \emph{genuine function} on $U$, we mean a pair $\Phi = (\Phi_X, \Phi_Y)$ of smooth functions $\Phi_X : U_X \rightarrow \mathbb{C}$ and $\Phi_Y : U_Y \rightarrow \mathbb{C}$ such that
   \begin{equation}\label{eq:transition-relation}
     \Phi_X(x, y) = \{x, y\}_n \Phi_Y(x, y) \quad \text{ on } U_X \cap U_Y.
   \end{equation}
-  We denote by $\mathcal{D}$ the following space of genuine functions $\Phi$.
+  We denote by $\mathcal{D}$ the following space of genuine functions $\Phi$.\lean{NFoldCover.Setup.testSet}
   \begin{itemize}
   \item If $F$ is non-archimedean, we require that $\Phi_X$ and $\Phi_Y$ vanish outside some compact subset of $U$.
   \item If $F$ is archimedean, we require that $\Phi_X$ and $\Phi_Y$, together with their partial derivatives of all orders with respect to the real coordinates, decay rapidly at the origin and at infinity: each is $O(\min(\lVert v \rVert^{N}, \lVert v \rVert^{-N}))$ for each $N \geq 0$.
@@ -234,7 +257,7 @@ For a genuine function $\Phi$, the functions $\lvert \Phi_X \rvert$ and $\lvert 
 For $n = 1$, a genuine function is a function $\Phi$ on $U$, and one may compute its symplectic Fourier transform at $(x', y') \neq(0, 0)$ by first integrating $\Phi$ over the line $x y' - y x' = \tau$, then taking the Fourier transform in the variable $\tau$ at $1$.  For homogeneous $\Phi$, integrating over $x y ' - y x ' = 1$ gives the standard intertwining operator  \cite[(1.4) and Example~1.7]{MR1988971}.
 
 Deligne \cite[\S\S1.13--1.14, 6.3]{SB_1978-1979__21__244_0} uses the trivialization of his torsor along $a x + b y = 1$ to realize the standard intertwining operator for the metaplectic principal series as a Radon transform.  Dilation by $\tau^n$ transports this trivialization to $a x + b y = \tau^n$ for $\tau \neq 0$.  Writing $(a, b) = (y', -x')$ in his formulas leads to the following definition:
-\begin{definition}\label{definition:lines}
+\begin{definition}\label{definition:lines}\lean{NFoldCover.radon}
   Let $\Phi$ be a genuine function.  For $\tau \in F$ and $v' = (x', y') \in U$, we define $R_X \Phi(v', \tau)$ and $R_Y \Phi(v', \tau)$ by the following integrals whenever they converge absolutely:
   \begin{align*}
     R_X \Phi(v', \tau)
@@ -355,7 +378,7 @@ where the Fourier integrals are understood distributionally at frequency $1$.  S
 \subsection{The Fourier transform}\label{sec:fourier-transform}
 
 We now apply the integral on the left-hand side of \eqref{eq:cuue7ixq1x} to define the Fourier transform of any genuine function $\Phi$ satisfying \eqref{eq:growth}.
-\begin{definition}\label{definition:fourier-transform}
+\begin{definition}\label{definition:fourier-transform}\lean{NFoldCover.transform}
   We define functions $(\mathcal{F} \Phi)_X$ on $U_X$ and $(\mathcal{F} \Phi)_Y$ on $U_Y$ by
   \begin{equation}\label{eq:transform-via-lines}
     \begin{aligned}
@@ -448,7 +471,7 @@ We next observe that along each orbit of dilations by $F^{\times n}$, the functi
 
 \subsection{The Schwartz space}\label{sec:schwartz-space}
 The space $\mathcal{D}$ is not preserved by $\mathcal{F}$.  Following \cite[\S3.1]{MR1694894}, we enlarge it by the transforms of its elements.
-\begin{definition}\label{definition:schwartz-space}
+\begin{definition}\label{definition:schwartz-space}\lean{NFoldCover.Setup.schwartz}
   We define the \emph{Schwartz space} by
   \begin{equation*}
     \mathcal{S} := \mathcal{D} + \mathcal{F} \mathcal{D}.
@@ -482,7 +505,7 @@ Since $F^{\times n}$ is open, the symbol is trivial for $(u, x, y)$ near any giv
   (n^-(u) \Phi)_X(x, 0) = \Phi_X(x, 0).
 \end{equation}
 In these terms, Deligne's construction \cite[\S\S1.11--1.12, 3.7]{SB_1978-1979__21__244_0} takes the following form:
-\begin{proposition}\label{proposition:kubota}
+\begin{proposition}\label{proposition:kubota}\lean{MetaplecticPoisson.Datum.kubota_projection}
   Let $\widetilde{\mathrm{SL}}_2(F)$ denote the group of automorphisms of the space of genuine functions generated by the scalars in $\mu_n$ and by the operators $n(u)$ and $n^-(u)$ with $u \in F$.  There is a surjective homomorphism $\pi : \widetilde{\mathrm{SL}}_2(F) \rightarrow \mathrm{SL}_2(F)$ with
   \begin{equation*}
     \pi(n(u)) = \begin{pmatrix} 1 & u \\ 0 & 1 \end{pmatrix},
@@ -604,8 +627,8 @@ We return to the spherical section $e_s$ of \S\ref{sec:intertwining}.
 
 \begin{proposition}\label{proposition:basic-vector-fixed}
   \begin{enumerate}[(i)]
-  \item\label{item:basic-fixed} If $\psi$ is unramified, then $\mathcal{F} \Phi^0 = \Phi^0$.
-  \item\label{item:basic-schwartz} The basic vector $\Phi^0$ lies in $\mathcal{S}$.
+  \item\label{item:basic-fixed}\lean{MetaplecticPoisson.Datum.basicCharts_fourier_fixed} If $\psi$ is unramified, then $\mathcal{F} \Phi^0 = \Phi^0$.
+  \item\label{item:basic-schwartz}\lean{NFoldCover.basicCharts_mem} The basic vector $\Phi^0$ lies in $\mathcal{S}$.
   \end{enumerate}
 \end{proposition}
 \begin{proof}
@@ -639,7 +662,7 @@ In the global setting, the following situation occurs at almost all places:
 \section{Fourier inversion}\label{sec:inversion}
 For $n = 1$, the symplectic Fourier transform is an involution commuting with $\mathrm{SL}_2(F)$.  The analogous properties of $\mathcal{F}$ are as follows:
 
-\begin{theorem}\label{theorem:schwartz-space}
+\begin{theorem}\label{theorem:schwartz-space}\lean{NFoldCover.schwartz_inversion}
   Set $\varepsilon := (-1)^{n+1}$.
   \begin{enumerate}[(i)]
   \item\label{item:schwartz-inversion} The transform $\mathcal{F}$ maps $\mathcal{S}$ bijectively onto itself, and $\mathcal{F}^2 = h(\varepsilon)$ on $\mathcal{S}$.
@@ -684,7 +707,7 @@ For $n = 1$, the Poisson summation formula involves the values of $\Phi$ and $\m
 \end{equation}
 formed in either chart.
 
-\begin{proposition}\label{proposition:schwartz-origin}
+\begin{proposition}\label{proposition:schwartz-origin}\lean{MetaplecticPoisson.Datum.exists_leading}
   Let $\Psi \in \mathcal{S}$.  In either chart, the function \eqref{eq:normalized-ray} extends to a Schwartz--Bruhat function on $F$.  As $v$ varies over a compact subset of the chart, these extensions form a bounded subset of the space of Schwartz--Bruhat functions.  At an archimedean place, the same holds for their derivatives with respect to $v$.
 \end{proposition}
 \begin{proof}
@@ -789,7 +812,7 @@ for the restricted tensor product with respect to the vectors $b \Phi_{\mathfrak
 \end{equation*}
 for the surjective linear map given on pure tensors by $b \Phi = \otimes_{\mathfrak{p}} b \Phi_{\mathfrak{p}}$.
 
-\begin{theorem}[Poisson formula]\label{theorem:poisson}
+\begin{theorem}[Poisson formula]\label{theorem:poisson}\lean{NFoldCover.poisson}
   There is a unique linear functional $B$ on $b(\mathcal{S}_{\mathbb{A}})$ such that for every $\Phi \in \mathcal{S}_{\mathbb{A}}$,
   \begin{equation*}
     \sum_{v \in F^2 - \{0\}} \Phi(v) + B(b \Phi)
@@ -800,14 +823,14 @@ for the surjective linear map given on pure tensors by $b \Phi = \otimes_{\mathf
 \end{theorem}
 For $n = 1$, we have $B(b \Phi) = \prod_{\mathfrak{p}} \Phi_{\mathfrak{p}}(0)$ for each pure tensor $\Phi$, by \eqref{eq:intro-poisson-A} and the uniqueness.
 
-\begin{corollary}\label{corollary:poisson-vanishing}
+\begin{corollary}\label{corollary:poisson-vanishing}\lean{NFoldCover.poisson_of_leading_eq_zero}
   Let $\Phi \in \mathcal{S}_{\mathbb{A}}$ with $b \Phi = 0$ and $b \mathcal{F} \Phi = 0$.  Then
   \begin{equation*}
     \sum_{v \in F^2 - \{0\}} \Phi(v)
     =
     \sum_{v \in F^2 - \{0\}} \mathcal{F} \Phi(v).
   \end{equation*}
-  This holds in particular if $\Phi$ is a pure tensor such that $b \Phi_{\mathfrak{p}} = 0$ for some place $\mathfrak{p}$ and $b \mathcal{F} \Phi_{\mathfrak{q}} = 0$ for some place $\mathfrak{q}$; for instance, if some factor $\Phi_{\mathfrak{p}}$ lies in $\mathcal{D}$ and satisfies the vanishing condition.
+  This holds in particular if $\Phi$ is a pure tensor such that $b \Phi_{\mathfrak{p}} = 0$ for some place $\mathfrak{p}$ and $b \mathcal{F} \Phi_{\mathfrak{q}} = 0$ for some place $\mathfrak{q}$\lean{MetaplecticPoisson.Datum.poisson_pure_of_local_vanishing}; for instance, if some factor $\Phi_{\mathfrak{p}}$ lies in $\mathcal{D}$ and satisfies the vanishing condition.
 \end{corollary}
 \begin{proof}
   Apply Theorem \ref{theorem:poisson}, observing that $b \Phi_{\mathfrak{p}} = b \mathcal{F} \Phi_{\mathfrak{p}} = 0$ for a test function $\Phi_{\mathfrak{p}} \in \mathcal{D}$ satisfying the vanishing condition (\S\ref{sec:germs}).
@@ -816,7 +839,7 @@ For $n = 1$, we have $B(b \Phi) = \prod_{\mathfrak{p}} \Phi_{\mathfrak{p}}(0)$ f
 We prove Theorem \ref{theorem:poisson} in Appendix \ref{sec:proof-poisson}.  The proof uses the Poisson summation formulas on $\mathbb{A}$ and on $\mathbb{A}^\times / \mathbb{A}^{\times n}$, the local relations of Appendix \ref{sec:marginals}, and reduction theory.
 
 When $\mathcal{O}_S$ is a principal ideal domain, the sums in Theorem \ref{theorem:poisson} take the following classical form, in terms of the power residue symbol.
-\begin{definition}\label{definition:residue-symbol}
+\begin{definition}\label{definition:residue-symbol}\lean{NFoldCover.Setup.residue}
   Let $m \geq 1$ with $\mu_m \subset F$.  For $c \in \mathcal{O}_S - \{0\}$ and $d \in F$, we define the power residue symbol
   \begin{equation*}
     \qr{d}{c}_m :=
@@ -1023,7 +1046,7 @@ It follows that $\mathcal{F}$ induces an operator on $\mathcal{W}$.
   Let $c \in F^\times$.  The function $H_c$ vanishes, so by \eqref{eq:jacquet-weak}, the continuous function $\mu \mapsto \lvert \mu \rvert^{-1} J(\mathcal{F} \Phi)(\mu^n c)$ on $F^\times$ has integral zero against each $\rho \in C_c^\infty(F^\times)$.  It therefore vanishes.  We take $\mu = 1$.
 \end{proof}
 
-\begin{definition}\label{definition:transform}
+\begin{definition}\label{definition:transform}\lean{NFoldCover.Setup.dualWeight}
   For $W \in \mathcal{W}$, we define $W^\vee \in \mathcal{W}$ by
   \begin{equation*}
     W^\vee := J(\mathcal{F} \Phi),
@@ -1149,7 +1172,7 @@ with $W_{\mathfrak{p}} \in C_c^\infty(F_{\mathfrak{p}}^\times)$ for each $\mathf
 \end{equation*}
 where each local transform is taken with respect to $\psi_{\mathfrak{p}}$.
 
-\begin{theorem}\label{theorem:main}
+\begin{theorem}\label{theorem:main}\lean{MetaplecticPoisson.Datum.lineSummation}
   Let $W$ be as above.  The sums of $W(c)$ and $W^\vee(c)$ over $c \in F^\times$ converge absolutely.  There are unique constants $\rho_S(\beta)$, independent of $W$ and indexed by the tuples $\beta = (\beta_{\mathfrak{p}})_{\mathfrak{p} \in S}$ of cosets $\beta_{\mathfrak{p}}$ of $F_{\mathfrak{p}}^{\times n}$ in $F_{\mathfrak{p}}^\times$, such that
   \begin{equation*}
     \sum_{c \in F^\times} W(c)
@@ -1432,7 +1455,7 @@ The character $\psi_S$ of $F_S$ is trivial on $\mathcal{O}_S$.
 
 In Theorem \ref{theorem:main}, the summand $W(c)$ is the product of the factors $W_{\mathfrak{p}}(c)$ with $\mathfrak{p} \in S$ and of the basic functions at the places outside $S$.  The basic functions are local generating functions for Gauss sums (Lemma \ref{lemma:jacquet-basic}).  We now express their product by global Gauss sums.  We use the power residue symbol of Definition~\ref{definition:residue-symbol}.
 
-\begin{definition}\label{definition:global-gauss-sums}
+\begin{definition}\label{definition:global-gauss-sums}\lean{NFoldCover.Setup.normalizedGauss}
   For $b, c \in \mathcal{O}_S - \{0\}$, we define
   \begin{equation*}
     g_\psi^S(b, c) := \sum_{d \in(\mathcal{O}_S / c)^\times} \qr{d}{c}_n \psi_S(b d/c),
@@ -1509,7 +1532,7 @@ where the transforms are taken with respect to the characters $\psi_{\mathfrak{p
   G_{\mathfrak{p}}(\rho_{\mathfrak{p}}, -b/f).
 \end{equation}
 
-\begin{theorem}\label{theorem:gauss-sums}
+\begin{theorem}\label{theorem:gauss-sums}\lean{NFoldCover.twistedGaussSummation}
   Let $T$, $\chi$, $f$, $b$ and $\varepsilon$ be as above.  Let $W_S = \prod_{\mathfrak{p} \in S} W_{\mathfrak{p}}$ with each $W_{\mathfrak{p}} \in C_c^\infty(F_{\mathfrak{p}}^\times)$.  Then $\lvert \varepsilon \rvert = 1$, and
   \begin{multline*}
     \sum_{c \in \mathcal{O}_S - \{0\}}
@@ -1675,7 +1698,7 @@ Proposition \ref{proposition:twisted-vector} evaluates the constant $W^\vee(a)$.
 \subsubsection{The summation formula}\label{sec:quadratic-dual-summation-formula}
 We assume, as at the end of \S\ref{sec:two-symbols}, that $n$ is odd and that the residue characteristic of each place outside $S$ is odd.
 
-\begin{corollary}\label{corollary:quadratic-dual}
+\begin{corollary}\label{corollary:quadratic-dual}\lean{NFoldCover.quadraticDual}
   Let $h \in \mathcal{O}_S - \{0\}$ be squarefree and not a unit.  There is a complex number $\varepsilon$ of modulus one such that, for all $W_S = \prod_{\mathfrak{p} \in S} W_{\mathfrak{p}}$ with each $W_{\mathfrak{p}} \in C_c^\infty(F_{\mathfrak{p}}^\times)$, we have
   \begin{multline*}
     \sum_{c \in \mathcal{O}_S - \{0\}}
@@ -1694,7 +1717,7 @@ We assume, as at the end of \S\ref{sec:two-symbols}, that $n$ is odd and that th
   \end{multline*}
 \end{corollary}
 \begin{example}
-  If $n = 3$, then $\qr{c}{h}_2 \qr{c}{h}_3^2 = \qr{c}{h}_6$ is the sextic residue symbol, defined with respect to an embedding $\mu_6 \hookrightarrow \mathbb{C}^\times$ extending the given one on $\mu_3$.
+  If $n = 3$, then $\qr{c}{h}_2 \qr{c}{h}_3^2 = \qr{c}{h}_6$ is the sextic residue symbol, defined with respect to an embedding $\mu_6 \hookrightarrow \mathbb{C}^\times$ extending the given one on $\mu_3$.\lean{NFoldCover.sextic_to_quadratic}
 \end{example}
 \begin{proof}[Proof of Corollary \ref{corollary:quadratic-dual}]
   We apply Theorem \ref{theorem:gauss-sums} with $b = 1$, with $T$ the set of primes dividing $h$, and with the characters $\chi_{\mathfrak{p}} := \{h, \cdot\}_{\mathfrak{p}, 2} \{h, \cdot\}_{\mathfrak{p}, n}^2$ of \S\ref{sec:two-symbols}, for which $\chi_{\mathfrak{p}}^n$ is the quadratic character of $\mathfrak{o}_{\mathfrak{p}}^\times$, of conductor exponent one.  Thus $f = h$ and $\chi(c) = \qr{c}{h}_2 \qr{c}{h}_n^2$, and the constant $\varepsilon$ of that theorem does not depend on $W_S$.  The reciprocity law gives $\qr{h}{c}_n = \qr{c}{h}_n \{h, c\}_S$, so the dual sum involves
@@ -2101,7 +2124,7 @@ For $\Psi \in \mathcal{S}_{\mathbb{A}}$, we set
 \end{equation*}
 This defines a linear functional $D$ on $\mathcal{S}_{\mathbb{A}}$.
 
-\begin{proposition}\label{proposition:poisson-vanishing}
+\begin{proposition}\label{proposition:poisson-vanishing}\lean{MetaplecticPoisson.Datum.thetaDifference_vanishing}
   Let $\Phi$ be a pure tensor.  Suppose that $b \Phi_{\mathfrak{p}} = 0$ for some place $\mathfrak{p}$, and that $b \mathcal{F} \Phi_{\mathfrak{q}} = 0$ for some place $\mathfrak{q}$.  Then $D(\Phi) = 0$.
 \end{proposition}
 The proof occupies the remainder of this subsection.  Let $\Phi$ be as in the proposition.  For $m \in \mathrm{SL}_2(\mathbb{A})$, with lift $g$, we set
@@ -2235,6 +2258,30 @@ Adding the identity $D(Q \Phi) = - B(b \Phi)$, we obtain $D(\Phi) = B(b \mathcal
 
 \emph{Uniqueness.}  Let $B'$ be a linear functional on $b(\mathcal{S}_{\mathbb{A}})$ for which the formula of Theorem \ref{theorem:poisson} holds.  Let $\Phi$ be a pure tensor.  We apply that formula to $Q \Phi$.  By \eqref{eq:projector}, we have $b \, Q \Phi = b \Phi$, while $b \mathcal{F} Q \Phi = 0$, since its $w$-factor is zero.  Hence $B'(b \Phi) = - D(Q \Phi) = B(b \Phi)$.  Since the leading terms of the pure tensors span $b(\mathcal{S}_{\mathbb{A}})$, we conclude that $B' = B$.
 
+
+\section{Statements checked in Lean}\label{sec:lean}
+\sloppy
+For number fields $F$, the results listed below are formalized in Lean~4 with Mathlib, in the directory \texttt{lean} of \url{\leanrepo}.  Each is stated in \texttt{lean/Challenge.lean}, which imports only Mathlib, and proved in \texttt{lean/Solution.lean} from the formal development, using only the standard axioms of Lean.  The local objects used there (self-dual measures, Hilbert symbols, the transform $\mathcal{F}$ on $\mathcal{S}$, the leading terms $b$, and the adelic maps of \S\ref{sec:rational-points}) are specified by their defining properties, which determine them; \texttt{exists\_setup} and \texttt{nonempty\_data} show that they exist.  The second column links to the source of each declaration.
+
+\medskip
+\begin{center}
+\small
+\begin{tabular}{p{0.2\textwidth}p{0.36\textwidth}p{0.36\textwidth}}
+Paper & Lean & Hypotheses and scope \\
+\hline
+Proposition~\ref{proposition:basic-vector-fixed}(ii) & \leanentry{NFoldCover.basicCharts_mem}{Challenge.lean}{568} & Every finite place prime to $n$. \\
+Theorem~\ref{theorem:schwartz-space} & \leanentry{NFoldCover.schwartz_inversion}{Challenge.lean}{583} & Every place; $\widetilde{\mathrm{SL}}_2(F_{\mathfrak{p}})$ is the group generated by $\mu_n$, $n(u)$ and $n^-(u)$. \\
+Theorem~\ref{theorem:poisson} & \leanentry{NFoldCover.poisson}{Challenge.lean}{594} & Number fields only.  The reference vector at the places dividing $n$ is $0$, which does not change $\mathcal{S}_{\mathbb{A}}$. \\
+Corollary~\ref{corollary:poisson-vanishing} & \leanentry{NFoldCover.poisson_of_leading_eq_zero}{Challenge.lean}{605} & As for Theorem~\ref{theorem:poisson}. \\
+Theorem~\ref{theorem:gauss-sums} & \leanentry{NFoldCover.twistedGaussSummation}{Challenge.lean}{621} & The setting of \S\ref{sec:gauss-sums}.  The constants $\rho(\beta)$ in $M_b$ are asserted to exist, independently of $T$, $\chi$, $f$ and $W_S$, rather than identified with those of Theorem~\ref{theorem:main}; the absolute convergence of both sums is included. \\
+Corollary~\ref{corollary:quadratic-dual} & \leanentry{NFoldCover.quadraticDual}{Challenge.lean}{649}, \leanentry{NFoldCover.sextic_to_quadratic}{Challenge.lean}{663} & The setting of \S\ref{sec:quadratic-dual-summation-formula}; the second declaration is the case $n = 3$. \\
+\end{tabular}
+\end{center}
+
+\medskip
+\noindent Further declarations cited in the text.
+Definitions: \leanentry{NFoldCover.Glues}{Challenge.lean}{161}, \leanentry{NFoldCover.Setup.testSet}{Challenge.lean}{251}, \leanentry{NFoldCover.radon}{Challenge.lean}{165}, \leanentry{NFoldCover.transform}{Challenge.lean}{178}, \leanentry{NFoldCover.Setup.schwartz}{Challenge.lean}{267}, \leanentry{NFoldCover.Setup.residue}{Challenge.lean}{479}, \leanentry{NFoldCover.Setup.dualWeight}{Challenge.lean}{453}, \leanentry{NFoldCover.Setup.gauss}{Challenge.lean}{488}, \leanentry{NFoldCover.Setup.normalizedGauss}{Challenge.lean}{499}.
+Results in the formal development: \leanentry{MetaplecticPoisson.Datum.kubota_projection}{MetaplecticSummation/Cover/Projection.lean}{84} (Proposition~\ref{proposition:kubota}), \leanentry{MetaplecticPoisson.Datum.basicCharts_fourier_fixed}{MetaplecticSummation/BasicFixed.lean}{103} (Proposition~\ref{proposition:basic-vector-fixed}(i)), \leanentry{MetaplecticPoisson.Datum.exists_leading}{MetaplecticSummation/Schwartz.lean}{9} (existence of $b$, \S\ref{sec:germs}), \leanentry{MetaplecticPoisson.Datum.poisson_pure_of_local_vanishing}{MetaplecticSummation/Poisson.lean}{104} (Corollary~\ref{corollary:poisson-vanishing}, last assertion), \leanentry{MetaplecticPoisson.Datum.lineSummation}{MetaplecticSummation/Jacquet.lean}{133} (Theorem~\ref{theorem:main}), \leanentry{MetaplecticPoisson.Datum.thetaDifference_vanishing}{MetaplecticSummation/Poisson.lean}{68} (Proposition~\ref{proposition:poisson-vanishing}).
 
 \bibliography{refs}{} \bibliographystyle{plain}
 \end{document}
