@@ -7,7 +7,8 @@ name: build
 #    Permanent URLs are preserved because file paths never change.
 #  - A failed compile keeps the previous artifact (site never
 #    regresses) and marks the run failed with a summary.
-#  - TeX Live is cached between runs (setup-texlive-action).
+#  - TeX Live (current year, minimal packages) is cached between
+#    runs by setup-texlive-action; pandoc is pinned.
 on:
   workflow_dispatch:
     inputs:
@@ -96,26 +97,28 @@ jobs:
       - name: Install TeX Live (cached)
         uses: TeX-Live/setup-texlive-action@v4
         with:
-          # Current TeX Live cold setup was tested on 2026-07-05 and took
-          # about twenty minutes before compilation. Keep the known-fast
-          # cached toolchain unless a downstream site deliberately retests.
-          version: 2025
+          # Current TeX Live (no `version:` pin: a pinned past year installs
+          # from the slow historic archive, which took over an hour cold),
+          # and only what the documents use.  scheme-basic carries amsart,
+          # amsmath, amssymb, hyperref/xr-hyper and tools; cm-super gives
+          # Type 1 fonts for [T1]{fontenc}.  Tested 2026-11-25: cold install
+          # 31s, cached 5s.  Add packages here when a document needs more
+          # (tlmgr names; `tlmgr search --global --file foo.sty` finds them).
           packages: |
             scheme-basic
-            collection-latex
-            collection-latexextra
-            collection-latexrecommended
-            collection-mathscience
-            collection-fontsrecommended
-            collection-publishers
             latexmk
             cm-super
-            navigator
-            texapi
-            yax
 
-      - name: Install pandoc and jq
-        run: sudo apt-get update && sudo apt-get install -y pandoc jq
+      - name: Install jq
+        run: command -v jq || sudo apt-get install -y jq
+
+      # Pin pandoc: Ubuntu's apt pandoc (3.1.x) drops equation wrappers
+      # and other structure the HTML postprocessing was tested against.
+      - name: Install pandoc 3.12
+        run: |
+          curl -fsSL -o /tmp/pandoc.deb https://github.com/jgm/pandoc/releases/download/3.12/pandoc-3.12-1-amd64.deb
+          sudo dpkg -i /tmp/pandoc.deb
+          pandoc --version | head -1
 
       - uses: purcell/setup-emacs@master
         with:
