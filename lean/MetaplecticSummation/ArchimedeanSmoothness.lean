@@ -1,4 +1,5 @@
 import MetaplecticSummation.LineSmoothness
+import MetaplecticSummation.RadonDerivatives
 import MetaplecticSummation.ArchimedeanFourierDecay
 import MetaplecticSummation.Schwartz
 
@@ -206,6 +207,79 @@ theorem arch_radon_smooth {L : Type} [NormedField L] [NormedAlgebra ℝ L] (e : 
     congr 2
     ring_nf
 
+/-- Lemma 4.2(iii) at a real or complex place, all derivatives: every joint derivative of either
+Radon chart, in the point of the chart and the line parameter τ, decays rapidly in τ, uniformly
+for the point in a compact subset of the chart. -/
+theorem arch_radon_deriv_decay {L : Type} [NormedField L] [NormedAlgebra ℝ L] [ProperSpace L]
+    (e : K ≃+* L) (he : Isometry e) {f : Charts K} (htest : archTest e f) :
+    let R := radon n (d.symbol v) (modulus F v) dx f
+    (∀ k N : ℕ, ∀ δ B : ℝ, 0 < δ → ∃ C : ℝ, ∀ P : L × L × L, δ ≤ ‖P.1‖ → ‖P.1‖ ≤ B → ‖P.2.1‖ ≤ B →
+      ‖iteratedFDeriv ℝ k (fun P : L × L × L => (R (e.symm P.2.2)).1 (unitOf (e.symm P.1)) (e.symm P.2.1)) P‖ *
+        (1+‖P.2.2‖)^N ≤ C) ∧
+    (∀ k N : ℕ, ∀ δ B : ℝ, 0 < δ → ∃ C : ℝ, ∀ P : L × L × L, δ ≤ ‖P.2.1‖ → ‖P.2.1‖ ≤ B → ‖P.1‖ ≤ B →
+      ‖iteratedFDeriv ℝ k (fun P : L × L × L => (R (e.symm P.2.2)).2 (e.symm P.1) (unitOf (e.symm P.2.1))) P‖ *
+        (1+‖P.2.2‖)^N ≤ C) := by
+  intro R
+  let : SecondCountableTopology K :=
+    (InfinitePlace.Completion.isometry_extensionEmbedding w).isEmbedding.secondCountableTopology
+  have hneg : Continuous (fun a : Kˣ => -a) := Units.isEmbedding_val₀.continuous_iff.mpr Units.continuous_val.neg
+  obtain ⟨hx1,hx2,hx3⟩ := d.phase_properties w e he (fun a => -a) hneg
+  obtain ⟨hy1,hy2,hy3⟩ := d.phase_properties w e he id continuous_id
+  have hint := d.arch_integrable_inv_cube w
+  have HX := lineRadon_smooth dx e he hint htest.1 (d.phaseX w e) hx1 hx2 hx3
+  have HY := lineRadon_smooth dx e he hint (rapid_swapped_yChart w e htest) (d.phaseY w e) hy1 hy2 hy3
+  have DX := reciprocal_comp_decay n (NeZero.pos n) 1 (by simp) HX.1 HX.2
+  have DY := reciprocal_comp_decay n (NeZero.pos n) (-1) (by simp) HY.1 HY.2
+  constructor
+  · intro k N δ B hδ
+    obtain ⟨C,hC⟩ := DX k N δ B hδ
+    refine ⟨C,fun P h1 h2 h3 => ?_⟩
+    have hP : P.1 ≠ 0 := norm_pos_iff.mp (hδ.trans_le h1)
+    have hev : (fun P : L × L × L => (R (e.symm P.2.2)).1 (unitOf (e.symm P.1)) (e.symm P.2.1)) =ᶠ[𝓝 P]
+        (lineRadon dx e (d.phaseX w e) (fun p => xChart f (e.symm p.1, e.symm p.2)) ∘ reciprocalCoords n 1) := by
+      filter_upwards [(isOpen_ne_fun continuous_fst continuous_const).mem_nhds hP] with Q hQ
+      have hQ' : e.symm Q.1 ≠ 0 := (map_ne_zero e.symm).mpr hQ
+      have key : e (unitOf (e.symm Q.1)) = Q.1 := by rw [unitOf_val hQ',e.apply_symm_apply]
+      simp only [Function.comp_apply,R,reciprocalCoords]
+      rw [d.radon_fst_eq_lineRadon w e f,key,e.apply_symm_apply,map_div₀,map_pow,e.apply_symm_apply,
+        key,one_mul,div_eq_mul_inv]
+    rw [(hev.iteratedFDeriv (𝕜 := ℝ) k).eq_of_nhds]
+    exact hC P h1 h2 h3
+  · intro k N δ B hδ
+    obtain ⟨C,hC⟩ := DY k N δ B hδ
+    refine ⟨C,fun P h1 h2 h3 => ?_⟩
+    have hP : P.2.1 ≠ 0 := norm_pos_iff.mp (hδ.trans_le h1)
+    let sw : (L × L × L) →L[ℝ] (L × L × L) :=
+      ((ContinuousLinearMap.fst ℝ L L).comp (ContinuousLinearMap.snd ℝ L (L × L))).prod
+        ((ContinuousLinearMap.fst ℝ L (L × L)).prod
+          ((ContinuousLinearMap.snd ℝ L L).comp (ContinuousLinearMap.snd ℝ L (L × L))))
+    have hsw (Q : L × L × L) : sw Q = (Q.2.1, Q.1, Q.2.2) := rfl
+    have hswn : ‖sw‖ ≤ 1 := by
+      refine ContinuousLinearMap.opNorm_le_bound _ zero_le_one fun Q => ?_
+      rw [hsw,one_mul,Prod.norm_def,Prod.norm_def,Prod.norm_def,Prod.norm_def]
+      exact max_le (le_max_of_le_right (le_max_left _ _)) (max_le (le_max_left _ _) (le_max_of_le_right (le_max_right _ _)))
+    let G := lineRadon dx e (d.phaseY w e) (fun p => yChart f (e.symm p.2, e.symm p.1)) ∘ reciprocalCoords n (-1)
+    have hev : (fun P : L × L × L => (R (e.symm P.2.2)).2 (e.symm P.1) (unitOf (e.symm P.2.1))) =ᶠ[𝓝 P] G ∘ sw := by
+      filter_upwards [(isOpen_ne_fun (continuous_fst.comp continuous_snd) continuous_const).mem_nhds hP] with Q hQ
+      have hQ' : e.symm Q.2.1 ≠ 0 := (map_ne_zero e.symm).mpr hQ
+      have key : e (unitOf (e.symm Q.2.1)) = Q.2.1 := by rw [unitOf_val hQ',e.apply_symm_apply]
+      simp only [Function.comp_apply,R,G,hsw,reciprocalCoords]
+      rw [d.radon_snd_eq_lineRadon w e f,key,e.apply_symm_apply,map_div₀,map_pow,e.apply_symm_apply,key]
+      congr 2; ring_nf
+    have hGs : ContDiffOn ℝ ∞ G {Q | Q.1 ≠ 0} :=
+      HY.1.comp (contDiffOn_reciprocalCoords n (-1)) (fun Q hQ => show (reciprocalCoords n (-1) Q).1 ≠ 0 from hQ)
+    rw [(hev.iteratedFDeriv (𝕜 := ℝ) k).eq_of_nhds,
+      iteratedFDeriv_comp_clm_of_isOpen' (isOpen_ne_fun continuous_fst continuous_const) hGs sw
+        (show (sw P).1 ≠ 0 from hP) k]
+    have hb := hC (sw P) h1 h2 h3
+    have hn := (iteratedFDeriv ℝ k G (sw P)).norm_compContinuousLinearMap_le (fun _ : Fin k => sw)
+    simp only [Finset.prod_const,Finset.card_univ,Fintype.card_fin] at hn
+    calc _ ≤ ‖iteratedFDeriv ℝ k G (sw P)‖ * ‖sw‖^k * (1+‖P.2.2‖)^N :=
+          mul_le_mul_of_nonneg_right hn (by positivity)
+      _ ≤ ‖iteratedFDeriv ℝ k G (sw P)‖ * 1 * (1+‖P.2.2‖)^N := by
+          gcongr; exact pow_le_one₀ (norm_nonneg _) hswn
+      _ ≤ C := by rw [mul_one]; exact hb
+
 /-- The Fourier integrals of the Radon charts at any unitary continuous frequency function are smooth. -/
 theorem arch_radon_fourier_smooth {L : Type} [NormedField L] [NormedAlgebra ℝ L] (e : K ≃+* L) (he : Isometry e)
     {f : Charts K} (htest : archTest e f) {ψ : K → ℂ} (hψ : Continuous ψ) (hψ1 : ∀ t, ‖ψ t‖ = 1) :
@@ -370,6 +444,46 @@ theorem leading_smooth_complex (hw : ¬ w.IsReal) (Φ : d.schwartz v) :
       (InfinitePlace.not_isReal_iff_isComplex.mp hw)) (d.leading v Φ) :=
   d.leading_archSmoothCharts w _ (InfinitePlace.Completion.isometry_extensionEmbedding w)
     (fun f hf => by simpa only [testSet,hw,↓reduceDIte] using! hf.2) Φ
+
+/-- Lemma 4.2(iii) at a real place for a test section: joint smoothness of both Radon charts
+and rapid decay in τ of all their derivatives, uniformly on compact subsets of each chart. -/
+theorem radon_smooth_real (hw : w.IsReal) {f : Charts K} (hf : f ∈ d.testSet v) :
+    let e := InfinitePlace.Completion.ringEquivRealOfIsReal hw
+    let R := radon n (d.symbol v) (modulus F v) dx f
+    (ContDiffOn ℝ ∞ (fun P : ℝ × ℝ × ℝ => (R (e.symm P.2.2)).1 (unitOf (e.symm P.1)) (e.symm P.2.1))
+      {P | P.1 ≠ 0} ∧
+    ContDiffOn ℝ ∞ (fun P : ℝ × ℝ × ℝ => (R (e.symm P.2.2)).2 (e.symm P.1) (unitOf (e.symm P.2.1)))
+      {P | P.2.1 ≠ 0}) ∧
+    (∀ k N : ℕ, ∀ δ B : ℝ, 0 < δ → ∃ C : ℝ, ∀ P : ℝ × ℝ × ℝ, δ ≤ ‖P.1‖ → ‖P.1‖ ≤ B → ‖P.2.1‖ ≤ B →
+      ‖iteratedFDeriv ℝ k (fun P : ℝ × ℝ × ℝ => (R (e.symm P.2.2)).1 (unitOf (e.symm P.1)) (e.symm P.2.1)) P‖ *
+        (1+‖P.2.2‖)^N ≤ C) ∧
+    (∀ k N : ℕ, ∀ δ B : ℝ, 0 < δ → ∃ C : ℝ, ∀ P : ℝ × ℝ × ℝ, δ ≤ ‖P.2.1‖ → ‖P.2.1‖ ≤ B → ‖P.1‖ ≤ B →
+      ‖iteratedFDeriv ℝ k (fun P : ℝ × ℝ × ℝ => (R (e.symm P.2.2)).2 (e.symm P.1) (unitOf (e.symm P.2.1))) P‖ *
+        (1+‖P.2.2‖)^N ≤ C) := by
+  have ht : archTest (InfinitePlace.Completion.ringEquivRealOfIsReal hw) f := by
+    simpa only [testSet,hw,↓reduceDIte] using! hf.2
+  have he := InfinitePlace.Completion.isometry_extensionEmbeddingOfIsReal hw
+  exact ⟨d.arch_radon_smooth w _ he ht,d.arch_radon_deriv_decay w _ he ht⟩
+
+/-- Lemma 4.2(iii) at a complex place for a test section. -/
+theorem radon_smooth_complex (hw : ¬ w.IsReal) {f : Charts K} (hf : f ∈ d.testSet v) :
+    let e := InfinitePlace.Completion.ringEquivComplexOfIsComplex (InfinitePlace.not_isReal_iff_isComplex.mp hw)
+    let R := radon n (d.symbol v) (modulus F v) dx f
+    (ContDiffOn ℝ ∞ (fun P : ℂ × ℂ × ℂ => (R (e.symm P.2.2)).1 (unitOf (e.symm P.1)) (e.symm P.2.1))
+      {P | P.1 ≠ 0} ∧
+    ContDiffOn ℝ ∞ (fun P : ℂ × ℂ × ℂ => (R (e.symm P.2.2)).2 (e.symm P.1) (unitOf (e.symm P.2.1)))
+      {P | P.2.1 ≠ 0}) ∧
+    (∀ k N : ℕ, ∀ δ B : ℝ, 0 < δ → ∃ C : ℝ, ∀ P : ℂ × ℂ × ℂ, δ ≤ ‖P.1‖ → ‖P.1‖ ≤ B → ‖P.2.1‖ ≤ B →
+      ‖iteratedFDeriv ℝ k (fun P : ℂ × ℂ × ℂ => (R (e.symm P.2.2)).1 (unitOf (e.symm P.1)) (e.symm P.2.1)) P‖ *
+        (1+‖P.2.2‖)^N ≤ C) ∧
+    (∀ k N : ℕ, ∀ δ B : ℝ, 0 < δ → ∃ C : ℝ, ∀ P : ℂ × ℂ × ℂ, δ ≤ ‖P.2.1‖ → ‖P.2.1‖ ≤ B → ‖P.1‖ ≤ B →
+      ‖iteratedFDeriv ℝ k (fun P : ℂ × ℂ × ℂ => (R (e.symm P.2.2)).2 (e.symm P.1) (unitOf (e.symm P.2.1))) P‖ *
+        (1+‖P.2.2‖)^N ≤ C) := by
+  have ht : archTest (InfinitePlace.Completion.ringEquivComplexOfIsComplex
+      (InfinitePlace.not_isReal_iff_isComplex.mp hw)) f := by
+    simpa only [testSet,hw,↓reduceDIte] using! hf.2
+  have he := InfinitePlace.Completion.isometry_extensionEmbedding w
+  exact ⟨d.arch_radon_smooth w _ he ht,d.arch_radon_deriv_decay w _ he ht⟩
 
 end Datum
 end MetaplecticPoisson
