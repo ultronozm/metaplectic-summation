@@ -1,5 +1,7 @@
 {
-  "exclude": [],
+  "exclude": [
+    "common.tex"
+  ],
   "boxed-environments": [
     "theorem",
     "lemma",
@@ -19,8 +21,8 @@
     "summary"
   ],
   "site": {
-    "title": "TeX notes",
-    "author": "",
+    "title": "A Schwartz space for the n-fold cover of SL2",
+    "author": "Paul D. Nelson",
     "email": "",
     "githubRepository": "",
     "sourceBranch": "main",
