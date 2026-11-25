@@ -82,9 +82,14 @@ history before pushing), or be re-pinned afterwards.
   `ultronozm/metaplectic-summation`).
 - Palomar (submit with project path `lean`):
   - Every `.lean` file in the repository must use Lean's module system.  None
-    of the 295 files does yet, so the development, `Challenge.lean` and
-    `Solution.lean` must be ported together (`module`, `public import`,
-    `@[expose] public section`), then Comparator rerun.  `Challenge.lean`
+    of the 295 files does yet, and the port is not mechanical: a module cannot
+    import a non-module file, and the development imports 14 modules of the
+    pinned dependency `FiniteAbelianGlobalReciprocityv2`, whose import closure
+    is 877 files (about 376,000 lines) of which 18 are modules.  The
+    dependency (or that closure, vendored) must be ported first; then the
+    development, `Challenge.lean` and `Solution.lean` (`module`,
+    `public import`, `@[expose] public section`, and the 160 files with
+    `private` declarations checked), and Comparator rerun.  `Challenge.lean`
     imports only Mathlib, so its own port is mechanical.
   - Add a root `LICENSE` matching `project.license` in
     `lean/formalization.yaml` (Apache-2.0 there; the vendored code is
