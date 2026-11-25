@@ -1,145 +1,113 @@
-# tex-site
+# A Schwartz space for the n-fold cover of SL₂
 
-Reusable machinery for publishing a repository of TeX notes as a GitHub
-Pages site.
+The paper *A Schwartz space for the n-fold cover of SL₂* (Paul D. Nelson) and
+its Lean 4 formalization.
 
-The intended downstream shape is a content repository with this repository
-as an upstream parent.  The parent owns the build/conversion machinery; the
-child owns notes, images, bibliographies, local preambles, and site-specific
-index organization.
+| Path | Contents |
+| --- | --- |
+| `schwartz-space-n-fold-cover-sl2.tex` | The paper.  `common.tex` holds its macros, `refs.bib` the cited references. |
+| `lean/` | The Lean project: the development (`MetaplecticSummation/`), the statement file `Challenge.lean`, its proof `Solution.lean`, and the Palomar files `comparator.json` and `formalization.yaml`.  See [`lean/README.md`](lean/README.md) for a map of the development. |
+| `scripts/lean-links.py` | Keeps the paper's links to Lean declarations current. |
+| `.github/`, `*.sh`, `tex2html.el`, `index.org`, `tex.css`, `config.json` | Site machinery from [tex-site](https://github.com/ultronozm/tex-site): PDF and HTML builds deployed to GitHub Pages. |
 
-The parent repository itself is also buildable: it includes `sample.tex`, so a
-fresh copy renders a PDF, an HTML note, and an index entry immediately.
+The paper is kept under a short name rather than its notes-directory name
+(`20261118T190000--schwartz-space-n-fold-cover-sl2.tex`), because tex-site
+derives the PDF and HTML URLs from the file name.
 
-## What This Provides
+## Building
 
-- GitHub Actions snapshot deployment to a `deploy` branch.
-- Cached TeX Live + `latexmk` PDF builds.
-- Pandoc HTML conversion with Emacs postprocessing.
-- Org note HTML export with the same site chrome.
-- `listing.json` generation from note titles, abstracts, and git dates.
-- A DataTables-based `index.org` template.
-- Cross-document `xr` support by carrying `.aux` files on the deploy branch.
-- A warning-only TeX link report for missing aux files and dangling refs.
-
-## Downstream Setup
-
-1. Fork or otherwise copy this repository into a notes repository.
-2. Keep this repository as an `upstream` remote so machinery changes can be
-   merged later.
-3. Replace or delete `sample.tex`, then add notes as top-level `*.tex` or
-   `*.org` files.  `index.org` is reserved for the site index template.
-4. Put top-level non-standalone TeX inputs in `config.json` under `exclude`.
-   TeX files in subdirectories are not treated as publishable notes by
-   default.
-5. Set `site.githubRepository` in `config.json` to `OWNER/REPO` if generated
-   HTML pages should link to source history.
-6. Enable GitHub Pages from the `deploy` branch, root directory.
-
-The child repository may freely customize `index.org`, `tex.css`, and
-`config.json`; those are defaults, not sacred interfaces.  If you want the
-lowest-friction upstream merge path, keep local customization in content files
-and avoid unnecessary edits to `.github/workflows/*.yml`, `compile.sh`,
-`convert.sh`, `make-index.sh`, and `tex2html.el`.
-
-## Updating a Child Site
-
-When this parent changes, update a child repository with an ordinary upstream
-merge:
+Paper:
 
 ```sh
-git fetch upstream
-git merge upstream/main
+latexmk -pdf schwartz-space-n-fold-cover-sl2.tex
+./convert.sh schwartz-space-n-fold-cover-sl2.tex   # HTML, as on the site
 ```
 
-The child repository can have its own `README.md`.  Treat that file as
-child-owned documentation; if an upstream merge conflicts there, keep the
-child version unless you deliberately want to copy a parent documentation
-change downstream.
+Locally, pandoc 3.12 does not terminate on `\usepackage{preview}` in
+`common.tex` (the same file as in the `math` site).  The site's CI uses its
+own pandoc; to test HTML locally, convert a copy without the `preview` lines.
 
-## Standalone Notes
+Lean (Lean v4.35.0-rc2, Mathlib at the `v4.35.0-rc2` tag):
 
-Each top-level `*.tex` note should compile on its own and provide a title.
-An abstract is optional, but if present it is shown in `listing.json` and the
-index page.
-
-```tex
-\documentclass[reqno]{amsart}
-
-\begin{document}
-
-\title{A note title}
-
-\begin{abstract}
-  A short description used by the index.
-\end{abstract}
-
-...
-
-\end{document}
+```sh
+cd lean
+lake exe cache get
+lake build                       # development, Challenge and Solution
+lake env lean experiments/class-field-theory/MainAudit.lean   # admission and axiom audit
 ```
 
-Each top-level `*.org` note is exported to HTML and listed from its
-`#+TITLE:`.  `#+DESCRIPTION:` is used as the listing abstract when present.
+To check `Solution` against `Challenge` as Palomar does (Linux with `bwrap`),
+use `scripts/verify-comparator.sh` from the
+[Palomar starter](https://github.com/PalomarRegistry/PalomarTemplate).  On
+macOS, `lake comparator --inadvisably-no-sandbox` with `comparator.json`
+(plus the bundled `nanoda_bin` and `con-ron` as `external_kernels`) runs the
+same checks without the sandbox.
 
-## Non-Standalone TeX
+`lean/Solution.lean` is generated: edit `lean/Challenge.lean` and
+`lean/scripts/solution-proofs.lean-fragment`, then run
+`lean/scripts/make-solution.py`.
 
-The build treats top-level `*.tex` files as candidate notes.  If a top-level
-file is only an input to another document, exclude it:
+## Status
 
-```json
-{
-  "exclude": [
-    "master-body.tex",
-    "scratch-test.tex"
-  ]
-}
+- The development has no `sorry`.  `Challenge.lean` states Proposition 6.3(ii),
+  Theorem 7.1, Theorem 9.1, Corollary 9.2, Theorem 10.34 and Corollary 10.40
+  (with the sextic case) against Mathlib alone, for number fields.
+  `Solution.lean` proves them, and every compared theorem depends only on
+  `propext`, `Classical.choice` and `Quot.sound`.
+- `lake comparator` accepts the solution with Lean's kernel, NanoDa and
+  con-ron (run locally without the sandbox, 2026-11-25).
+- Appendix C of the paper lists what is checked and with which hypotheses;
+  `lean/formalization.yaml` records scope, provenance and AI involvement.
+
+## Links between paper and Lean
+
+`\lean{Decl}` (the syntax of leanblueprint) after a statement marks its Lean
+declaration.  In the PDF the mark links to the declaration's source line at
+the commit `\leancommit`; in the HTML version it links to the declaration's
+entry in Appendix C, which carries that link.  The repository URL
+`\leanrepo` and the commit are defined once in the preamble.  After changing
+the Lean sources, commit them and run
+
+```sh
+scripts/lean-links.py --commit   # update file and line of each entry; pin \leancommit
+scripts/lean-links.py --check    # fail if a link is stale or a name is unknown
 ```
 
-For a master document split into several files, either keep the included files
-outside the top level, such as:
+The pinned commit must reach GitHub unchanged (do not squash or rebase the
+history before pushing), or be re-pinned afterwards.
 
-```text
-master.tex
-sections/introduction.tex
-sections/proof.tex
+## Before publishing
+
+- Create the GitHub repository and check `\leanrepo` in the paper and
+  `site.githubRepository` in `config.json` (both assume
+  `ultronozm/metaplectic-summation`).
+- Palomar (submit with project path `lean`):
+  - Every `.lean` file in the repository must use Lean's module system.  None
+    of the 295 files does yet, so the development, `Challenge.lean` and
+    `Solution.lean` must be ported together (`module`, `public import`,
+    `@[expose] public section`), then Comparator rerun.  `Challenge.lean`
+    imports only Mathlib, so its own port is mechanical.
+  - Add a root `LICENSE` matching `project.license` in
+    `lean/formalization.yaml` (Apache-2.0 there; the vendored code is
+    Apache-2.0, see `lean/licenses/`).
+  - Audit `Challenge.lean` (680 lines, above Palomar's preferred 300) and
+    update `review.status` and the automation details in
+    `formalization.yaml`.
+- [Lean Pool](https://github.com/LeanPool/lean-pool) prefers projects already
+  registered in Palomar.
+
+## Keeping the parts in sync
+
+The site machinery tracks tex-site:
+
+```sh
+git fetch upstream && git merge upstream/main
 ```
 
-or keep them top-level and list the included files in `exclude`.  In both
-cases, `master.tex` is the publishable note.
+`lean/` was added with `git subtree add` from the standalone
+`MetaplecticSummation` repository and keeps its history.  To take later work
+from that repository:
 
-## Deployment Model
-
-The `build` workflow reconstructs the deploy branch as a snapshot:
-
-1. Check out `main`.
-2. Carry forward existing `*.pdf`, `*.html`, `*.aux`, and `listing.json` from
-   `deploy`, if the branch already exists.
-3. Rebuild changed notes and their dependents.
-4. Export changed Org notes.
-5. Report missing aux files and dangling TeX references in the Actions summary.
-6. Force-push `deploy` as a fresh snapshot.
-7. Run `make-index` on the deploy branch to refresh `listing.json` and
-   `index.html`.
-
-The force-push is deliberate: the deploy branch is generated state, not
-history.  Permanent URLs are preserved because paths are stable.
-
-For safe trials, dispatch the `build` workflow manually with
-`deploy_branch=deploy-test`, then dispatch `make-index` with the same
-`deploy_branch`.  This exercises the snapshot branch without changing the
-live Pages branch.
-
-## Known Tradeoffs
-
-- The default workflow pins TeX Live to 2025.  Unpinning to the current TeX
-  Live was tested on 2026-07-05 and the cold setup path took about twenty
-  minutes before compilation, so the known-fast cached toolchain remains the
-  default.
-- The workflow strips `tocindent` labels from carried `.aux` files before
-  compiling.  This avoids an `amsart`/`xr` interaction where imported
-  `tocindent` labels can break another document's sectioning commands.
-- Missing external aux files are warnings.  HTML conversion leaves visible
-  `??` markers when a number cannot be resolved, and CI reports the missing
-  aux file or dangling reference without breaking the deploy snapshot by
-  itself.
+```sh
+git subtree pull --prefix=lean ~/work/lean/MetaplecticSummation main
+```
