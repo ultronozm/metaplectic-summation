@@ -109,6 +109,7 @@ products and rational evaluations all depend on these inputs.
 | [RamifiedGauss](MetaplecticSummation/RamifiedGauss.lean) | Conductor of the Hilbert-symbol twist and the two Gauss factors in the ramified local transform |
 | [TwistedWeights](MetaplecticSummation/TwistedWeights.lean) | Character test weights, unit covariance of their transforms, vanishing of power-class moments, and the norm and Gauss-sum expression for ε |
 | [TwistedSummation](MetaplecticSummation/TwistedSummation.lean) | Adelic line summation at S ∪ T, vanishing of the main term for nonempty T, and the product of transformed weights at the conductor primes |
+| [TateLocal](MetaplecticSummation/TateLocal.lean), [MellinDual](MetaplecticSummation/MellinDual.lean) | Tate's local functional equation on the critical strip for test weights and Schwartz–Bruhat functions, and the Mellin transform of the transformed weight (Proposition 10.20) |
 | [LocalWeights](MetaplecticSummation/LocalWeights.lean) | Jacquet inversion from Schwartz inversion, Mellin factors, and the intertwining operator on leading terms |
 | [AdeleLattice](MetaplecticSummation/AdeleLattice.lean) | Discreteness of the diagonal field, an additive fundamental domain in the adeles, and compactness of the Hausdorff quotient |
 | [Marginals](MetaplecticSummation/Marginals.lean) | Both local Fourier identities and the two Schwartz–Bruhat regularity assertions of Lemma A.6 |

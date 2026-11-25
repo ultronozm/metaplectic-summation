@@ -17,6 +17,8 @@ assert_no_sorry MetaplecticPoisson.Datum.reverse_marginal_on_test
 assert_no_sorry MetaplecticPoisson.Datum.fourier_root_kernel
 assert_no_sorry MetaplecticPoisson.Datum.fourier_mass
 assert_no_sorry MetaplecticPoisson.Datum.schwartz_inversion
+assert_no_sorry MetaplecticPoisson.Datum.exists_tateEquation
+assert_no_sorry MetaplecticPoisson.Datum.mellin_dual
 assert_no_sorry MetaplecticPoisson.Datum.poisson
 assert_no_sorry MetaplecticPoisson.Datum.lineSummation
 assert_no_sorry MetaplecticPoisson.Datum.twistedGaussSummation

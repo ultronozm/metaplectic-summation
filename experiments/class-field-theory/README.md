@@ -34,7 +34,7 @@ The full build completed on the pinned archive. The direct project admissions re
 | `Datum.lineSummation` | None |
 | `Datum.twistedGaussSummation` | None |
 
-After proving Proposition B.6, the local Kubota projection, the degree-one boundary value, the Archimedean shear estimate, the Archimedean reverse marginal, the root-kernel formula and metaplectic Plancherel there is one direct admission in the library: `mellin_dual`. It does not lie in these three dependency chains or in that of `boundary_degree_one`. At finite places, the defining-integral version of the root formula uses the proved right-kernel theorem directly. [Finite root formulas](../../MetaplecticSummation/MarginalRootFormula.lean)
+After proving Proposition B.6, the local Kubota projection, the degree-one boundary value, the Archimedean shear estimate, the Archimedean reverse marginal, the root-kernel formula, metaplectic Plancherel and Proposition 10.20 (`mellin_dual`, through Tate's local functional equation) there are no direct admissions left in the library. At finite places, the defining-integral version of the root formula uses the proved right-kernel theorem directly. [Finite root formulas](../../MetaplecticSummation/MarginalRootFormula.lean)
 
 ## The arithmetic comparison
 
