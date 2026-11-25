@@ -14,7 +14,7 @@ local notation "v" => (Sum.inl w : Place F)
 local notation "K" => LocalField F v
 local notation "dx" => selfDual F d.character v
 
-private theorem arch_bruhat_estimates {f : K → ℂ} (hf : Bruhat v f) :
+theorem arch_bruhat_estimates {f : K → ℂ} (hf : Bruhat v f) :
     (∃ C : NNReal, LipschitzWith C f) ∧ (∀ k : ℕ, ∃ C : ℝ, ∀ x, ‖x‖^k * ‖f x‖ ≤ C) ∧
     Integrable (fun x => ‖x‖ * ‖f x‖) dx := by
   letI : MeasurableSpace w.Completion := borel _
@@ -71,7 +71,7 @@ private theorem affine_integrable {f : K → ℂ} (hf : Integrable f dx) (a : K)
   simpa only [Function.comp_def,sub_eq_add_neg,mul_comm u.val] using
     (measurePreserving_add_right dx (-a)).integrable_comp_of_integrable hi
 
-private theorem arch_min_weight :
+theorem arch_min_weight :
     Integrable (fun u : Kˣ => min ‖u.val‖ ‖u.val‖⁻¹) (d.lineMeasure v) := by
   letI : LocallyCompactSpace K := inferInstanceAs (LocallyCompactSpace w.Completion)
   letI : NontriviallyNormedField K := archNontriviallyNormedCompletion w
@@ -169,7 +169,7 @@ theorem arch_difference_pair_integrable {f h : K → ℂ}
         gcongr
       _ ≤ _ := by gcongr; exact le_max_right _ _
 
-private theorem integral_hat_arch {f : K → ℂ} (hf : Bruhat v f) :
+theorem integral_hat_arch {f : K → ℂ} (hf : Bruhat v f) :
     (∫ t, d.hat v f t ∂dx) = f 0 := by
   have he := congrFun (d.arch_hat_hat w f hf) 0
   simpa only [hat,zero_mul,Character.localValue_zero,mul_one,neg_zero] using he

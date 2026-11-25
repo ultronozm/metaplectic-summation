@@ -83,12 +83,12 @@ def axisSubtraction (v : Place F) (f : Charts (LocalField F v)) (s u : (LocalFie
     (y : LocalField F v) : ℂ :=
   if hy : y ≠ 0 then d.symbol v u (-(s*Units.mk0 y hy)) * f.2 u.val (Units.mk0 y hy) else 0
 
-private theorem chartDifference_eq (v : Place F) (f : Charts (LocalField F v)) (s u : (LocalField F v)ˣ)
+theorem chartDifference_eq (v : Place F) (f : Charts (LocalField F v)) (s u : (LocalField F v)ˣ)
     (t y : LocalField F v) : d.chartDifference v f s u t y =
       d.marginalSlice v f s u t y - d.axisSubtraction v f s u y := by
   by_cases hy : y = 0 <;> simp [hy,chartDifference,marginalSlice,axisSubtraction,mul_sub]
 
-private theorem chartTerm_measurable {Z : Type*} [MeasurableSpace Z] (v : Place F) [SecondCountableTopology (LocalField F v)]
+theorem chartTerm_measurable {Z : Type*} [MeasurableSpace Z] (v : Place F) [SecondCountableTopology (LocalField F v)]
     {f : Charts (LocalField F v)} (hf : Continuous (fun z : LocalField F v × (LocalField F v)ˣ => f.2 z.1 z.2))
     (s : (LocalField F v)ˣ) {u : Z → (LocalField F v)ˣ} {x y : Z → LocalField F v}
     (hu : Measurable u) (hx : Measurable x) (hy : Measurable y) :
