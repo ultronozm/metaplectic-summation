@@ -90,8 +90,11 @@ same checks without the sandbox.
   (twisted sums of Gauss sums of order n) and Corollary 10.39 (the quadratic
   dual) against Mathlib alone, for number fields, quantifying over self-dual
   measures and Hilbert symbols with their defining properties and giving the
-  local transform by the explicit integral (10.15).  `Solution.lean` proves
-  them.  The Poisson formula, Fourier inversion, the archimedean smoothness
+  local transform by the explicit integral (10.15).  In Theorem 10.33 the
+  main-term constants are stated to be unique; they are not identified there
+  with |b|_S times the constants of Theorem 10.16 for ψ(b·), which would need
+  the Schwartz space and the basic vectors of §§3–9.  Both statements include
+  the absolute convergence of both series.  `Solution.lean` proves them.  The Poisson formula, Fourier inversion, the archimedean smoothness
   and decay results of §§4, 8 and 10 and the rest are proved in the
   development.  Appendix C of the paper lists what is checked and with which
   hypotheses; `lean/formalization.yaml` records scope, provenance and AI
@@ -134,7 +137,7 @@ history before pushing), or be re-pinned afterwards.
 
 ## Next steps
 
-- Palomar (submit with project path `lean`): every `.lean` file must use Lean's module system.  The port is not mechanical: a module cannot import a non-module file, and the development imports 14 modules of the pinned dependency `FiniteAbelianGlobalReciprocityv2`, whose import closure is 877 files (about 376,000 lines), of which 18 are modules.  That dependency must be ported first; then the development, `Challenge.lean` and `Solution.lean`, and Comparator rerun.  `Challenge.lean` (398 lines, of which 319 are definitions) still needs a human audit against the paper.
+- Palomar (submit with project path `lean`): every `.lean` file must use Lean's module system.  The port is not mechanical: a module cannot import a non-module file, and the development imports 14 modules of the pinned dependency `FiniteAbelianGlobalReciprocityv2`, whose import closure is 877 files (about 376,000 lines), of which 18 are modules.  That dependency must be ported first; then the development, `Challenge.lean` and `Solution.lean`, and Comparator rerun.  `Challenge.lean` (406 lines, of which 319 are definitions) still needs a human audit against the paper.
 - [Lean Pool](https://github.com/LeanPool/lean-pool) prefers projects already registered in Palomar.
 - When the Lean code changes, re-pin the paper's links with `scripts/lean-links.py --commit` and rebuild with `./preview-site.sh`.
 

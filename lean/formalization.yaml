@@ -69,8 +69,14 @@ status:
     determine them), with existence proved in exists_selfDual_hilbert. The
     local transform W^∨ is the explicit integral of Proposition 10.8 at
     lambda = 1 (formula (10.15)). In Theorem 10.33 the main-term constants are
-    asserted to exist independently of the twist and the weights, rather than
-    identified with the constants of Theorem 10.16. The Schwartz space,
+    characterized as the unique family, independent of the twist and the
+    weights, for which the identity holds (uniqueness is part of the statement).
+    They are not identified in Challenge.lean with |b|_S times the constants of
+    Theorem 10.16 for the character psi(b .), because Theorem 10.16 involves the
+    Jacquet integrals of the basic vectors and the Schwartz space of Sections
+    3-9, which Challenge.lean does not define; the proof constructs exactly that
+    family (MetaplecticSummation/Gauss/Setup.lean, mainTerm). Both theorems
+    include the absolute convergence of both series. The Schwartz space,
     Theorem 7.1, the Poisson formula (Theorem 9.1, Corollary 9.2) and
     Theorem 10.16 are proved in the development but not restated in
     Challenge.lean.
@@ -138,12 +144,12 @@ alignment:
       lean: "NFoldCover.twistedGaussSummation"
       module: "Challenge"
       status: "proved"
-      note: "Main-term constants asserted to exist; absolute convergence included."
+      note: "Main-term constants unique (not identified with Theorem 10.16 in the statement); absolute convergence included."
     - source: "Corollary 10.39"
       lean: "NFoldCover.quadraticDual"
       module: "Challenge"
       status: "proved"
-      note: "n odd, odd residue characteristic outside S."
+      note: "n odd, odd residue characteristic outside S; absolute convergence of both series included."
     - source: "Existence of self-dual measures and Hilbert symbols (Sections 2 and 9.1)"
       lean: "NFoldCover.exists_selfDual_hilbert"
       module: "Challenge"
