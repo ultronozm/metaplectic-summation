@@ -22,3 +22,8 @@ _region_.*
 /*.html
 /*.pdf
 /*.aux
+
+# Builds of the sketches (make sketched, make html) write here.
+/build/
+/output/
+__pycache__/

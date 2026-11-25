@@ -1,5 +1,5 @@
 {
-  "exclude": [],
+  "exclude": ["sketches.tex", "sketched.tex"],
   "boxed-environments": [
     "theorem",
     "lemma",
