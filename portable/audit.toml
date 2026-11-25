@@ -3,15 +3,15 @@
 # no longer matches, and python3 portable/audit.py explains why and records the new version once the picture's text has
 # been checked.  Written by audit.py; read by build.py.
 
-[figure.double-cover]
-at = "9ea1179"
-[figure.double-cover.statements]
+[figure.charts]
+at = "49e2744"
+[figure.charts.statements]
 "eq:transition-relation" = "14f4220df884"
 "sec:genuine" = "bc7cf347c943"
 "sec:hilbert-symbol" = "3e5ea276c3f3"
 
 [figure.lines]
-at = "9ea1179"
+at = "49e2744"
 [figure.lines.statements]
 "definition:lines" = "adf0957cbaaa"
 "lemma:lines" = "588f688e39dd"
