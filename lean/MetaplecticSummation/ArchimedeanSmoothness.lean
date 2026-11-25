@@ -1,5 +1,6 @@
 import MetaplecticSummation.LineSmoothness
 import MetaplecticSummation.ArchimedeanFourierDecay
+import MetaplecticSummation.Schwartz
 
 /-! Smoothness at real and complex places (Lemma 4.2(iii), Proposition 4.5).
 
@@ -205,13 +206,15 @@ theorem arch_radon_smooth {L : Type} [NormedField L] [NormedAlgebra ℝ L] (e : 
     congr 2
     ring_nf
 
-/-- Proposition 4.5 at a real or complex place: the transform of a test section has smooth charts. -/
-theorem arch_transform_smooth {L : Type} [NormedField L] [NormedAlgebra ℝ L] (e : K ≃+* L) (he : Isometry e)
-    {f : Charts K} (htest : archTest e f) :
-    let g := d.integralTransform v f
+/-- The Fourier integrals of the Radon charts at any unitary continuous frequency function are smooth. -/
+theorem arch_radon_fourier_smooth {L : Type} [NormedField L] [NormedAlgebra ℝ L] (e : K ≃+* L) (he : Isometry e)
+    {f : Charts K} (htest : archTest e f) {ψ : K → ℂ} (hψ : Continuous ψ) (hψ1 : ∀ t, ‖ψ t‖ = 1) :
+    let R := radon n (d.symbol v) (modulus F v) dx f
+    let c₀ : ℂ := (Real.sqrt (modulus F v (n : K)))⁻¹
+    let g : Charts K := (fun a b => c₀ * ∫ t, ψ t * (R t).1 a b ∂dx, fun a b => c₀ * ∫ t, ψ t * (R t).2 a b ∂dx)
     ContDiffOn ℝ ∞ (fun p : L × L => xChart g (e.symm p.1, e.symm p.2)) {p | p.1 ≠ 0} ∧
     ContDiffOn ℝ ∞ (fun p : L × L => yChart g (e.symm p.1, e.symm p.2)) {p | p.2 ≠ 0} := by
-  intro g
+  intro R c₀ g
   let : SecondCountableTopology K :=
     (InfinitePlace.Completion.isometry_extensionEmbedding w).isEmbedding.secondCountableTopology
   have hneg : Continuous (fun a : Kˣ => -a) := Units.isEmbedding_val₀.continuous_iff.mpr Units.continuous_val.neg
@@ -220,11 +223,8 @@ theorem arch_transform_smooth {L : Type} [NormedField L] [NormedAlgebra ℝ L] (
   have hint := d.arch_integrable_inv_cube w
   have HX := lineRadon_smooth dx e he hint htest.1 (d.phaseX w e) hx1 hx2 hx3
   have HY := lineRadon_smooth dx e he hint (rapid_swapped_yChart w e htest) (d.phaseY w e) hy1 hy2 hy3
-  have hψ := d.character.continuous_localValue v
-  have hψ1 (t : K) : ‖d.character.localValue F v t‖ = 1 := d.character.norm_localValue v t
   have QX := lineFourier_smooth dx e he hint n (NeZero.pos n) hψ hψ1 HX.1 HX.2
   have QY := lineFourier_smooth dx e he hint n (NeZero.pos n) hψ hψ1 HY.1 HY.2
-  let c₀ : ℂ := (Real.sqrt (modulus F v (n : K)))⁻¹
   have hinvX : ContDiffOn ℝ ∞ (fun p : L × L => (p.1, p.2, p.1⁻¹)) {p | p.1 ≠ 0} := by
     intro p hp
     exact (contDiffAt_fst.prodMk (contDiffAt_snd.prodMk
@@ -243,8 +243,7 @@ theorem arch_transform_smooth {L : Type} [NormedField L] [NormedAlgebra ℝ L] (
       simp [xChart,hp']
     simp only [Function.comp_apply]
     rw [hx]
-    change c₀ * ∫ t, d.character.localValue F v t *
-      (radon n (d.symbol v) (modulus F v) dx f t).1 (Units.mk0 (e.symm p.1) hp') (e.symm p.2) ∂dx = _
+    change c₀ * ∫ t, ψ t * (R t).1 (Units.mk0 (e.symm p.1) hp') (e.symm p.2) ∂dx = _
     congr 1; congr 1; funext t
     rw [d.radon_fst_eq_lineRadon w e f,hu,e.apply_symm_apply,map_div₀,map_pow,hu,div_eq_mul_inv]
   · refine (contDiffOn_const (c := c₀).mul (QY.comp hinvY ?_)).congr ?_
@@ -256,11 +255,30 @@ theorem arch_transform_smooth {L : Type} [NormedField L] [NormedAlgebra ℝ L] (
       simp [yChart,hp']
     simp only [Function.comp_apply]
     rw [hy]
-    change c₀ * ∫ t, d.character.localValue F v t *
-      (radon n (d.symbol v) (modulus F v) dx f t).2 (e.symm p.1) (Units.mk0 (e.symm p.2) hp') ∂dx = _
+    change c₀ * ∫ t, ψ t * (R t).2 (e.symm p.1) (Units.mk0 (e.symm p.2) hp') ∂dx = _
     congr 1; congr 1; funext t
     rw [d.radon_snd_eq_lineRadon w e f,hu,e.apply_symm_apply,map_div₀,map_pow,hu]
     congr 2; ring_nf
+
+/-- Proposition 4.5 at a real or complex place: the transform of a test section has smooth charts. -/
+theorem arch_transform_smooth {L : Type} [NormedField L] [NormedAlgebra ℝ L] (e : K ≃+* L) (he : Isometry e)
+    {f : Charts K} (htest : archTest e f) :
+    let g := d.integralTransform v f
+    ContDiffOn ℝ ∞ (fun p : L × L => xChart g (e.symm p.1, e.symm p.2)) {p | p.1 ≠ 0} ∧
+    ContDiffOn ℝ ∞ (fun p : L × L => yChart g (e.symm p.1, e.symm p.2)) {p | p.2 ≠ 0} :=
+  d.arch_radon_fourier_smooth w e he htest (d.character.continuous_localValue v)
+    (d.character.norm_localValue v)
+
+/-- The leading term (§8) of the transform of a test section has smooth charts at a real or
+complex place: it is the Fourier integral of the Radon charts at frequency zero. -/
+theorem arch_radonLeading_smooth {L : Type} [NormedField L] [NormedAlgebra ℝ L] (e : K ≃+* L)
+    (he : Isometry e) {f : Charts K} (htest : archTest e f) :
+    let g := d.radonLeading v f
+    ContDiffOn ℝ ∞ (fun p : L × L => xChart g (e.symm p.1, e.symm p.2)) {p | p.1 ≠ 0} ∧
+    ContDiffOn ℝ ∞ (fun p : L × L => yChart g (e.symm p.1, e.symm p.2)) {p | p.2 ≠ 0} := by
+  have h := d.arch_radon_fourier_smooth w e he htest (ψ := fun _ => 1) continuous_const (fun _ => norm_one)
+  simp only [one_mul] at h
+  exact h
 
 /-- Both charts are smooth in real coordinates on their open domains. -/
 def archSmoothCharts {L : Type} [NormedField L] [NormedAlgebra ℝ L] (e : K ≃+* L) (g : Charts K) : Prop :=
@@ -303,6 +321,30 @@ theorem schwartz_archSmoothCharts {L : Type} [NormedField L] [NormedAlgebra ℝ 
   | add _ _ _ _ hg hh => exact archSmoothCharts_add w e hg hh
   | smul a _ _ hg => exact archSmoothCharts_smul w e a hg
 
+/-- Proposition 8.1 at a real or complex place: the leading term of every element of the
+local Schwartz space has smooth charts. -/
+theorem leading_archSmoothCharts {L : Type} [NormedField L] [NormedAlgebra ℝ L] (e : K ≃+* L)
+    (he : Isometry e) (htests : ∀ f ∈ d.testSet v, archTest e f) (Φ : d.schwartz v) :
+    archSmoothCharts w e (d.leading v Φ) := by
+  refine Submodule.span_induction (p := fun f hf => archSmoothCharts w e (d.leading v ⟨f,hf⟩))
+    ?_ ?_ ?_ ?_ Φ.property
+  · rintro f (hf | ⟨g,hg,rfl⟩)
+    · rw [d.leading_archTest_eq_zero w _ hf]
+      exact archSmoothCharts_zero w e
+    · rw [d.leading_archTest_transform w hg]
+      exact d.arch_radonLeading_smooth w e he (htests g hg)
+  · change archSmoothCharts w e (d.leading v 0)
+    rw [map_zero]
+    exact archSmoothCharts_zero w e
+  · intro f g hf hg H J
+    change archSmoothCharts w e (d.leading v (⟨f,hf⟩ + ⟨g,hg⟩))
+    rw [map_add]
+    exact archSmoothCharts_add w e H J
+  · intro c f hf H
+    change archSmoothCharts w e (d.leading v (c • ⟨f,hf⟩))
+    rw [map_smul]
+    exact archSmoothCharts_smul w e c H
+
 /-- §4 at a real place: the local Schwartz space consists of smooth sections. -/
 theorem schwartz_smooth_real (hw : w.IsReal) :
     ∀ Φ ∈ d.schwartz v, archSmoothCharts w (InfinitePlace.Completion.ringEquivRealOfIsReal hw) Φ :=
@@ -315,6 +357,19 @@ theorem schwartz_smooth_complex (hw : ¬ w.IsReal) :
       (InfinitePlace.not_isReal_iff_isComplex.mp hw)) Φ :=
   d.schwartz_archSmoothCharts w _ (InfinitePlace.Completion.isometry_extensionEmbedding w)
     fun f hf => by simpa only [testSet,hw,↓reduceDIte] using! hf.2
+
+/-- Proposition 8.1 at a real place: leading terms of the local Schwartz space are smooth. -/
+theorem leading_smooth_real (hw : w.IsReal) (Φ : d.schwartz v) :
+    archSmoothCharts w (InfinitePlace.Completion.ringEquivRealOfIsReal hw) (d.leading v Φ) :=
+  d.leading_archSmoothCharts w _ (InfinitePlace.Completion.isometry_extensionEmbeddingOfIsReal hw)
+    (fun f hf => by simpa only [testSet,hw,↓reduceDIte] using! hf.2) Φ
+
+/-- Proposition 8.1 at a complex place: leading terms of the local Schwartz space are smooth. -/
+theorem leading_smooth_complex (hw : ¬ w.IsReal) (Φ : d.schwartz v) :
+    archSmoothCharts w (InfinitePlace.Completion.ringEquivComplexOfIsComplex
+      (InfinitePlace.not_isReal_iff_isComplex.mp hw)) (d.leading v Φ) :=
+  d.leading_archSmoothCharts w _ (InfinitePlace.Completion.isometry_extensionEmbedding w)
+    (fun f hf => by simpa only [testSet,hw,↓reduceDIte] using! hf.2) Φ
 
 end Datum
 end MetaplecticPoisson
