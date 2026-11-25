@@ -1,0 +1,5 @@
+# Adelic Poisson for number fields
+
+These are the 35 modules imported transitively by `GroundTheory.GlobalFields.TateThesis.AdelePoisson` in `~/work/repos/rh/extracted/lean/src`, including the theorem that classifies additive characters trivial on the diagonal. The extracted project uses Lean v4.33.1 and Mathlib `0df444a360eaa60ab8c11dca51a86af692955474`. Its local checkout had no Git commit. The SHA-256 digest of the original module paths and contents is `f46bef2ab522fa0272ace37ae7d4df9544eef7a1c01ada85fba3619b115fed2f`. To reproduce it, traverse the two namespaces in lexicographic order and each namespace’s Lean files in sorted relative-path order, hashing each relative path, a null byte, its original bytes, and a null byte.
+
+The [compatibility patch](lean-4.35.0-rc2.patch) records the two changes made in the isolated Lean v4.35.0-rc2 test. The updated valuation formula already returns the logarithm, and the measure pushforward now takes an explicit almost-everywhere measurability proof. From the project root, `lake build MetaplecticSummation.AdditivePoisson` builds the source and the comparison with the paper’s additive character.

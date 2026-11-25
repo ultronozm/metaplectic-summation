@@ -1,0 +1,25 @@
+--- a/GroundTheory/GlobalFields/LocalFieldAtPlace.lean
++++ b/GroundTheory/GlobalFields/LocalFieldAtPlace.lean
+@@ -53,11 +53,7 @@
+ theorem normalizedAbv_eq_zpow {x : v.adicCompletion K} (hx : x ≠ 0) :
+     normalizedAbv v x = (Ideal.absNorm v.asIdeal : ℝ) ^ log (Valued.v x) := by
+   have hx' : Valued.v x ≠ 0 := (Valued.v).ne_zero_iff.2 hx
+-  have key : ∀ (y : ℤᵐ⁰) (hy : y ≠ 0), Multiplicative.toAdd (unzero hy) = log y := by
+-    rintro (_ | a) hy
+-    · exact absurd rfl hy
+-    · rfl
+-  rw [normalizedAbv_eq_toNNReal, WithZeroMulInt.toNNReal_neg_apply _ hx', key]
++  rw [normalizedAbv_eq_toNNReal, WithZeroMulInt.toNNReal_neg_apply _ hx']
+   simp
+
+ theorem normalizedAbv_of_irreducible {ϖ : v.adicCompletionIntegers K} (hϖ : Irreducible ϖ) :
+--- a/GroundTheory/GlobalFields/TateThesis/TraceFourier.lean
++++ b/GroundTheory/GlobalFields/TateThesis/TraceFourier.lean
+@@ -49,6 +49,7 @@
+   rw [selfDualMeasure, Measure.map_smul, hmap, smul_smul, hd, abs_inv, abs_pow, ha,
+     ENNReal.ofReal_inv_of_pos (by positivity), ENNReal.ofReal_pow (by norm_num),
+     ENNReal.ofReal_ofNat, ENNReal.mul_inv_cancel (by simp) (by simp), one_smul]
++  exact (mapComplexCoord K a).continuous.aemeasurable
+
+ def sqrtTwoSMulComplex : ℂ ≃L[ℝ] ℂ :=
+   (LinearEquiv.smulOfNeZero ℝ ℂ (√2) (by positivity)).toContinuousLinearEquiv

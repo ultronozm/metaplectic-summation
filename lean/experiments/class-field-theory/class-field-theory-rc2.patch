@@ -1,0 +1,48 @@
+--- a/Lean4/ClassFieldTheory/AlgebraicNumberTheory/Idele/BaseChange.lean
++++ b/Lean4/ClassFieldTheory/AlgebraicNumberTheory/Idele/BaseChange.lean
+@@ -98,11 +98,11 @@
+       (infinitePlaceBelow_self (K := K) W)⟩
+   refine InfinitePlace.Completion.induction_on W x ?_ ?_
+   · exact isClosed_eq
+-      (NumberField.LiesOver.continuous_completionMap W W)
++      NumberField.LiesOver.continuous_completionMap
+       continuous_id
+   · intro y
+     change
+-      NumberField.LiesOver.completionMap W W
++      NumberField.LiesOver.completionMap
+           (y : W.Completion) =
+         (y : W.Completion)
+     rw [NumberField.LiesOver.completionMap_coe
+--- a/Lean4/ClassFieldTheory/AlgebraicNumberTheory/Completion/AdicCompletionComparison.lean
++++ b/Lean4/ClassFieldTheory/AlgebraicNumberTheory/Completion/AdicCompletionComparison.lean
+@@ -398,7 +398,6 @@
+             HeightOneSpectrum.valuedAdicCompletion_eq_valuation']
+     _ = (w.valuation K k) ^
+           w.asIdeal.ramificationIdx' W.asIdeal := by
+-      rw [Ideal.ramificationIdx'_eq_ramificationIdx w.asIdeal W.asIdeal w.ne_bot]
+       exact (HeightOneSpectrum.valuation_liesOver L w W k).symm
+     _ = Valued.v x ^
+           w.asIdeal.ramificationIdx' W.asIdeal := by
+--- a/Lean4/ClassFieldTheory/AlgebraicNumberTheory/Completion/UnramifiedComparison/IdealToCompletion.lean
++++ b/Lean4/ClassFieldTheory/AlgebraicNumberTheory/Completion/UnramifiedComparison/IdealToCompletion.lean
+@@ -302,8 +302,6 @@
+       _ =
+           (v.valuation K (π : K)) ^
+             v.asIdeal.ramificationIdx' W.asIdeal := by
+-        rw [Ideal.ramificationIdx'_eq_ramificationIdx
+-          v.asIdeal W.asIdeal v.ne_bot]
+         symm
+         exact HeightOneSpectrum.valuation_liesOver
+           L v W (π : K)
+--- a/Lean4/ClassFieldTheory/AlgebraicNumberTheory/Adele/InfinitePlaceTensorBlock.lean
++++ b/Lean4/ClassFieldTheory/AlgebraicNumberTheory/Adele/InfinitePlaceTensorBlock.lean
+@@ -90,7 +90,7 @@
+             v.1 w.1 u.2).continuous.comp
+           (InfinitePlace.Completion.continuous_toCompletion v))
+         ((InfinitePlace.Completion.continuous_toCompletion w).comp
+-          (NumberField.LiesOver.continuous_completionMap v w))
++          (NumberField.LiesOver.continuous_completionMap))
+   · intro y
+     have hy :
+         (y : v.1.Completion) =

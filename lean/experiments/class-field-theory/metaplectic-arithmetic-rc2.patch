@@ -1,0 +1,56 @@
+diff --git a/MetaplecticSummation/AdelicCharacters.lean b/MetaplecticSummation/AdelicCharacters.lean
+index 888add8..49498ad 100644
+--- a/MetaplecticSummation/AdelicCharacters.lean
++++ b/MetaplecticSummation/AdelicCharacters.lean
+@@ -59,7 +59,7 @@ private theorem component_single (x : Adeles F) (i v : Place F) :
+   classical
+   rcases i with i|i <;> rcases v with v|v
+   · by_cases h : i = v
+-    · subst v; simp [component,singleAdele]
++    · subst v; simp [component,singleAdele] <;> rfl
+     · simp [component,singleAdele,h]; rfl
+   · exact rfl
+   · exact rfl
+diff --git a/MetaplecticSummation/ArchimedeanPlancherel.lean b/MetaplecticSummation/ArchimedeanPlancherel.lean
+index 0de4162..ed92011 100644
+--- a/MetaplecticSummation/ArchimedeanPlancherel.lean
++++ b/MetaplecticSummation/ArchimedeanPlancherel.lean
+@@ -51,9 +51,9 @@ theorem euclidean_integral_plancherel {f : L → ℂ} (hi : Integrable f) (h₂
+   have hn : eLpNorm (𝓕 f) 2 volume = eLpNorm f 2 volume := by
+     rw [eLpNorm_congr_ae ae,← Lp.enorm_def,← Lp.enorm_toLp h₂]
+     simpa only [ofReal_norm] using congrArg ENNReal.ofReal (Lp.norm_fourier_eq g)
+-  have sq (h : L → ℂ) : (∫⁻ x, ‖h x‖ₑ^2) = eLpNorm h 2 volume ^ 2 := by
+-    simpa using (eLpNorm_nnreal_pow_eq_lintegral (μ := volume) (f := h) (p := 2) (by norm_num)).symm
+-  rw [sq,sq,hn]
++  have sq (h : L → ℂ) (hm : AEStronglyMeasurable h volume) : (∫⁻ x, ‖h x‖ₑ^2) = eLpNorm h 2 volume ^ 2 := by
++    simpa using (eLpNorm_nnreal_pow_eq_lintegral (μ := volume) (f := h) (p := 2) (by norm_num) hm).symm
++  rw [sq _ hc.aestronglyMeasurable,sq _ hi.aestronglyMeasurable,hn]
+ 
+ /-- In inner-product coordinates the nontrivial character of the field
+ pairing differs from the standard Fourier character by a linear isomorphism. -/
+diff --git a/MetaplecticSummation/ArchimedeanSelfDual.lean b/MetaplecticSummation/ArchimedeanSelfDual.lean
+index f9de52a..8a26699 100644
+--- a/MetaplecticSummation/ArchimedeanSelfDual.lean
++++ b/MetaplecticSummation/ArchimedeanSelfDual.lean
+@@ -19,7 +19,7 @@ private theorem arch_selfDual_coordinates {L : Type} [RCLike L] (e : w.Completio
+     fun x y => by rw [map_add]; exact ψ.localValue_add v _ _⟩
+   have hc : Continuous χ := (ψ.continuous_localValue v).comp i.symm.continuous
+   obtain ⟨x,hx⟩ := ψ.nontrivial_localValue v
+-  have hn : ∃ z, χ z ≠ 1 := ⟨e x,by simpa only [χ,AddChar.coe_mk,e.symm_apply_apply] using hx⟩
++  have hn : ∃ z, χ z ≠ 1 := ⟨e x,fun hh => hx ((congrArg (ψ.localValue F v) (e.symm_apply_apply x)).symm.trans hh)⟩
+   obtain ⟨ν,hν,hP⟩ := exists_rclike_plancherel χ hc (fun _ => ψ.norm_localValue v _) hn
+   letI : ν.IsAddHaarMeasure := hν
+   let j := i.symm.toHomeomorph.toMeasurableEquiv
+diff --git a/MetaplecticSummation/FiniteCompletionTopology.lean b/MetaplecticSummation/FiniteCompletionTopology.lean
+index 4706c30..d6cb22d 100644
+--- a/MetaplecticSummation/FiniteCompletionTopology.lean
++++ b/MetaplecticSummation/FiniteCompletionTopology.lean
+@@ -93,7 +93,7 @@ section NumberField
+ variable {K : Type*} [Field K] [NumberField K] (v : HeightOneSpectrum (𝓞 K))
+ 
+ instance : Finite (IsLocalRing.ResidueField (v.adicCompletionIntegers K)) :=
+-  haveI := Ideal.finiteQuotientOfFreeOfNeBot v.asIdeal v.ne_bot
++  haveI := Ring.HasFiniteQuotients.finiteQuotient v.ne_bot
+   Finite.of_equiv _ (residueFieldEquiv v).toEquiv
+ 
+ theorem natCard_residueField_adicCompletionIntegers :

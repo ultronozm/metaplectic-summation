@@ -1,0 +1,27 @@
+name = "MetaplecticSummation"
+defaultTargets = ["MetaplecticSummation"]
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "065356127b1dc0016f66b7283ce0ce2c4055aa55"
+
+[[lean_lib]]
+name = "MetaplecticSummation"
+
+[[require]]
+name = "FiniteAbelianGlobalReciprocityv2"
+git = "https://github.com/PalomarArchive/n-yamaguchi-0729--FiniteAbelianGlobalReciprocityv2--ccc6f4bb14f4.git"
+rev = "58370e628052f54159c1eac913de908e360059d6"
+
+[[lean_lib]]
+name = "Development"
+srcDir = "vendor/ground-theory"
+leanOptions = {autoImplicit = false, relaxedAutoImplicit = false, maxSynthPendingDepth = 3, maxHeartbeats = 4000000}
+moreLeanArgs = ["--tstack=400000"]
+
+[[lean_lib]]
+name = "GroundTheory"
+srcDir = "vendor/ground-theory"
+leanOptions = {autoImplicit = false, relaxedAutoImplicit = false, maxSynthPendingDepth = 3, maxHeartbeats = 4000000}
+moreLeanArgs = ["--tstack=400000"]
