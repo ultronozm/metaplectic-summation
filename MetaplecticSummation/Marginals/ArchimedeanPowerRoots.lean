@@ -1,11 +1,9 @@
-import MetaplecticSummation.PowerHaar
+import MetaplecticSummation.PowerRootSums
 import MetaplecticSummation.Marginals.Basic
 import MetaplecticSummation.RadonConvergence
 
-/-! Change of variables by the power map at real and complex places. Summing a
-function over the n-th roots of the integration variable multiplies its
-multiplicative integral by the normalized modulus of n. The root sum is continuous
-on the open subgroup of powers, because the power map is proper onto it. -/
+/-! The change of variables y = −rⁿ/s at real and complex places, which turns a
+sum over the roots of −sy into an integral against the axis density. -/
 
 noncomputable section
 namespace MetaplecticPoisson.Datum
@@ -16,112 +14,13 @@ variable {F : Type} [Field F] [NumberField F] {n : ℕ} [NeZero n] (d : Datum F 
 local notation "v" => (Sum.inl w : Place F)
 local notation "K" => LocalField F v
 
-omit [NumberField F] [NeZero n] in
-/-- The n-th roots of an n-th power are its multiples by the n-th roots of one. -/
-theorem nthRootsFinset_pow_eq_image {L : Type*} [Field L] (hn : 0 < n) (u : Lˣ) :
-    nthRootsFinset n (u.val^n) = (nthRootsFinset n (1 : L)).image (· * u.val) := by
-  ext r
-  simp only [mem_nthRootsFinset hn,Finset.mem_image]
-  constructor
-  · intro hr
-    refine ⟨r * u.val⁻¹,?_,by field_simp [u.ne_zero]⟩
-    rw [mul_pow,hr,inv_pow,mul_inv_cancel₀ (pow_ne_zero _ u.ne_zero)]
-  · rintro ⟨ζ,hζ,rfl⟩
-    rw [mul_pow,hζ,one_mul]
-
-omit [NeZero n] in
-include d in
-/-- At an infinite place there are exactly n roots of one. -/
-theorem arch_card_roots_one : (nthRootsFinset n (1 : K)).card = n :=
-  (d.primitive.map_of_injective (diagonal F v).injective).card_nthRootsFinset
-
 /-- Summing over the n-th roots of the integration variable multiplies the integral
 over the units by the normalized modulus of n, at every infinite place. -/
 theorem arch_lineIntegral_root_sum (Θ : K → ℂ) (hc : ContinuousOn Θ {0}ᶜ)
     (hi : Integrable (fun u : Kˣ => Θ u.val) (d.lineMeasure v)) :
     (∫ z : Kˣ, ∑ r ∈ nthRootsFinset n z.val, Θ r ∂(d.lineMeasure v)) =
-      (modulus F v (n : K) : ℂ) * ∫ u : Kˣ, Θ u.val ∂(d.lineMeasure v) := by
-  let ν := d.lineMeasure v
-  let : LocallyCompactSpace K := inferInstanceAs (LocallyCompactSpace w.Completion)
-  let : NontriviallyNormedField K := archNontriviallyNormedCompletion w
-  let : ProperSpace K := .of_nontriviallyNormedField_of_weaklyLocallyCompactSpace _
-  let : CharZero K := charZero_of_injective_ringHom (algebraMap F w.Completion).injective
-  let P := (powMonoidHom n : Kˣ →* Kˣ).range
-  have hP : IsOpen (P : Set Kˣ) := by
-    rw [MonoidHom.coe_range]
-    exact isOpen_unit_powers n (Nat.cast_ne_zero.mpr (NeZero.ne n))
-  let : LocallyCompactSpace P := hP.locallyCompactSpace
-  let G (z : Kˣ) := ∑ r ∈ nthRootsFinset n z.val, Θ r
-  let R := nthRootsFinset n (1 : K)
-  have hpow (u : Kˣ) : G (u^n) = ∑ ζ ∈ R, Θ (ζ * u.val) := by
-    simp only [G,Units.val_pow_eq_pow_val]
-    rw [nthRootsFinset_pow_eq_image (NeZero.pos n) u,Finset.sum_image]
-    intro a _ b _ hab
-    exact mul_right_cancel₀ u.ne_zero hab
-  have hR (ζ : K) (hζ : ζ ∈ R) : ζ ≠ 0 := by
-    intro h
-    rw [mem_nthRootsFinset (NeZero.pos n),h,zero_pow (NeZero.ne n)] at hζ
-    exact zero_ne_one hζ
-  have hGP (z : Kˣ) (hz : z ∉ (P : Set Kˣ)) : G z = 0 := by
-    apply Finset.sum_eq_zero
-    intro r hr
-    exfalso
-    rw [mem_nthRootsFinset (NeZero.pos n)] at hr
-    have hr0 : r ≠ 0 := by
-      rintro rfl
-      rw [zero_pow (NeZero.ne n)] at hr
-      exact z.ne_zero hr.symm
-    exact hz ⟨Units.mk0 r hr0,Units.ext (by simpa using hr)⟩
-  -- Continuity of the root sum on the open subgroup of powers.
-  let f := (powMonoidHom n : Kˣ →* Kˣ).rangeRestrict
-  have hfc : Continuous f := (continuous_id.pow n : Continuous (fun x : Kˣ => x^n)).subtype_mk _
-  have hq : Topology.IsQuotientMap f := by
-    have hp : IsProperMap f := isProperMap_iff_tendsto_cocompact.mpr
-      ⟨hfc,unitPower_proper n (NeZero.ne n)⟩
-    exact hp.isClosedMap.isQuotientMap hfc (MonoidHom.rangeRestrict_surjective _)
-  have hsum_cont : Continuous (fun u : Kˣ => ∑ ζ ∈ R, Θ (ζ * u.val)) := by
-    refine continuous_finsetSum _ fun ζ hζ => ?_
-    exact hc.comp_continuous (continuous_const.mul Units.continuous_val)
-      (fun u => mul_ne_zero (hR ζ hζ) u.ne_zero)
-  have hGc : ContinuousOn G (P : Set Kˣ) := by
-    rw [continuousOn_iff_continuous_domRestrict]
-    apply hq.continuous_iff.mpr
-    convert hsum_cont using 1
-    funext u
-    exact hpow u
-  have hmap := d.arch_map_lineMeasure_pow w
-  dsimp only at hmap
-  let c := ((n : ℝ) / modulus F v (n : K)).toNNReal
-  have hmn : 0 < modulus F v (n : K) := by
-    have hnz := (diagonal F v).injective.ne (Nat.cast_ne_zero.mpr (NeZero.ne n) : (n:F) ≠ 0)
-    simp only [map_natCast,map_zero] at hnz
-    simp [modulus,norm_pos_iff.mpr hnz,pow_pos]
-  have hcpos : (c : ℝ) = n / modulus F v (n : K) := Real.coe_toNNReal _ (by positivity)
-  have hGm : AEStronglyMeasurable G (ν.map (fun x : Kˣ => x^n)) := by
-    rw [hmap]
-    exact (hGc.aestronglyMeasurable hP.measurableSet).smul_measure c
-  have key := integral_map (φ := fun x : Kˣ => x^n) (μ := ν) (continuous_pow n).aemeasurable hGm
-  rw [hmap,integral_smul_nnreal_measure] at key
-  have hres : (∫ z, G z ∂ν.restrict (P : Set Kˣ)) = ∫ z, G z ∂ν :=
-    setIntegral_eq_integral_of_forall_compl_eq_zero hGP
-  have hrot (ζ : K) (hζ : ζ ∈ R) : (∫ u, Θ (ζ * u.val) ∂ν) = ∫ u, Θ u.val ∂ν :=
-    integral_mul_left_eq_self (fun u : Kˣ => Θ u.val) (Units.mk0 ζ (hR ζ hζ))
-  have hsum : (∫ u, G (u^n) ∂ν) = n * ∫ u, Θ u.val ∂ν := by
-    simp_rw [hpow]
-    rw [integral_finsetSum _ (fun ζ hζ => by
-      simpa only [Units.val_mul,Units.val_mk0] using
-        (hi.comp_mul_left (Units.mk0 ζ (hR ζ hζ))))]
-    rw [Finset.sum_congr rfl hrot,Finset.sum_const,arch_card_roots_one d w,nsmul_eq_mul]
-  rw [hres,hsum,NNReal.smul_def,hcpos,Complex.real_smul] at key
-  change (∫ z, G z ∂ν) = _
-  have hn0 : (n : ℂ) ≠ 0 := Nat.cast_ne_zero.mpr (NeZero.ne n)
-  have hm0 : (modulus F v (n : K) : ℂ) ≠ 0 := Complex.ofReal_ne_zero.mpr hmn.ne'
-  have hq : ((n : ℝ) / modulus F v (n : K) : ℝ) ≠ 0 := div_ne_zero (by exact_mod_cast NeZero.ne n) hmn.ne'
-  apply mul_left_cancel₀ (Complex.ofReal_ne_zero.mpr hq)
-  rw [key]
-  push_cast
-  field_simp
-  rfl
+      (modulus F v (n : K) : ℂ) * ∫ u : Kˣ, Θ u.val ∂(d.lineMeasure v) :=
+  (d.lineIntegral_rootSum v Θ hc hi).2
 
 local notation "dx" => selfDual F d.character v
 
