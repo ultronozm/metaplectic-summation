@@ -132,32 +132,11 @@ history before pushing), or be re-pinned afterwards.
 - The text of the paper (`schwartz-space-n-fold-cover-sl2.tex` and the files built from it) is licensed under the Creative Commons Attribution 4.0 International licence (`LICENSE-paper.txt`).
 - `lean/vendor/ground-theory/` contains 35 modules copied from the Lean archive released with Alpöge's proof of the generalized Riemann hypothesis (https://alpo.ge/remark.pdf), which states no licence; they are included here with credit to that archive and its authors, and remain theirs.  Other vendored code carries the licences in `lean/licenses/`.
 
-## Before publishing
+## Next steps
 
-- Create the GitHub repository and check `\leanrepo` in the paper,
-  `site.githubRepository` in `config.json`, and the GitHub links in
-  `index.org` (all assume `ultronozm/metaplectic-summation`).
-- Re-pin `\leancommit` to the final commit touching `lean/`
-  (`scripts/lean-links.py --commit`), rebuild with `./preview-site.sh`, and
-  commit the paper and `index.org`.
-- Palomar (submit with project path `lean`):
-  - Every `.lean` file in the repository must use Lean's module system.  None
-    of the 295 files does yet, and the port is not mechanical: a module cannot
-    import a non-module file, and the development imports 14 modules of the
-    pinned dependency `FiniteAbelianGlobalReciprocityv2`, whose import closure
-    is 877 files (about 376,000 lines) of which 18 are modules.  The
-    dependency (or that closure, vendored) must be ported first; then the
-    development, `Challenge.lean` and `Solution.lean` (`module`,
-    `public import`, `@[expose] public section`, and the 160 files with
-    `private` declarations checked), and Comparator rerun.  `Challenge.lean`
-    imports only Mathlib, so its own port is mechanical.
-  - Add a root `LICENSE` matching `project.license` in
-    `lean/formalization.yaml` (Apache-2.0 there).
-  - Audit `Challenge.lean` (398 lines, of which 319 are definitions; Palomar
-    prefers at most 300) and update `review.status` and the automation
-    details in `formalization.yaml`.
-- [Lean Pool](https://github.com/LeanPool/lean-pool) prefers projects already
-  registered in Palomar.
+- Palomar (submit with project path `lean`): every `.lean` file must use Lean's module system.  The port is not mechanical: a module cannot import a non-module file, and the development imports 14 modules of the pinned dependency `FiniteAbelianGlobalReciprocityv2`, whose import closure is 877 files (about 376,000 lines), of which 18 are modules.  That dependency must be ported first; then the development, `Challenge.lean` and `Solution.lean`, and Comparator rerun.  `Challenge.lean` (398 lines, of which 319 are definitions) still needs a human audit against the paper.
+- [Lean Pool](https://github.com/LeanPool/lean-pool) prefers projects already registered in Palomar.
+- When the Lean code changes, re-pin the paper's links with `scripts/lean-links.py --commit` and rebuild with `./preview-site.sh`.
 
 ## Keeping the parts in sync
 
