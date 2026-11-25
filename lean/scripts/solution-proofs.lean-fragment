@@ -1,170 +1,41 @@
 /-! ## Bridge to the proof development
 
-The project `MetaplecticSummation` fixes its objects by choice from proved
-existence and uniqueness statements. Here we show that every `Setup` and every
-`Data` agree with those choices, then transport the project's theorems. -/
+The development fixes the self-dual measures and the Hilbert symbols by choice
+from proved existence and uniqueness statements. Any measures and symbols with
+the defining properties are those choices; after substituting them, the
+definitions above agree definitionally with the development's, and its
+theorems apply. -/
 
 set_option linter.unusedSectionVars false
-
 set_option maxHeartbeats 2000000
 
 namespace Bridge
-open MetaplecticPoisson (Datum)
 
-/-- The project's datum attached to a setup. -/
-def datum (s : Setup F n) : Datum F n :=
-  { root := s.root, primitive := s.primitive, embedding := s.embedding,
-    injective := s.injective,
-    character := ⟨s.character, s.continuous_character, s.nontrivial, s.trivial_on_F⟩ }
-
-theorem measure_eq (s : Setup F n) (v : Place F) :
-    s.measure v = MetaplecticPoisson.selfDual F (datum s).character v :=
-  (MetaplecticPoisson.existsUnique_selfDual F (datum s).character v).unique (s.selfDual v)
-    (MetaplecticPoisson.existsUnique_selfDual F (datum s).character v).exists.choose_spec
-
-theorem isHilbert (s : Setup F n) : MetaplecticPoisson.IsHilbertFamily F n s.hilbert :=
-  let h := s.isHilbert
+theorem isHilbert {m : ℕ} {H : SymbolFamily F m} (h : IsHilbertFamily F m H) :
+    MetaplecticPoisson.IsHilbertFamily F m H :=
   ⟨h.continuous_pair, h.mul_left, h.mul_right, h.skew, h.neg_self, h.tame_units,
     h.tame_uniformizer, h.unramified, h.reciprocity⟩
 
-theorem hilbert_eq (s : Setup F n) :
-    s.hilbert = (MetaplecticPoisson.existsUnique_hilbert F n s.primitive).exists.choose :=
-  (MetaplecticPoisson.existsUnique_hilbert F n s.primitive).unique (isHilbert s)
-    (MetaplecticPoisson.existsUnique_hilbert F n s.primitive).exists.choose_spec
+theorem measure_eq (ψ : MetaplecticPoisson.Character F) {μ : ∀ v, Measure (LocalField F v)}
+    (hμ : ∀ v, IsSelfDual ψ.toChar v (μ v)) :
+    μ = fun v => MetaplecticPoisson.selfDual F ψ v :=
+  funext fun v => (MetaplecticPoisson.existsUnique_selfDual F ψ v).unique (hμ v)
+    (MetaplecticPoisson.existsUnique_selfDual F ψ v).exists.choose_spec
 
-/-- A setup whose measures and symbols are the project's choices. -/
-def IsCanonical (s : Setup F n) : Prop :=
-  s.measure = (fun v => MetaplecticPoisson.selfDual F (datum s).character v) ∧
-  s.hilbert = (MetaplecticPoisson.existsUnique_hilbert F n s.primitive).exists.choose
+theorem hilbert_eq {m : ℕ} [NeZero m] {ζ : F} (hζ : IsPrimitiveRoot ζ m) {H : SymbolFamily F m}
+    (hH : IsHilbertFamily F m H) :
+    H = (MetaplecticPoisson.existsUnique_hilbert F m hζ).exists.choose :=
+  (MetaplecticPoisson.existsUnique_hilbert F m hζ).unique (isHilbert hH)
+    (MetaplecticPoisson.existsUnique_hilbert F m hζ).exists.choose_spec
 
-/-- The setup whose measures and symbols are the project's choices. -/
-abbrev canon (ζ : F) (hζ : IsPrimitiveRoot ζ n) (ε : Mu F n →* ℂˣ) (hε : Function.Injective ε)
-    (ψ : AddChar (Adeles F) Circle) (hc : Continuous ψ) (hnt : ∃ a, ψ a ≠ 1)
-    (htr : ∀ x : F, ψ (algebraMap F (Adeles F) x) = 1)
-    (hμ : ∀ v, IsSelfDual ψ v (MetaplecticPoisson.selfDual F ⟨ψ, hc, hnt, htr⟩ v))
-    (hH : IsHilbertFamily F n (MetaplecticPoisson.existsUnique_hilbert F n hζ).exists.choose) :
-    Setup F n :=
-  ⟨ζ, hζ, ε, hε, ψ, hc, hnt, htr, fun v => MetaplecticPoisson.selfDual F ⟨ψ, hc, hnt, htr⟩ v,
-    hμ, (MetaplecticPoisson.existsUnique_hilbert F n hζ).exists.choose, hH⟩
-
-/-- Every statement about setups reduces to canonical setups. -/
-@[elab_as_elim]
-theorem setup_induction {P : Setup F n → Prop}
-    (h : ∀ ζ hζ ε hε ψ hc hnt htr hμ hH, P (canon ζ hζ ε hε ψ hc hnt htr hμ hH))
-    (s : Setup F n) : P s := by
-  obtain ⟨ζ, hζ, ε, hε, ψ, hc, hnt, htr, μ, hμ, H, hH⟩ := s
-  have hm : ∀ v, μ v = MetaplecticPoisson.selfDual F ⟨ψ, hc, hnt, htr⟩ v :=
-    measure_eq ⟨ζ, hζ, ε, hε, ψ, hc, hnt, htr, μ, hμ, H, hH⟩
-  have hh : H = (MetaplecticPoisson.existsUnique_hilbert F n hζ).exists.choose :=
-    hilbert_eq ⟨ζ, hζ, ε, hε, ψ, hc, hnt, htr, μ, hμ, H, hH⟩
-  obtain rfl : μ = _ := funext hm
-  obtain rfl : H = _ := hh
-  exact h ζ hζ ε hε ψ hc hnt htr hμ hH
-
-private theorem place_units_neBot (v : Place F) :
-    NeBot (comap (fun u : (LocalField F v)ˣ => u.val) (𝓝 0)) := by
-  cases v with
-  | inl w => exact MetaplecticPoisson.Datum.arch_units_neBot w
-  | inr p =>
-    let := MetaplecticPoisson.FinitePlace.nontriviallyNormedCompletion p
-    exact MetaplecticPoisson.units_neBot_at_zero (L := p.adicCompletion F)
-
-/-- Linear maps out of a restricted tensor product agree if they agree on pure tensors. -/
-theorem restricted_ext {ι : Type} {V : ι → Type} [∀ i, AddCommGroup (V i)] [∀ i, Module ℂ (V i)]
-    {M : Type} [AddCommMonoid M] [Module ℂ M] (basic : ∀ i, V i)
-    {L L' : restrictedTensor basic →ₗ[ℂ] M}
-    (h : ∀ (f : ∀ i, V i) (hf : ∀ᶠ i in cofinite, f i = basic i),
-      L ⟨PiTensorProduct.tprod ℂ f, Submodule.subset_span ⟨f, hf, rfl⟩⟩ =
-        L' ⟨PiTensorProduct.tprod ℂ f, Submodule.subset_span ⟨f, hf, rfl⟩⟩) : L = L' := by
-  apply LinearMap.ext
-  rintro ⟨z, hz⟩
-  refine Submodule.span_induction
-    (p := fun x (hx : x ∈ restrictedTensor basic) => L ⟨x, hx⟩ = L' ⟨x, hx⟩) ?_ ?_ ?_ ?_ hz
-  · rintro _ ⟨f, hf, rfl⟩
-    exact h f hf
-  · exact (map_zero L).trans (map_zero L').symm
-  · intro x y hx hy ex ey
-    have := congrArg₂ (· + ·) ex ey
-    rw [← map_add, ← map_add] at this
-    exact this
-  · intro a x hx ex
-    have := congrArg (a • ·) ex
-    rw [← map_smul, ← map_smul] at this
-    exact this
-
-section Canonical
-variable (ζ : F) (hζ : IsPrimitiveRoot ζ n) (ε : Mu F n →* ℂˣ) (hε : Function.Injective ε)
-    (ψ : AddChar (Adeles F) Circle) (hc : Continuous ψ) (hnt : ∃ a, ψ a ≠ 1)
-    (htr : ∀ x : F, ψ (algebraMap F (Adeles F) x) = 1)
-    (hμ : ∀ v, IsSelfDual ψ v (MetaplecticPoisson.selfDual F ⟨ψ, hc, hnt, htr⟩ v))
-    (hH : IsHilbertFamily F n (MetaplecticPoisson.existsUnique_hilbert F n hζ).exists.choose)
-
-local notation "s₀" => canon ζ hζ ε hε ψ hc hnt htr hμ hH
-local notation "d₀" => datum (canon ζ hζ ε hε ψ hc hnt htr hμ hH)
-
-theorem basic_val (v : Place F) : ((d₀).basic v).val = (s₀).basicVector v := by
-  cases v with
-  | inl w => rfl
-  | inr p =>
-    by_cases hp : p.asIdeal.absNorm.Coprime n
-    · rw [MetaplecticPoisson.Datum.basic, dif_pos hp]
-      exact (if_pos hp).symm
-    · rw [MetaplecticPoisson.Datum.basic, dif_neg hp]
-      exact (if_neg hp).symm
-
-/-- The project's objects form a `Data`. -/
-def canonData : Data s₀ where
-  fourier := (d₀).fourier
-  fourier_spec := (d₀).fourier_apply
-  leading := (d₀).leading
-  leading_spec := (d₀).leading_spec
-  basic := (d₀).basic
-  basic_spec := basic_val ζ hζ ε hε ψ hc hnt htr hμ hH
-  adelicFourier := (d₀).adelicFourier
-  adelicFourier_spec f hf := congrArg Subtype.val ((d₀).adelicFourier_pure f hf)
-  adelicLeading := (d₀).adelicLeading
-  adelicLeading_spec f hf := by
-    exact PiTensorProduct.map_tprod _ f
-  evaluation := (d₀).evaluation
-  evaluation_spec := (d₀).evaluation_pure
-
-/-- Every `Data` over a canonical setup is the project's. -/
-theorem data_eq (D : Data s₀) : D = canonData ζ hζ ε hε ψ hc hnt htr hμ hH := by
-  obtain ⟨𝓕, h𝓕, b, hb, β, hβ, 𝓕A, h𝓕A, bA, hbA, E, hE⟩ := D
-  obtain rfl : 𝓕 = (d₀).fourier := funext fun v => LinearMap.ext fun f =>
-    Subtype.ext ((h𝓕 v f).trans ((d₀).fourier_apply v f).symm)
-  obtain rfl : b = (d₀).leading := funext fun v => LinearMap.ext fun f => by
-    have := place_units_neBot v
-    exact MetaplecticPoisson.IsLeadingTerm.unique (hb v f) ((d₀).leading_spec v f)
-  obtain rfl : β = (d₀).basic := funext fun v =>
-    Subtype.ext ((hβ v).trans (basic_val ζ hζ ε hε ψ hc hnt htr hμ hH v).symm)
-  obtain rfl : 𝓕A = (canonData ζ hζ ε hε ψ hc hnt htr hμ hH).adelicFourier :=
-    by
-      apply restricted_ext
-      intro f hf
-      exact Subtype.ext ((h𝓕A f hf).trans ((canonData ζ hζ ε hε ψ hc hnt htr hμ hH).adelicFourier_spec f hf).symm)
-  obtain rfl : bA = (canonData ζ hζ ε hε ψ hc hnt htr hμ hH).adelicLeading :=
-    by
-      apply restricted_ext
-      intro f hf
-      exact Subtype.ext ((hbA f hf).trans ((canonData ζ hζ ε hε ψ hc hnt htr hμ hH).adelicLeading_spec f hf).symm)
-  obtain rfl : E = (canonData ζ hζ ε hε ψ hc hnt htr hμ hH).evaluation :=
-    by
-      apply restricted_ext
-      intro f hf
-      exact funext fun p => (hE f hf p).trans ((d₀).evaluation_pure f hf p).symm
-  rfl
-
-end Canonical
-
-/-- The project's twist attached to a twist. -/
+/-- The development's twist attached to a twist. -/
 def toTwist {S : Finset (Place F)} {f : NonzeroInteger S} (T : Twist n S f) :
     MetaplecticPoisson.Datum.Twist (n := n) S f :=
   ⟨T.primes, T.outside, T.character, T.continuous_char, T.exponent, T.positive, T.conductor,
     T.generator, T.unit_elsewhere, T.empty_modulus⟩
 
 /-- An injective homomorphism `μ₂ → ℂˣ` is unique. -/
-theorem mu2_embedding_unique {F : Type} [Field F] (e₁ e₂ : Mu F 2 →* ℂˣ)
+theorem mu2_embedding_unique (e₁ e₂ : Mu F 2 →* ℂˣ)
     (h₁ : Function.Injective e₁) (h₂ : Function.Injective e₂) : e₁ = e₂ := by
   have key (e : Mu F 2 →* ℂˣ) (he : Function.Injective e) (z : Mu F 2) (hz : z ≠ 1) :
       ((e z : ℂˣ) : ℂ) = -1 := by
@@ -179,26 +50,18 @@ theorem mu2_embedding_unique {F : Type} [Field F] (e₁ e₂ : Mu F 2 →* ℂˣ
   · rw [hz, map_one, map_one]
   · rw [key e₁ h₁ z hz, key e₂ h₂ z hz]
 
-theorem residue_eq_of_embedding {m : ℕ} [NeZero m] {d₁ d₂ : MetaplecticPoisson.Datum F m}
-    (h : d₁.embedding = d₂.embedding) (S : Finset (Place F)) :
-    d₁.residue S = d₂.residue S := by
-  funext a c
-  unfold MetaplecticPoisson.Datum.residue MetaplecticPoisson.Datum.symbol MetaplecticPoisson.hilbert
-  rw [h]
-
-/-- The quadratic residue symbol of any setup with `n = 2` is the project's. -/
-theorem residue_two (s₂ : Setup F 2) (d : Datum F n) (S : Finset (Place F)) :
-    s₂.residue S = d.quadraticDatum.residue S := by
-  revert s₂
-  intro s₂
-  induction s₂ using setup_induction with
-  | h ζ hζ ε hε ψ hc hnt htr hμ hH =>
-    exact residue_eq_of_embedding (d₁ := datum (canon ζ hζ ε hε ψ hc hnt htr hμ hH))
-      (mu2_embedding_unique _ _ hε d.quadraticDatum.injective) S
+/-- The classical setting in the development's form. -/
+theorem classicalSetting (d : MetaplecticPoisson.Datum F n) {S : Finset (Place F)}
+    (hS : ClassicalSetting n d.character.toChar S) : d.ClassicalSetting S := by
+  refine ⟨⟨hS.nonempty, hS.infinite, fun p hp => ⟨hS.coprime p hp, fun x hx => ?_⟩⟩,
+    hS.unramified, hS.principal⟩
+  have h := ((hS.unramified p hp 1).mpr (by simp)) x hx
+  exact (congrArg (MetaplecticPoisson.Character.localValue F d.character (.inr p))
+    (one_mul x).symm).trans h
 
 /-- The moments for `ψ(b ·)` are a fixed multiple of those for `ψ`. -/
-theorem moment_scaled (d : Datum F n) {S : Finset (Place F)} (b : Fˣ) (W : Weights S)
-    (β : Classes n S) :
+theorem moment_scaled (d : MetaplecticPoisson.Datum F n) {S : Finset (Place F)} (b : Fˣ)
+    (W : Weights S) (β : Classes n S) :
     (d.scaled b).moment W β =
       (∏ v : S, (NNReal.sqrt (modulus F v.val (diagonal F v.val b)).toNNReal : ℂ)) *
         d.moment W β := by
@@ -208,7 +71,7 @@ theorem moment_scaled (d : Datum F n) {S : Finset (Place F)} (b : Fˣ) (W : Weig
 
 end Bridge
 
--- proof: exists_setup
+-- proof: exists_selfDual_hilbert
   ⟨fun v => MetaplecticPoisson.selfDual F ⟨ψ, hψ, hnt, htriv⟩ v,
     (MetaplecticPoisson.existsUnique_hilbert F n hζ).exists.choose,
     fun v => (MetaplecticPoisson.existsUnique_selfDual F ⟨ψ, hψ, hnt, htriv⟩ v).exists.choose_spec,
@@ -216,98 +79,42 @@ end Bridge
       let h := (MetaplecticPoisson.existsUnique_hilbert F n hζ).exists.choose_spec
       exact ⟨h.continuous_pair, h.mul_left, h.mul_right, h.skew, h.neg_self, h.tame_units,
         h.tame_uniformizer, h.unramified, h.reciprocity⟩⟩
--- proof: basicCharts_mem
-  by
-  revert p
-  induction s using Bridge.setup_induction with
-  | h ζ hζ ε hε ψ hc hnt htr hμ hH =>
-    intro p hp
-    exact (Bridge.datum (Bridge.canon ζ hζ ε hε ψ hc hnt htr hμ hH)).basic_mem p hp
--- proof: nonempty_data
-  by
-  induction s using Bridge.setup_induction with
-  | h ζ hζ ε hε ψ hc hnt htr hμ hH => exact ⟨Bridge.canonData ζ hζ ε hε ψ hc hnt htr hμ hH⟩
--- proof: schwartz_inversion
-  by
-  revert D
-  induction s using Bridge.setup_induction with
-  | h ζ hζ ε hε ψ hc hnt htr hμ hH =>
-    intro D
-    obtain rfl := Bridge.data_eq ζ hζ ε hε ψ hc hnt htr hμ hH D
-    exact (Bridge.datum (Bridge.canon ζ hζ ε hε ψ hc hnt htr hμ hH)).schwartz_inversion v
--- proof: poisson
-  by
-  revert D
-  induction s using Bridge.setup_induction with
-  | h ζ hζ ε hε ψ hc hnt htr hμ hH =>
-    intro D
-    obtain rfl := Bridge.data_eq ζ hζ ε hε ψ hc hnt htr hμ hH D
-    exact (Bridge.datum (Bridge.canon ζ hζ ε hε ψ hc hnt htr hμ hH)).poisson
--- proof: poisson_of_leading_eq_zero
-  by
-  revert D
-  induction s using Bridge.setup_induction with
-  | h ζ hζ ε hε ψ hc hnt htr hμ hH =>
-    intro D Φ h hF
-    obtain rfl := Bridge.data_eq ζ hζ ε hε ψ hc hnt htr hμ hH D
-    exact (Bridge.datum (Bridge.canon ζ hζ ε hε ψ hc hnt htr hμ hH)).poisson_of_leading_eq_zero Φ h hF
 -- proof: twistedGaussSummation
   by
-  revert h b
-  induction s using Bridge.setup_induction with
-  | h ζ hζ ε hε ψ hc hnt htr hμ hH =>
-    intro h b
-    let d := Bridge.datum (Bridge.canon ζ hζ ε hε ψ hc hnt htr hμ hH)
-    have h' : d.ClassicalSetting S := ⟨h.good, h.unramified, h.principal⟩
-    let ρ₀ := ((d.scaled (fieldUnit b)).lineSummation S (d.scaled_good h' b)).exists.choose
-    let C : ℂ := ∏ v : S,
-      (NNReal.sqrt (modulus F v.val (diagonal F v.val (fieldUnit b : F))).toNNReal : ℂ)
-    refine ⟨fun β => (Real.sqrt (sNorm S (fieldUnit b)) : ℂ) * (ρ₀ β * C), ?_⟩
-    intro f T hcop W hW
-    obtain ⟨hε', H⟩ := d.twistedGaussSummation h' f b (Bridge.toTwist T) hcop W hW
-    obtain ⟨hs₁, hs₂⟩ := d.summable_twistedGauss h' b (Bridge.toTwist T) hcop W hW
-    refine ⟨hε', hs₁, hs₂, ?_⟩
-    refine H.trans ?_
-    congr 1
-    change (if T.primes.card = 0 then d.mainTerm h' b W else 0) = _
-    split_ifs
-    · simp only [MetaplecticPoisson.Datum.mainTerm]
-      rw [mul_finsum]
-      apply finsum_congr
-      intro β
-      show (Real.sqrt (sNorm S (fieldUnit b : F)) : ℂ) *
-          (ρ₀ β * (d.scaled (fieldUnit b)).moment W β) =
-        (Real.sqrt (sNorm S (fieldUnit b : F)) : ℂ) * (ρ₀ β * C) * d.moment W β
-      rw [Bridge.moment_scaled d (fieldUnit b) W β]
-      ring
-    · rfl
+  intro σ
+  obtain rfl := Bridge.measure_eq ⟨ψ, hψ, hnt, htriv⟩ hμ
+  obtain rfl := Bridge.hilbert_eq hζ hH
+  let d : MetaplecticPoisson.Datum F n := ⟨ζ, hζ, ε, hε, ⟨ψ, hψ, hnt, htriv⟩⟩
+  have h' : d.ClassicalSetting S := Bridge.classicalSetting d hS
+  let ρ₀ := ((d.scaled (fieldUnit b)).lineSummation S (d.scaled_good h' b)).exists.choose
+  let C : ℂ := ∏ v : S,
+    (NNReal.sqrt (modulus F v.val (diagonal F v.val (fieldUnit b : F))).toNNReal : ℂ)
+  refine ⟨fun β => (Real.sqrt (sNorm S (fieldUnit b)) : ℂ) * (ρ₀ β * C), ?_⟩
+  intro f T hcop W hW
+  obtain ⟨hε', H⟩ := d.twistedGaussSummation h' f b (Bridge.toTwist T) hcop W hW
+  obtain ⟨hs₁, hs₂⟩ := d.summable_twistedGauss h' b (Bridge.toTwist T) hcop W hW
+  refine ⟨hε', hs₁, hs₂, ?_⟩
+  refine H.trans ?_
+  congr 1
+  change (if T.primes.card = 0 then d.mainTerm h' b W else 0) = _
+  split_ifs
+  · simp only [MetaplecticPoisson.Datum.mainTerm]
+    rw [mul_finsum]
+    apply finsum_congr
+    intro β
+    show (Real.sqrt (sNorm S (fieldUnit b : F)) : ℂ) *
+        (ρ₀ β * (d.scaled (fieldUnit b)).moment W β) =
+      (Real.sqrt (sNorm S (fieldUnit b : F)) : ℂ) * (ρ₀ β * C) * d.moment W β
+    rw [Bridge.moment_scaled d (fieldUnit b) W β]
+    ring
+  · rfl
 -- proof: quadraticDual
   by
-  revert hS
-  induction s using Bridge.setup_induction with
-  | h ζ hζ ε hε ψ hc hnt htr hμ hH =>
-    intro hS
-    let d := Bridge.datum (Bridge.canon ζ hζ ε hε ψ hc hnt htr hμ hH)
-    have hS' : d.ClassicalSetting S := ⟨hS.good, hS.unramified, hS.principal⟩
-    obtain ⟨e, he, H⟩ := d.quadraticDual hS' odd awayTwo h nonunit squarefree
-    refine ⟨e, he, fun W hW => ?_⟩
-    rw [Bridge.residue_two s₂ d S]
-    exact H W hW
--- proof: sextic_to_quadratic
-  by
-  revert compatible hS
-  induction s using Bridge.setup_induction with
-  | h ζ hζ ε hε ψ hc hnt htr hμ hH =>
-    revert s₆
-    intro s₆
-    induction s₆ using Bridge.setup_induction with
-    | h ζ₆ hζ₆ ε₆ hε₆ ψ₆ hc₆ hnt₆ htr₆ hμ₆ hH₆ =>
-      intro compatible hS
-      let a := Bridge.datum (Bridge.canon ζ hζ ε hε ψ hc hnt htr hμ hH)
-      let six := Bridge.datum (Bridge.canon ζ₆ hζ₆ ε₆ hε₆ ψ₆ hc₆ hnt₆ htr₆ hμ₆ hH₆)
-      have hS' : a.ClassicalSetting S := ⟨hS.good, hS.unramified, hS.principal⟩
-      obtain ⟨e, he, H⟩ := MetaplecticPoisson.Datum.sextic_to_quadratic a six compatible hS'
-        awayTwo h nonunit squarefree
-      refine ⟨e, he, fun W hW => ?_⟩
-      rw [Bridge.residue_two s₂ a S]
-      exact H W hW
+  intro σ σ₂
+  obtain rfl := Bridge.measure_eq ⟨ψ, hψ, hnt, htriv⟩ hμ
+  obtain rfl := Bridge.hilbert_eq hζ hH
+  let d : MetaplecticPoisson.Datum F n := ⟨ζ, hζ, ε, hε, ⟨ψ, hψ, hnt, htriv⟩⟩
+  obtain rfl := Bridge.hilbert_eq d.quadraticDatum.primitive hH₂
+  obtain rfl := Bridge.mu2_embedding_unique ε₂ d.quadraticDatum.embedding hε₂
+    d.quadraticDatum.injective
+  exact d.quadraticDual (Bridge.classicalSetting d hS) odd awayTwo h nonunit squarefree

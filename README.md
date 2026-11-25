@@ -45,11 +45,14 @@ same checks without the sandbox.
 
 ## Status
 
-- The development has no `sorry`.  `Challenge.lean` states Proposition 6.3(ii),
-  Theorem 7.1, Theorem 9.1, Corollary 9.2, Theorem 10.34 and Corollary 10.40
-  (with the sextic case) against Mathlib alone, for number fields.
-  `Solution.lean` proves them, and every compared theorem depends only on
-  `propext`, `Classical.choice` and `Quot.sound`.
+- The development has no `sorry`.  `Challenge.lean` states Theorem 10.33
+  (twisted sums of Gauss sums of order n) and Corollary 10.39 (the quadratic
+  dual) against Mathlib alone, for number fields, quantifying over self-dual
+  measures and Hilbert symbols with their defining properties and giving the
+  local transform by the explicit integral (10.15).  `Solution.lean` proves
+  them, and every compared theorem depends only on `propext`,
+  `Classical.choice` and `Quot.sound`.  The Poisson formula, Theorem 7.1 and
+  the rest are proved in the development (Appendix C of the paper).
 - `lake comparator` accepts the solution with Lean's kernel, NanoDa and
   con-ron (run locally without the sandbox, 2026-11-25).
 - Appendix C of the paper lists what is checked and with which hypotheses;
@@ -86,8 +89,8 @@ history before pushing), or be re-pinned afterwards.
   - Add a root `LICENSE` matching `project.license` in
     `lean/formalization.yaml` (Apache-2.0 there; the vendored code is
     Apache-2.0, see `lean/licenses/`).
-  - Audit `Challenge.lean` (680 lines, above Palomar's preferred 300) and
-    update `review.status` and the automation details in
+  - Audit `Challenge.lean` (398 lines, of which 319 are definitions; Palomar
+    prefers at most 300) and update `review.status` and the automation details in
     `formalization.yaml`.
 - [Lean Pool](https://github.com/LeanPool/lean-pool) prefers projects already
   registered in Palomar.

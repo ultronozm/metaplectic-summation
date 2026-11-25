@@ -2,17 +2,15 @@
   "challenge_module": "Challenge",
   "solution_module": "Solution",
   "theorem_names": [
-    "NFoldCover.exists_setup",
-    "NFoldCover.basicCharts_mem",
-    "NFoldCover.nonempty_data",
-    "NFoldCover.schwartz_inversion",
-    "NFoldCover.poisson",
-    "NFoldCover.poisson_of_leading_eq_zero",
+    "NFoldCover.exists_selfDual_hilbert",
     "NFoldCover.twistedGaussSummation",
-    "NFoldCover.quadraticDual",
-    "NFoldCover.sextic_to_quadratic"
+    "NFoldCover.quadraticDual"
   ],
   "definition_names": [],
-  "permitted_axioms": ["propext", "Quot.sound", "Classical.choice"],
+  "permitted_axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+  ],
   "enable_nanoda": true
 }

@@ -23,9 +23,11 @@ header = ("import Mathlib\nimport MetaplecticSummation\n\n"
 body = challenge
 body = re.sub(r'^import Mathlib\n', '', body)
 # Insert the bridge before the first theorem section.
-marker = '/-! ## Existence of the characterized objects -/'
+marker = '/-! ## Statements -/\n\nvariable {F : Type} [Field F] [NumberField F] {n : ℕ} [NeZero n]\n'
+if marker not in body:
+    sys.exit('statement marker not found in Challenge.lean')
 before, _, after = body.partition(marker)
-body = before + bridge.strip() + '\n\n' + marker + after
+body = before + marker + '\n' + bridge.strip() + '\n\n' + after
 
 def repl(m):
     name = m.group(1)
