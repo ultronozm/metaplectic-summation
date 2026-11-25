@@ -8,7 +8,7 @@ its Lean 4 formalization.
 | `schwartz-space-n-fold-cover-sl2.tex` | The paper, with a self-contained preamble.  `refs.bib` holds the cited references. |
 | `lean/` | The Lean project: the development (`MetaplecticSummation/`), the statement file `Challenge.lean`, its proof `Solution.lean`, and the Palomar files `comparator.json` and `formalization.yaml`.  See [`lean/README.md`](lean/README.md) for a map of the development. |
 | `scripts/lean-links.py` | Keeps the paper's links to Lean declarations current. |
-| `sketches.tex`, `sketched.tex`, `portable/`, `Makefile` | Informal sketches of the paper, keyed by its labels, and the two ways of reading them: a PDF and a portable HTML reader.  See [Sketches](#sketches). |
+| `Makefile` | `make paper` builds the PDF into `output/pdf/`. |
 | `.github/`, `*.sh`, `tex2html.el`, `index.org`, `tex.css`, `config.json` | Site machinery from [tex-site](https://github.com/ultronozm/tex-site): PDF and HTML builds deployed to GitHub Pages. |
 
 The paper is kept under a short name rather than its notes-directory name
@@ -43,27 +43,6 @@ same checks without the sandbox.
 `lean/Solution.lean` is generated: edit `lean/Challenge.lean` and
 `lean/scripts/solution-proofs.lean-fragment`, then run
 `lean/scripts/make-solution.py`.
-
-## Sketches
-
-[sketches.tex](sketches.tex) holds informal sketches of the paper (an
-overview, the main results, and the ideas of the proofs), keyed by its labels
-and mostly condensed from its own prose.  The paper itself is unchanged.
-
-- `make sketched` compiles [sketched.tex](sketched.tex): the paper with the
-  sketches in front, each linked to its unit, in `output/pdf/sketched.pdf`.
-  It uses `sketches.sty` from [~/work/sketches](/Users/au710211/work/sketches).
-- `make html` builds the same reading as one portable HTML file,
-  `output/html/metaplectic-sketches.html`: double-click it.  Each sketch
-  opens the paper's text beside it; statements checked in Lean carry a Lean
-  link; two figures for n = 2 over ℝ sit under the sketches they illustrate.
-  `make check-html` checks it in headless Chrome.  See
-  [portable/README.md](portable/README.md) and
-  [portable/MEDIA.md](portable/MEDIA.md).
-
-`make sketched` needs TeX; `make html` also needs Python 3.11 or later (set
-`PYTHON=...` if `python3` is older) and Node.  `config.json` excludes
-`sketches.tex` and `sketched.tex` from the site build.
 
 ## Status
 

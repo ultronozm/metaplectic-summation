@@ -23,7 +23,7 @@ _region_.*
 /*.pdf
 /*.aux
 
-# Builds of the sketches (make sketched, make html) write here.
+# make paper writes here.
 /build/
 /output/
 __pycache__/
