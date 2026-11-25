@@ -2,6 +2,7 @@ import MetaplecticSummation.FiniteGerms
 import MetaplecticSummation.FiniteInversion
 import MetaplecticSummation.ArchimedeanInversion
 import MetaplecticSummation.RootKernel
+import MetaplecticSummation.PlancherelBounds
 
 noncomputable section
 namespace MetaplecticPoisson.Datum
