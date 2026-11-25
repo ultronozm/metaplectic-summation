@@ -1130,8 +1130,10 @@ Suppose now that $(F, \psi, n)$ is good (Definition~\ref{definition:good}).  As 
   \begin{equation*}
     g_{\psi}(c) :=
     \begin{cases}
+      1
+      & \text{ if } c \in \mathfrak{o}^\times, \\
       \sum_{d \in(\mathfrak{o} / c)^\times} \{c, d\}_n \psi(- d/c)
-      & \text{ if } c \in \mathfrak{o} - \{0\}, \\
+      & \text{ if } c \in \mathfrak{o} - \mathfrak{o}^\times - \{0\}, \\
       0    
       & \text{ if } c \notin \mathfrak{o}.
     \end{cases}
