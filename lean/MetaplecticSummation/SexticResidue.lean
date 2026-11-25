@@ -1,7 +1,7 @@
 import MetaplecticSummation.TameDegreeCompatibility
 import MetaplecticSummation.ResidueCRT
 
-/-! The sextic residue character in Corollary 10.40. -/
+/-! The sextic residue character in Corollary 10.39. -/
 noncomputable section
 namespace MetaplecticPoisson.Datum
 open NumberField IsDedekindDomain

@@ -82,7 +82,7 @@ products and rational evaluations all depend on these inputs.
 | [Jacquet/Convergence](MetaplecticSummation/Jacquet/Convergence.lean), [Jacquet/Lines](MetaplecticSummation/Jacquet/Lines.lean) | Absolute convergence, continuity, unipotent equivariance, and the fixed-parameter Radon identity for integrable X-charts |
 | [SArithmetic](MetaplecticSummation/SArithmetic.lean) | Finiteness of residue rings, power residue symbols, independence of Gauss sums from residue representatives, and the divisor sum over S-integers |
 | [Gauss/Setup](MetaplecticSummation/Gauss/Setup.lean) | Classical arithmetic hypotheses, twists, scaling the additive character, and its conductor |
-| [Gauss](MetaplecticSummation/Gauss.lean) | Deduction of the untwisted S-integer identity from adelic line summation, the twisted formula (Theorem 10.34), and quadratic duals (Corollary 10.40) |
+| [Gauss](MetaplecticSummation/Gauss.lean) | Deduction of the untwisted S-integer identity from adelic line summation, the twisted formula (Theorem 10.33), and quadratic duals (Corollary 10.39) |
 | [ConductorMeasure](MetaplecticSummation/ConductorMeasure.lean) | Existence of finite conductor parameters, self-dual volumes, and Fourier integrals over the local integers |
 | [BasicShears](MetaplecticSummation/BasicShears.lean) | Gluing and integral shear invariance of the explicit basic vector, and determination of an invariant section by its vertical axis |
 | [PrimitiveLayer](MetaplecticSummation/PrimitiveLayer.lean) | Local constancy of the explicit basic charts, the primitive test section, and the shell recurrence (6.1) |
@@ -112,7 +112,7 @@ products and rational evaluations all depend on these inputs.
 | [TateLocal](MetaplecticSummation/TateLocal.lean), [MellinDual](MetaplecticSummation/MellinDual.lean) | Tate's local functional equation on the critical strip for test weights and Schwartz–Bruhat functions, and the Mellin transform of the transformed weight (Proposition 10.20) |
 | [LocalWeights](MetaplecticSummation/LocalWeights.lean) | Jacquet inversion from Schwartz inversion, Mellin factors, and the intertwining operator on leading terms |
 | [AdeleLattice](MetaplecticSummation/AdeleLattice.lean) | Discreteness of the diagonal field, an additive fundamental domain in the adeles, and compactness of the Hausdorff quotient |
-| [Marginals](MetaplecticSummation/Marginals.lean) | Both local Fourier identities and the two Schwartz–Bruhat regularity assertions of Lemma A.6 |
+| [Marginals](MetaplecticSummation/Marginals.lean) | Both local Fourier identities and the two Schwartz–Bruhat regularity assertions of Lemma A.4 |
 | [MarginalDifference](MetaplecticSummation/MarginalDifference.lean) | The cocycle for the multiplicative difference integral in Appendix A, finite-place integrability, and cancellation for a nontrivial Hilbert character |
 | [MarginalRoots](MetaplecticSummation/MarginalRoots.lean) | Decomposition of the difference integral over the distinct roots of an n-th power, including the integrated identity |
 | [MultiplicativeMeasure](MetaplecticSummation/MultiplicativeMeasure.lean) | Multiplicative Haar measure on the units, invariance under inversion, and the substitution t = a/u at every completion |
@@ -217,7 +217,7 @@ The marginal-to-axis identity is proved at all places from chart gluing and
 the one-dimensional power-ray formula. Both marginal kernels are Schwartz–Bruhat
 for every Schwartz section at every number-field place. For a pure tensor at
 almost every finite place the axis density is the indicator of the local integers.
-The remaining analytic input to Lemma A.6 is the Archimedean case of the reverse Fourier identity on test
+The remaining analytic input to Lemma A.4 is the Archimedean case of the reverse Fourier identity on test
 sections (Lemma A.2). Lean proves the identity on tests at every finite place. The finite-place proof establishes
 absolute convergence of the multiplicative difference integral for finite-place
 tests and its vanishing when the Hilbert character is nontrivial. For an n-th
@@ -530,12 +530,12 @@ character. On the dual side the reindexed basic factor outside S and the
 conductor primes contributes one Hilbert symbol. For an integral argument
 with nonzero twist, their product is the residue symbol with that argument
 as denominator. Reindexing the dual sum and cancelling the common square-root
-factor proves Theorem 10.34 from the adelic line formula and the local
+factor proves Theorem 10.33 from the adelic line formula and the local
 evaluations. Both S-integer series converge absolutely. The
 empty conductor retains the scaled main term.
 
 The quadratic-dual corollary and its sextic specialization now follow in Lean
-from Theorem 10.34. For an odd covering degree, the quadratic twist has
+from Theorem 10.33. For an odd covering degree, the quadratic twist has
 conductor exponent one at each prime dividing the squarefree modulus.
 Power reciprocity identifies the dual summand, including its Hilbert factor
 at S. For degree three, compatibility between the degree-six and degree-three

@@ -269,7 +269,7 @@ theorem dual_charWeight_unit (p : Prime F) (hp : p.asIdeal.absNorm.Coprime n) (�
     _ = _ := by rw [← he]; ring
 
 /-- The scaled dual weight at a conductor prime, after the change of index
-in Theorem 10.34. The extended character on the right also gives the vanishing off units. -/
+in Theorem 10.33. The extended character on the right also gives the vanishing off units. -/
 theorem dual_conductor_factor {S : Finset (Place F)} (h : d.ClassicalSetting S)
     (f b : NonzeroInteger S) (T : Twist (n := n) S f) (hb : IsCoprime b.val f.val)
     (p : T.primes) (x : (LocalField F (.inr p.val))ˣ) :

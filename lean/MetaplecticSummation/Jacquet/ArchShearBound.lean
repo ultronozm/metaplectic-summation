@@ -5,7 +5,7 @@ import Mathlib.Analysis.Calculus.ContDiff.RestrictScalars
 import Mathlib.Analysis.Calculus.Deriv.ZPow
 
 
-/-! The third difference of order three behind Lemma 10.4 at real and complex
+/-! The third difference of order three behind Lemma 10.3 at real and complex
 places. On the far part of the vertical cone the X-chart of a test section has
 rapidly decaying third derivatives along vertical lines. For the transform of a
 test section, the power-ray formula expresses the third difference as the Fourier
@@ -483,7 +483,7 @@ local notation "K" => LocalField F v
 local notation "m" => modulus F v
 
 /-- The bound of order three on the far part of the vertical cone for the
-third normalized shear difference, as in the proof of Lemma 10.4. -/
+third normalized shear difference, as in the proof of Lemma 10.3. -/
 def ShearVerticalBound (u : K) (g : d.Operators v) (Φ : d.schwartz v) : Prop :=
   ∃ C₀ B : ℝ, 0 ≤ B ∧ ∀ (c : Kˣ) (y : K), m c.val < 1 → C₀ * ‖c.val‖ ≤ ‖y‖ →
     ‖((d.jacquetDifference v u g)^[3] Φ).val.1 c y‖ ≤ B * (m c.val)^(-growthExponent n) * (‖c.val‖/‖y‖)^3

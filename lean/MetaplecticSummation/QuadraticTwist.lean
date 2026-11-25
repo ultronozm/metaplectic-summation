@@ -2,7 +2,7 @@ import MetaplecticSummation.TwistedSummation
 import MetaplecticSummation.ResidueReciprocity
 import MetaplecticSummation.TamePowers
 
-/-! The primitive unit characters used in Corollary 10.40 at the primes of a squarefree modulus. -/
+/-! The primitive unit characters used in Corollary 10.39 at the primes of a squarefree modulus. -/
 noncomputable section
 namespace MetaplecticPoisson.Datum
 open NumberField

@@ -50,7 +50,7 @@ private theorem split_twist_product (T : Twist (n := n) S f)
       · simpa [a,b,hp,hv] using hs ⟨_,hv⟩
       · simpa [a,b,hp,hv] using ho (.inr p) (by simp [T.finite_mem_places,hp,hv])
 
-/-- The original adelic summand of Theorem 10.34 at an arbitrary field element. -/
+/-- The original adelic summand of Theorem 10.33 at an arbitrary field element. -/
 theorem twistedGauss_original_factor (h : d.ClassicalSetting S) (b : NonzeroInteger S)
     (T : Twist (n := n) S f) (coprime : IsCoprime b.val f.val) (W : Weights S) (c : Fˣ) :
     (d.scaled (fieldUnit b)).globalWeight (T.weights W) false c =

@@ -141,7 +141,7 @@ private theorem tsum_globalWeight_untwisted {S : Finset (Place F)} (h : d.Classi
   rw [← fieldUnit_injective.tsum_eq hs]
   exact tsum_congr (d.globalWeight_integer h W dual)
 
-/-- The untwisted S-integer formula preceding Theorem 10.34. -/
+/-- The untwisted S-integer formula preceding Theorem 10.33. -/
 theorem untwistedGaussSummation {S : Finset (Place F)} (h : d.ClassicalSetting S)
     (W : Weights S) (hW : Admissible W) :
     let ρ := (d.lineSummation S h.good).exists.choose
@@ -242,7 +242,7 @@ theorem summable_twistedGauss {S : Finset (Place F)} (h : d.ClassicalSetting S)
     ring_nf
     rfl
 
-/-- Theorem 10.34. The primes of the conductor determine whether the main term occurs. -/
+/-- Theorem 10.33. The primes of the conductor determine whether the main term occurs. -/
 theorem twistedGaussSummation {S : Finset (Place F)} (h : d.ClassicalSetting S)
     (f b : NonzeroInteger S) (T : Twist (n := n) S f) (coprime : IsCoprime b.val f.val)
     (W : Weights S) (hW : Admissible W) :
@@ -284,7 +284,7 @@ def quadraticDatum : Datum F 2 := by
           injective := (Units.map_injective e.injective).comp Subtype.val_injective
           character := d.character }
 
-/-- Corollary 10.40. The quadratic datum uses the same number field;
+/-- Corollary 10.39. The quadratic datum uses the same number field;
 the quadratic Hilbert symbol has a unique complex embedding. -/
 theorem quadraticDual {S : Finset (Place F)} (hS : d.ClassicalSetting S)
     (odd : Odd n)
@@ -325,7 +325,7 @@ theorem quadraticDual {S : Finset (Place F)} (hS : d.ClassicalSetting S)
     linear_combination d.sDual W (fieldUnit c / fieldUnit h ^ (n-1)) *
       d.normalizedGauss S 1 c.val * H
 
-/-- In degree three the twist on the left of Corollary 10.40 is the
+/-- In degree three the twist on the left of Corollary 10.39 is the
 sextic residue symbol for the compatible embedding of μ₆. -/
 theorem sextic_to_quadratic (a : Datum F 3) (six : Datum F 6)
     (compatible : ∀ z : Mu F 3,
