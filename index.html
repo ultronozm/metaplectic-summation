@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2026-11-25 Wed 15:02 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>A Schwartz space for the $n$-fold cover of $\mathrm{SL}_2$</title>
+<meta name="author" content="Paul D. Nelson" />
+<meta name="generator" content="Org Mode" />
+<style type="text/css">
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-c:before { content: 'C'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'JavaScript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<script>window.MathJax = {tex: {inlineMath: [['$','$'],['\\(','\\)']]}};</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"></script>
+<style> td, th { vertical-align: top; padding: 0.2em 0.6em; } td:first-child { white-space: nowrap; } td code { display: block; white-space: nowrap; } </style>
+<script>
+  window.MathJax = {
+    tex: {
+      ams: {
+        multlineWidth: '85%'
+      },
+      tags: 'ams',
+      tagSide: 'right',
+      tagIndent: '.8em'
+    },
+    chtml: {
+      scale: 1.0,
+      displayAlign: 'center',
+      displayIndent: '0em'
+    },
+    svg: {
+      scale: 1.0,
+      displayAlign: 'center',
+      displayIndent: '0em'
+    },
+    output: {
+      font: 'mathjax-modern',
+      displayOverflow: 'overflow'
+    }
+  };
+</script>
+
+<script
+  id="MathJax-script"
+  async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
+</head>
+<body>
+<div id="content" class="content">
+<h1 class="title">A Schwartz space for the $n$-fold cover of \(\mathrm{SL}_2\)</h1>
+<p>
+Poisson summation on the plane gives the functional equation for Eisenstein series on \(\mathrm{SL}_2\).  We develop an analogue of Poisson summation for Kubota's $n$-fold cover of \(\mathrm{SL}_2\), in the spirit of Braverman&ndash;Kazhdan.  Locally, we define a Schwartz space consisting of genuine functions on Deligne's $&mu;_n$-torsor over the punctured plane.  It comes with a Fourier transform \(\mathcal{F}\) defined like the symplectic Fourier transform, but with the symplectic form replaced by its $n$th roots.  At almost all places, we define a basic vector fixed by \(\mathcal{F}\).  Globally, we prove a Poisson summation formula for the resulting adelic Schwartz space.  Taking a Fourier coefficient gives a general Voronoi-type summation formula for Gauss sums of order \(n\), with an explicit integral transform relating the weights.  For cubic Gauss sums, the formula takes sextic residue twists to quadratic twists, as in recent work on the quasi-Riemann hypothesis.
+</p>
+
+<p>
+<b>The paper:</b> <a href="schwartz-space-n-fold-cover-sl2.html">HTML</a> · <a href="schwartz-space-n-fold-cover-sl2.pdf">PDF</a> · <a href="schwartz-space-n-fold-cover-sl2.tex">TeX</a>
+</p>
+<div id="outline-container-org50948f0" class="outline-2">
+<h2 id="org50948f0">Lean formalization</h2>
+<div class="outline-text-2" id="text-org50948f0">
+<p>
+For number fields, the main results of the paper are formalized in Lean 4 with Mathlib, in the directory <a href="https://github.com/ultronozm/metaplectic-summation/tree/main/lean">lean/</a> of the repository.  The development has no <code>sorry</code>, and the statements below depend only on the standard axioms <code>propext</code>, <code>Classical.choice</code> and <code>Quot.sound</code>.
+</p>
+
+<p>
+The file <a href="https://github.com/ultronozm/metaplectic-summation/blob/main/lean/Challenge.lean">lean/Challenge.lean</a> is a challenge in the format of the <a href="https://github.com/PalomarRegistry/PalomarTemplate">Palomar</a> registry.  It states the Voronoi-type formula for twisted Gauss sums of order \(n\) and its quadratic dual (the first two rows of the table below) against Mathlib alone, quantifying over self-dual measures and Hilbert symbols with their defining properties, and giving the local transform by its explicit integral.  The file <a href="https://github.com/ultronozm/metaplectic-summation/blob/main/lean/Solution.lean">lean/Solution.lean</a> proves them from the development.  The Poisson formula, Fourier inversion and the other statements in the table are proved in the development itself.
+</p>
+
+<p>
+Not formalized: the case of global function fields; the remark comparing the transform with Kubota's transform over \(\mathbb{C}\); and, at archimedean places, the smoothness across \(\mu = 0\) of the extensions of the normalized rays at the origin.
+</p>
+
+<p>
+The table follows <a href="schwartz-space-n-fold-cover-sl2.html#sec:lean">Appendix C</a> of the paper.  Each declaration links to its source at the commit cited in the paper.
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">Paper</th>
+<th scope="col" class="org-left">Lean</th>
+<th scope="col" class="org-left">Hypotheses and scope</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left"><a href="schwartz-space-n-fold-cover-sl2.html#theorem:gauss-sums">Theorem 10.33</a></td>
+<td class="org-left"><a href="https://github.com/ultronozm/metaplectic-summation/blob/3b301a97286276f336773d5d16b00d96d020b185/lean/Challenge.lean#L344"><code>NFoldCover.twistedGaussSummation</code></a></td>
+<td class="org-left">The setting of §10.6. The constants \(\rho(\beta)\) in \(M_b\) are asserted to exist, independently of \(T\), \(\chi\), \(f\) and \(W_S\), rather than identified with those of Theorem 10.16; the absolute convergence of both sums is included.</td>
+</tr>
+
+<tr>
+<td class="org-left"><a href="schwartz-space-n-fold-cover-sl2.html#corollary:quadratic-dual">Corollary 10.39</a></td>
+<td class="org-left"><a href="https://github.com/ultronozm/metaplectic-summation/blob/3b301a97286276f336773d5d16b00d96d020b185/lean/Challenge.lean#L377"><code>NFoldCover.quadraticDual</code></a></td>
+<td class="org-left">The setting of §10.7.2.</td>
+</tr>
+
+<tr>
+<td class="org-left"><a href="schwartz-space-n-fold-cover-sl2.html#item:lines-smooth">Lemma 4.2(iii)</a></td>
+<td class="org-left"><a href="https://github.com/ultronozm/metaplectic-summation/blob/3b301a97286276f336773d5d16b00d96d020b185/lean/MetaplecticSummation/ArchimedeanSmoothness.lean#L450"><code>MetaplecticPoisson.Datum.radon_smooth_real</code></a> <a href="https://github.com/ultronozm/metaplectic-summation/blob/3b301a97286276f336773d5d16b00d96d020b185/lean/MetaplecticSummation/ArchimedeanSmoothness.lean#L469"><code>MetaplecticPoisson.Datum.radon_smooth_complex</code></a></td>
+<td class="org-left">Real and complex places: joint smoothness, and rapid decay in \(\tau\) of every derivative, uniformly for \(v'\) in compact sets.</td>
+</tr>
+
+<tr>
+<td class="org-left"><a href="schwartz-space-n-fold-cover-sl2.html#proposition:fourier-transform-genuine">Proposition 4.5</a></td>
+<td class="org-left"><a href="https://github.com/ultronozm/metaplectic-summation/blob/3b301a97286276f336773d5d16b00d96d020b185/lean/MetaplecticSummation/ArchimedeanSmoothness.lean#L338"><code>MetaplecticPoisson.Datum.arch_transform_smooth</code></a></td>
+<td class="org-left">Real and complex places: the smoothness of \(\mathcal{F} \Phi\) for \(\Phi \in \mathcal{D}\).</td>
+</tr>
+
+<tr>
+<td class="org-left"><a href="schwartz-space-n-fold-cover-sl2.html#definition:schwartz-space">Definition 4.11</a></td>
+<td class="org-left"><a href="https://github.com/ultronozm/metaplectic-summation/blob/3b301a97286276f336773d5d16b00d96d020b185/lean/MetaplecticSummation/ArchimedeanSmoothness.lean#L423"><code>MetaplecticPoisson.Datum.schwartz_smooth_real</code></a> <a href="https://github.com/ultronozm/metaplectic-summation/blob/3b301a97286276f336773d5d16b00d96d020b185/lean/MetaplecticSummation/ArchimedeanSmoothness.lean#L429"><code>MetaplecticPoisson.Datum.schwartz_smooth_complex</code></a></td>
+<td class="org-left">Real and complex places: the elements of \(\mathcal{S}\) are smooth.</td>
+</tr>
+
+<tr>
+<td class="org-left"><a href="schwartz-space-n-fold-cover-sl2.html#proposition:basic-vector-fixed">Proposition 6.3</a></td>
+<td class="org-left"><a href="https://github.com/ultronozm/metaplectic-summation/blob/3b301a97286276f336773d5d16b00d96d020b185/lean/MetaplecticSummation/BasicFixed.lean#L103"><code>MetaplecticPoisson.Datum.basicCharts_fourier_fixed</code></a> <a href="https://github.com/ultronozm/metaplectic-summation/blob/3b301a97286276f336773d5d16b00d96d020b185/lean/MetaplecticSummation/BasicMembership.lean#L184"><code>MetaplecticPoisson.Datum.basic_mem</code></a></td>
+<td class="org-left">Finite places prime to \(n\).</td>
+</tr>
+
+<tr>
+<td class="org-left"><a href="schwartz-space-n-fold-cover-sl2.html#theorem:schwartz-space">Theorem 7.1</a></td>
+<td class="org-left"><a href="https://github.com/ultronozm/metaplectic-summation/blob/3b301a97286276f336773d5d16b00d96d020b185/lean/MetaplecticSummation/Inversion.lean#L500"><code>MetaplecticPoisson.Datum.schwartz_inversion</code></a></td>
+<td class="org-left">Every place; \(\widetilde{\mathrm{SL}}_2(F_{\mathfrak{p}})\) is the group generated by \(\mu_n\), \(n(u)\) and \(n^-(u)\).</td>
+</tr>
+
+<tr>
+<td class="org-left"><a href="schwartz-space-n-fold-cover-sl2.html#proposition:schwartz-origin">Proposition 8.1</a></td>
+<td class="org-left"><a href="https://github.com/ultronozm/metaplectic-summation/blob/3b301a97286276f336773d5d16b00d96d020b185/lean/MetaplecticSummation/ArchimedeanRays.lean#L683"><code>MetaplecticPoisson.Datum.schwartz_rayBound_real</code></a> <a href="https://github.com/ultronozm/metaplectic-summation/blob/3b301a97286276f336773d5d16b00d96d020b185/lean/MetaplecticSummation/ArchimedeanRays.lean#L690"><code>MetaplecticPoisson.Datum.schwartz_rayBound_complex</code></a> <a href="https://github.com/ultronozm/metaplectic-summation/blob/3b301a97286276f336773d5d16b00d96d020b185/lean/MetaplecticSummation/ArchimedeanSmoothness.lean#L436"><code>MetaplecticPoisson.Datum.leading_smooth_real</code></a> <a href="https://github.com/ultronozm/metaplectic-summation/blob/3b301a97286276f336773d5d16b00d96d020b185/lean/MetaplecticSummation/ArchimedeanSmoothness.lean#L442"><code>MetaplecticPoisson.Datum.leading_smooth_complex</code></a></td>
+<td class="org-left">Real and complex places: the functions (8.1) are smooth in \(v\), and each derivative in \(v\) decays rapidly in \(\mu\), uniformly for \(v\) in compact sets; the leading term \(b \Psi\) is smooth. The smoothness of the extensions in \(\mu\) across \(\mu = 0\) is not formalized.</td>
+</tr>
+
+<tr>
+<td class="org-left"><a href="schwartz-space-n-fold-cover-sl2.html#theorem:poisson">Theorem 9.1</a></td>
+<td class="org-left"><a href="https://github.com/ultronozm/metaplectic-summation/blob/3b301a97286276f336773d5d16b00d96d020b185/lean/MetaplecticSummation/Poisson.lean#L85"><code>MetaplecticPoisson.Datum.poisson</code></a></td>
+<td class="org-left">The reference vector at the places dividing \(n\) is \(0\), which does not change \(\mathcal{S}_{\mathbb{A}}\).</td>
+</tr>
+
+<tr>
+<td class="org-left"><a href="schwartz-space-n-fold-cover-sl2.html#corollary:poisson-vanishing">Corollary 9.2</a></td>
+<td class="org-left"><a href="https://github.com/ultronozm/metaplectic-summation/blob/3b301a97286276f336773d5d16b00d96d020b185/lean/MetaplecticSummation/Poisson.lean#L96"><code>MetaplecticPoisson.Datum.poisson_of_leading_eq_zero</code></a> <a href="https://github.com/ultronozm/metaplectic-summation/blob/3b301a97286276f336773d5d16b00d96d020b185/lean/MetaplecticSummation/Poisson.lean#L104"><code>MetaplecticPoisson.Datum.poisson_pure_of_local_vanishing</code></a></td>
+<td class="org-left">As for Theorem 9.1.</td>
+</tr>
+
+<tr>
+<td class="org-left"><a href="schwartz-space-n-fold-cover-sl2.html#corollary:jacquet-decay">Corollary 10.4</a></td>
+<td class="org-left"><a href="https://github.com/ultronozm/metaplectic-summation/blob/3b301a97286276f336773d5d16b00d96d020b185/lean/MetaplecticSummation/Jacquet/ArchDecay.lean#L37"><code>MetaplecticPoisson.Datum.jacquet_decay_arch</code></a></td>
+<td class="org-left">Real and complex places.</td>
+</tr>
+
+<tr>
+<td class="org-left"><a href="schwartz-space-n-fold-cover-sl2.html#theorem:main">Theorem 10.16</a></td>
+<td class="org-left"><a href="https://github.com/ultronozm/metaplectic-summation/blob/3b301a97286276f336773d5d16b00d96d020b185/lean/MetaplecticSummation/Jacquet.lean#L133"><code>MetaplecticPoisson.Datum.lineSummation</code></a></td>
+<td class="org-left">The setting of §9.1.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: Paul D. Nelson</p>
+<p class="date">Created: 2026-11-25 Wed 15:02</p>
+</div>
+</body>
+</html>
