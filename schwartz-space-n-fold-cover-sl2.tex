@@ -1,4 +1,23 @@
-\documentclass[reqno]{amsart} \input{common.tex}
+\documentclass[reqno]{amsart}
+% Self-contained preamble, derived on 2026-11-25 from common.tex (the author's shared macro file), keeping only what this paper uses.
+\usepackage{amssymb}
+\usepackage{enumerate}
+\usepackage{hyperref}
+
+\DeclareMathOperator{\vol}{vol}
+\newcommand{\qr}[2]{\left( \frac{#1}{#2} \right)}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{remark}[theorem]{Remark}
+\newtheoremstyle{itplain}{6pt}{5pt\topsep}{\itshape}{}{\itshape}{.}{5pt plus 1pt minus 1pt}{}
+\theoremstyle{itplain}
+\newtheorem{lemma}[theorem]{Lemma}
 \setlength{\emergencystretch}{3em}
 
 % Links to the Lean formalization in lean/ (Appendix~\ref{sec:lean}).

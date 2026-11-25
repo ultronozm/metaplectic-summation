@@ -5,7 +5,7 @@ its Lean 4 formalization.
 
 | Path | Contents |
 | --- | --- |
-| `schwartz-space-n-fold-cover-sl2.tex` | The paper.  `common.tex` holds its macros, `refs.bib` the cited references. |
+| `schwartz-space-n-fold-cover-sl2.tex` | The paper, with a self-contained preamble.  `refs.bib` holds the cited references. |
 | `lean/` | The Lean project: the development (`MetaplecticSummation/`), the statement file `Challenge.lean`, its proof `Solution.lean`, and the Palomar files `comparator.json` and `formalization.yaml`.  See [`lean/README.md`](lean/README.md) for a map of the development. |
 | `scripts/lean-links.py` | Keeps the paper's links to Lean declarations current. |
 | `.github/`, `*.sh`, `tex2html.el`, `index.org`, `tex.css`, `config.json` | Site machinery from [tex-site](https://github.com/ultronozm/tex-site): PDF and HTML builds deployed to GitHub Pages. |
@@ -22,10 +22,6 @@ Paper:
 latexmk -pdf schwartz-space-n-fold-cover-sl2.tex
 ./convert.sh schwartz-space-n-fold-cover-sl2.tex   # HTML, as on the site
 ```
-
-Locally, pandoc 3.12 does not terminate on `\usepackage{preview}` in
-`common.tex` (the same file as in the `math` site).  The site's CI uses its
-own pandoc; to test HTML locally, convert a copy without the `preview` lines.
 
 Lean (Lean v4.35.0-rc2, Mathlib at the `v4.35.0-rc2` tag):
 
