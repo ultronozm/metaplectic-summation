@@ -26,7 +26,7 @@
 % row of Decl in Appendix C, which carries the same link.  The rows
 % \leanentry{Decl}{file}{line} are kept current by scripts/lean-links.py.
 \newcommand{\leanrepo}{https://github.com/ultronozm/metaplectic-summation}
-\newcommand{\leancommit}{f68b00d3103a0a2312980364c09101a9cc2589f3}
+\newcommand{\leancommit}{49e2744135f67ea4494c28c868bd4ec14b7037de}
 \newcommand{\leanurl}[2]{\leanrepo/blob/\leancommit/lean/#1\#L#2}
 \newcommand{\leanmark}{\textsuperscript{\textsf{Lean}}}
 \newcommand{\lean}[1]{\hyperlink{lean:#1}{\leanmark}}
@@ -316,7 +316,7 @@ Near $x = 0$ with $y \neq 0$, the quantity $b y = \tau^n - a x$ lies in the open
   \begin{enumerate}[(i)]
   \item\label{item:lines-convergence} The integrals defining $R_X \Phi(v', \tau)$ and $R_Y \Phi(v', \tau)$ converge absolutely and define continuous functions on $U_X \times F$ (resp.\ $U_Y \times F$).  They decay rapidly in $\tau$, uniformly for $v'$ in a compact subset of $U_X$ (resp.\ $U_Y$).
   \item\label{item:lines-compatibility} If $x' y' \neq 0$, then $R_X \Phi(v', \tau) = \{x', y'\}_n R_Y \Phi(v', \tau)$.
-  \item\label{item:lines-smooth} If $\Phi \in \mathcal{D}$, then $R_X \Phi$ is smooth on $U_X \times F$, and $R_Y \Phi$ is smooth on $U_Y \times F$.  For $v'$ in a compact subset of $U_X$ (resp.\ $U_Y$), the functions $R_X \Phi(v', \cdot)$ (resp.\ $R_Y \Phi(v', \cdot)$) form a bounded subset of the space of Schwartz--Bruhat functions on $F$.  If $F$ is archimedean, the same holds for all derivatives of $R_X \Phi$ (resp.\ $R_Y \Phi$).
+  \item\label{item:lines-smooth}\lean{MetaplecticPoisson.Datum.radon_smooth_real}\lean{MetaplecticPoisson.Datum.radon_smooth_complex} If $\Phi \in \mathcal{D}$, then $R_X \Phi$ is smooth on $U_X \times F$, and $R_Y \Phi$ is smooth on $U_Y \times F$.  For $v'$ in a compact subset of $U_X$ (resp.\ $U_Y$), the functions $R_X \Phi(v', \cdot)$ (resp.\ $R_Y \Phi(v', \cdot)$) form a bounded subset of the space of Schwartz--Bruhat functions on $F$.  If $F$ is archimedean, the same holds for all derivatives of $R_X \Phi$ (resp.\ $R_Y \Phi$).
   \end{enumerate}
 \end{lemma}
 \begin{proof}
@@ -410,7 +410,7 @@ We now apply the integral on the left-hand side of \eqref{eq:cuue7ixq1x} to defi
 The integrals converge absolutely by Lemma \ref{lemma:lines}.  For $n = 1$, we recover the symplectic Fourier transform.  For $f$ satisfying \eqref{eq:principal-series-homogeneity} with $0 < \Re(s) < 1$, the distributional interpretation gives $\mathcal{F} f = \lvert n \rvert^{-1/2} \gamma(s, \xi, \psi) A f$.
 
 \begin{proposition}\label{proposition:fourier-transform-genuine}
-  The functions $(\mathcal{F} \Phi)_X$ and $(\mathcal{F} \Phi)_Y$ are continuous, and $(\mathcal{F} \Phi)_X = \{x', y'\}_n (\mathcal{F} \Phi)_Y$ on $U_X \cap U_Y$.  If $\Phi \in \mathcal{D}$, then $(\mathcal{F} \Phi)_X$ and $(\mathcal{F} \Phi)_Y$ are smooth.
+  The functions $(\mathcal{F} \Phi)_X$ and $(\mathcal{F} \Phi)_Y$ are continuous, and $(\mathcal{F} \Phi)_X = \{x', y'\}_n (\mathcal{F} \Phi)_Y$ on $U_X \cap U_Y$.  If $\Phi \in \mathcal{D}$, then $(\mathcal{F} \Phi)_X$ and $(\mathcal{F} \Phi)_Y$ are smooth.\lean{MetaplecticPoisson.Datum.arch_transform_smooth}
 \end{proposition}
 \begin{proof}
   This follows from Lemma \ref{lemma:lines} and the definition \eqref{eq:transform-via-lines}, by dominated convergence.
@@ -496,7 +496,7 @@ The space $\mathcal{D}$ is not preserved by $\mathcal{F}$.  Following \cite[\S3.
     \mathcal{S} := \mathcal{D} + \mathcal{F} \mathcal{D}.
   \end{equation*}
 \end{definition}
-By Proposition \ref{proposition:fourier-transform-genuine} and Corollary \ref{corollary:transform-decay}, the elements of $\mathcal{S}$ are genuine functions satisfying \eqref{eq:growth}.  The integral defining $\mathcal{F}$ thus applies to every element of $\mathcal{S}$.
+By Proposition \ref{proposition:fourier-transform-genuine} and Corollary \ref{corollary:transform-decay}, the elements of $\mathcal{S}$ are genuine functions satisfying \eqref{eq:growth}.\lean{MetaplecticPoisson.Datum.schwartz_smooth_real}\lean{MetaplecticPoisson.Datum.schwartz_smooth_complex}  The integral defining $\mathcal{F}$ thus applies to every element of $\mathcal{S}$.
 
 \begin{lemma}\label{lemma:schwartz-dilation}
   The space $\mathcal{S}$ is preserved by the dilations by $F^{\times n}$, and does not depend upon the choice of $\psi$.
@@ -727,7 +727,7 @@ For $n = 1$, the Poisson summation formula involves the values of $\Phi$ and $\m
 formed in either chart.
 
 \begin{proposition}\label{proposition:schwartz-origin}\lean{MetaplecticPoisson.Datum.exists_leading}
-  Let $\Psi \in \mathcal{S}$.  In either chart, the function \eqref{eq:normalized-ray} extends to a Schwartz--Bruhat function on $F$.  As $v$ varies over a compact subset of the chart, these extensions form a bounded subset of the space of Schwartz--Bruhat functions.  At an archimedean place, the same holds for their derivatives with respect to $v$.
+  Let $\Psi \in \mathcal{S}$.  In either chart, the function \eqref{eq:normalized-ray} extends to a Schwartz--Bruhat function on $F$.  As $v$ varies over a compact subset of the chart, these extensions form a bounded subset of the space of Schwartz--Bruhat functions.  At an archimedean place, the same holds for their derivatives with respect to $v$.\lean{MetaplecticPoisson.Datum.schwartz_rayBound_real}\lean{MetaplecticPoisson.Datum.schwartz_rayBound_complex}
 \end{proposition}
 \begin{proof}
   For $\Psi \in \mathcal{D}$, the extension by zero has the required properties by the definition of $\mathcal{D}$.  For $\Psi = \mathcal{F} \Phi$ with $\Phi \in \mathcal{D}$, Lemma \ref{lemma:transform-fourier} identifies \eqref{eq:normalized-ray} in the $X$-chart with $\lvert n \rvert^{-1/2}$ times the Fourier transform of $R_X \Phi(v, \cdot)$, and likewise in the $Y$-chart.  The assertions follow from Lemma \ref{lemma:lines}\eqref{item:lines-smooth} and $\mathcal{S} = \mathcal{D} + \mathcal{F} \mathcal{D}$.
@@ -741,7 +741,7 @@ Evaluating the extension at $\mu = 0$ in each chart gives a pair of functions, w
 \end{equation}
 For $n = 1$, this is the constant $\int_{F^2} \Phi$, which is the value of $\mathcal{F} \Phi$ at the origin.  The leading term has the following properties:
 \begin{itemize}
-\item The pair $b \Psi$ is a genuine function, and $(b \Psi)(\mu^n \, \cdot) = \lvert \mu \rvert^{1-n} \, b \Psi$ for $\mu \in F^\times$.  The relation between the two components and the homogeneity follow from the definition, and the smoothness from \eqref{eq:leading-term-transform} and Lemma \ref{lemma:lines}\eqref{item:lines-smooth}.
+\item The pair $b \Psi$ is a genuine function, and $(b \Psi)(\mu^n \, \cdot) = \lvert \mu \rvert^{1-n} \, b \Psi$ for $\mu \in F^\times$.  The relation between the two components and the homogeneity follow from the definition, and the smoothness from \eqref{eq:leading-term-transform} and Lemma \ref{lemma:lines}\eqref{item:lines-smooth}.\lean{MetaplecticPoisson.Datum.leading_smooth_real}\lean{MetaplecticPoisson.Datum.leading_smooth_complex}
 \item For $a \in F^{\times n}$, we have $b(\Psi(a \, \cdot)) = \lvert a \rvert^{-1 + 1/n} \, b \Psi$.
 \item For $g \in \widetilde{\mathrm{SL}}_2(F)$, we have $b (g \Psi) = g (b \Psi)$.  It suffices to verify this for $g = n(u)$ and $g = n^-(u)$, where it follows from the definitions.
 \item If the residue characteristic of $F$ does not divide $n$, then $b \Phi^0$ agrees with $\Phi^0$ at the vectors $v$ with $\lVert v \rVert \leq 1$.  In particular, $(b \Phi^0)_Y(0, y)$ equals $\lvert y \rvert^{-1 + 1/n}$ if $n$ divides $v(y)$, and vanishes otherwise.
@@ -1011,7 +1011,7 @@ Deligne \cite[(5.15.1)]{SB_1978-1979__21__244_0} uses the difference $\Delta$ to
 
 Integrating this estimate against $d^\times c$ shows that the integral \eqref{eq:x-integrable} is finite for $\Xi$ in place of $\Phi$.
 
-\begin{corollary}\label{corollary:jacquet-decay}
+\begin{corollary}\label{corollary:jacquet-decay}\lean{MetaplecticPoisson.Datum.jacquet_decay_arch}
   Let $W \in \mathcal{W}$.  Then for each $A \geq 0$,
   \begin{equation*}
     W(c) \ll \min \left( \lvert c \rvert^{1/n}, \lvert c \rvert^{-A} \right)
@@ -2282,7 +2282,7 @@ Adding the identity $D(Q \Phi) = - B(b \Phi)$, we obtain $D(\Phi) = B(b \mathcal
 
 \section{Statements checked in Lean}\label{sec:lean}
 \sloppy
-For number fields $F$, the results listed below are formalized in Lean~4 with Mathlib, in the directory \texttt{lean} of \url{\leanrepo}, using only the standard axioms of Lean.  Theorem~\ref{theorem:gauss-sums} and Corollary~\ref{corollary:quadratic-dual} are stated in \texttt{lean/Challenge.lean}, which imports only Mathlib, and proved in \texttt{lean/Solution.lean} from the formal development.  There the self-dual measures and the Hilbert symbols are arbitrary objects with their defining properties, which determine them, and $W^\vee$ is given by \eqref{eq:transform-formula}.  The other results are proved in the development itself.  The second column links to the source of each declaration.
+For number fields $F$, the results listed below are formalized in Lean~4 with Mathlib, in the directory \texttt{lean} of \url{\leanrepo}, using only the standard axioms of Lean.  Theorem~\ref{theorem:gauss-sums} and Corollary~\ref{corollary:quadratic-dual} are stated in \texttt{lean/Challenge.lean}, which imports only Mathlib, and proved in \texttt{lean/Solution.lean} from the formal development.  There the self-dual measures and the Hilbert symbols are arbitrary objects with their defining properties, which determine them, and $W^\vee$ is given by \eqref{eq:transform-formula}.  The other results are proved in the development itself.  Not formalized are the case of function fields, Remark~\ref{remark:kubota-transform}, and, at archimedean places, the smoothness in $\mu$ across $\mu = 0$ in Proposition~\ref{proposition:schwartz-origin}.  The second column links to the source of each declaration.
 
 \medskip
 \begin{center}
@@ -2292,10 +2292,15 @@ Paper & Lean & Hypotheses and scope \\
 \hline
 Theorem~\ref{theorem:gauss-sums} & \leanentry{NFoldCover.twistedGaussSummation}{Challenge.lean}{344} & The setting of \S\ref{sec:gauss-sums}.  The constants $\rho(\beta)$ in $M_b$ are asserted to exist, independently of $T$, $\chi$, $f$ and $W_S$, rather than identified with those of Theorem~\ref{theorem:main}; the absolute convergence of both sums is included. \\
 Corollary~\ref{corollary:quadratic-dual} & \leanentry{NFoldCover.quadraticDual}{Challenge.lean}{377} & The setting of \S\ref{sec:quadratic-dual-summation-formula}. \\
+Lemma~\ref{lemma:lines}\eqref{item:lines-smooth} & \leanentry{MetaplecticPoisson.Datum.radon_smooth_real}{MetaplecticSummation/ArchimedeanSmoothness.lean}{450}, \leanentry{MetaplecticPoisson.Datum.radon_smooth_complex}{MetaplecticSummation/ArchimedeanSmoothness.lean}{469} & Real and complex places: joint smoothness, and rapid decay in $\tau$ of every derivative, uniformly for $v'$ in compact sets. \\
+Proposition~\ref{proposition:fourier-transform-genuine} & \leanentry{MetaplecticPoisson.Datum.arch_transform_smooth}{MetaplecticSummation/ArchimedeanSmoothness.lean}{338} & Real and complex places: the smoothness of $\mathcal{F} \Phi$ for $\Phi \in \mathcal{D}$. \\
+Definition~\ref{definition:schwartz-space} & \leanentry{MetaplecticPoisson.Datum.schwartz_smooth_real}{MetaplecticSummation/ArchimedeanSmoothness.lean}{423}, \leanentry{MetaplecticPoisson.Datum.schwartz_smooth_complex}{MetaplecticSummation/ArchimedeanSmoothness.lean}{429} & Real and complex places: the elements of $\mathcal{S}$ are smooth. \\
 Proposition~\ref{proposition:basic-vector-fixed} & \leanentry{MetaplecticPoisson.Datum.basicCharts_fourier_fixed}{MetaplecticSummation/BasicFixed.lean}{103}, \leanentry{MetaplecticPoisson.Datum.basic_mem}{MetaplecticSummation/BasicMembership.lean}{184} & Finite places prime to $n$. \\
 Theorem~\ref{theorem:schwartz-space} & \leanentry{MetaplecticPoisson.Datum.schwartz_inversion}{MetaplecticSummation/Inversion.lean}{500} & Every place; $\widetilde{\mathrm{SL}}_2(F_{\mathfrak{p}})$ is the group generated by $\mu_n$, $n(u)$ and $n^-(u)$. \\
+Proposition~\ref{proposition:schwartz-origin} & \leanentry{MetaplecticPoisson.Datum.schwartz_rayBound_real}{MetaplecticSummation/ArchimedeanRays.lean}{683}, \leanentry{MetaplecticPoisson.Datum.schwartz_rayBound_complex}{MetaplecticSummation/ArchimedeanRays.lean}{690}, \leanentry{MetaplecticPoisson.Datum.leading_smooth_real}{MetaplecticSummation/ArchimedeanSmoothness.lean}{436}, \leanentry{MetaplecticPoisson.Datum.leading_smooth_complex}{MetaplecticSummation/ArchimedeanSmoothness.lean}{442} & Real and complex places: the functions \eqref{eq:normalized-ray} are smooth in $v$, and each derivative in $v$ decays rapidly in $\mu$, uniformly for $v$ in compact sets; the leading term $b \Psi$ is smooth.  The smoothness of the extensions in $\mu$ across $\mu = 0$ is not formalized. \\
 Theorem~\ref{theorem:poisson} & \leanentry{MetaplecticPoisson.Datum.poisson}{MetaplecticSummation/Poisson.lean}{85} & The reference vector at the places dividing $n$ is $0$, which does not change $\mathcal{S}_{\mathbb{A}}$. \\
 Corollary~\ref{corollary:poisson-vanishing} & \leanentry{MetaplecticPoisson.Datum.poisson_of_leading_eq_zero}{MetaplecticSummation/Poisson.lean}{96}, \leanentry{MetaplecticPoisson.Datum.poisson_pure_of_local_vanishing}{MetaplecticSummation/Poisson.lean}{104} & As for Theorem~\ref{theorem:poisson}. \\
+Corollary~\ref{corollary:jacquet-decay} & \leanentry{MetaplecticPoisson.Datum.jacquet_decay_arch}{MetaplecticSummation/Jacquet/ArchDecay.lean}{37} & Real and complex places. \\
 Theorem~\ref{theorem:main} & \leanentry{MetaplecticPoisson.Datum.lineSummation}{MetaplecticSummation/Jacquet.lean}{133} & The setting of \S\ref{sec:main-formula}. \\
 \end{tabular}
 \end{center}
