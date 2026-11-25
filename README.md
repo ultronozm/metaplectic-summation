@@ -123,6 +123,7 @@ products and rational evaluations all depend on these inputs.
 | [PowerJacobian](MetaplecticSummation/PowerJacobian.lean) | Bijection of sufficiently small balls under the power map, with radius scaled by the norm of its derivative |
 | [PowerArea](MetaplecticSummation/PowerArea.lean) | Integrated change of variables for the power map on locally constant compactly supported functions vanishing at zero, at every finite place |
 | [FiniteMarginal](MetaplecticSummation/FiniteMarginal.lean) | Reverse marginal Fourier identity on test sections at every finite place |
+| [ArchimedeanRootSum](MetaplecticSummation/Marginals/ArchimedeanRootSum.lean), [ArchimedeanPowerRoots](MetaplecticSummation/Marginals/ArchimedeanPowerRoots.lean), [ArchimedeanTestInversion](MetaplecticSummation/Marginals/ArchimedeanTestInversion.lean) | The tested root sum, the change of variables by the power map over roots, and the reverse marginal identity on test sections at every infinite place |
 | [TransformedMarginals](MetaplecticSummation/TransformedMarginals.lean) | Extension of the reverse identity from test sections to the full span, and the independent proof at tame places |
 | [DiagonalTransform](MetaplecticSummation/DiagonalTransform.lean) | Covariance of both defining chart integrals under the diagonal lifts at every place |
 | [SchwartzStability](MetaplecticSummation/SchwartzStability.lean) | Absolute convergence of the outer integral, the Fourier automorphism of the full tame Schwartz space, and its square |
@@ -384,8 +385,7 @@ uniformly. [Restricted lifts](MetaplecticSummation/Cusp/Lifts.lean) ·
 [Local lifting condition](MetaplecticSummation/Cusp/Localization.lean) ·
 [Local lifts in both charts](MetaplecticSummation/Cusp/LocalContinuity.lean)
 
-This proves `thetaDifference_vanishing` (Proposition B.6) using the remaining
-Archimedean reverse marginal identity. Lean uses the vanishing to construct the boundary functional. Modifying a single finite factor gives a functional that descends
+This proves `thetaDifference_vanishing` (Proposition B.6). Lean uses the vanishing to construct the boundary functional. Modifying a single finite factor gives a functional that descends
 through the adelic leading-term map (Lemma B.10). Reindexing the theta sum
 under the square of Fourier transformation yields the boundary identity.
 The same local modification determines the boundary functional uniquely.
@@ -406,17 +406,14 @@ there. The Poisson vanishing criterion applied to upper unipotent translates
 then identifies their Fourier coefficients. The difference of the two sums
 therefore descends to a multilinear form on the moment vectors. Evaluation
 on products of the normalized tests determines its coefficients uniquely.
-The only remaining admission used by this deduction is the Archimedean
-reverse marginal identity on tests.
+This deduction uses no admissions.
 For any covering degree, the original summand has finite support on those
 elements. The local tests at S give bounded radii, the basic factors outside S
 vanish on nonintegral elements, and the rational box count applies.
 In degree one, the local dual of a test weight is evaluation at the reciprocal
 argument. The same identity holds for the basic Jacquet factor at every finite
 conductor. Reindexing the finite sum by inversion proves `line_degree_one`
-with zero main term independently of `lineSummation`. The project dependencies
-that still contain admissions include the Archimedean
-reverse marginal identity on tests used to construct the local Fourier operator.
+with zero main term independently of `lineSummation`.
 `twistedGaussSummation` assumes the S-integers form a PID and sums over their
 nonzero **elements**. Only the inner divisor sum in `normalizedGauss` runs over
 associates. Multiplying the modulus by the n-th power of an S-unit preserves

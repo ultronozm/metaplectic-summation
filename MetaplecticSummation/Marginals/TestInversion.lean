@@ -1,6 +1,7 @@
 import MetaplecticSummation.DiagonalTransform
 import MetaplecticSummation.Marginals.FiniteTestInversion
 import MetaplecticSummation.Marginals.Density
+import MetaplecticSummation.Marginals.ArchimedeanTestInversion
 
 noncomputable section
 namespace MetaplecticPoisson.Datum
@@ -12,7 +13,8 @@ variable (v : Place F)
 /-- The Archimedean case of Appendix A on test sections. -/
 theorem arch_reverse_marginal_on_test (w : InfinitePlace F) (Φ : d.schwartz (.inl w)) (hΦ : Φ.val ∈ d.testSet (.inl w)) (x : (LocalField F (.inl w))ˣ) :
     ∀ u : (LocalField F (.inl w))ˣ, d.marginal (.inl w) (d.transformTest (.inl w) Φ hΦ) (u^n*x) =
-      (Real.sqrt (modulus F (.inl w) (n : LocalField F (.inl w))) : ℂ)⁻¹ * d.hat (.inl w) (d.axisDensity (.inl w) Φ x) u := by sorry
+      (Real.sqrt (modulus F (.inl w) (n : LocalField F (.inl w))) : ℂ)⁻¹ * d.hat (.inl w) (d.axisDensity (.inl w) Φ x) u :=
+  d.arch_reverse_marginal w Φ hΦ x
 
 /-- The converse marginal Fourier identity on test sections (Appendix A). -/
 theorem reverse_marginal_on_test (v : Place F) (Φ : d.schwartz v) (hΦ : Φ.val ∈ d.testSet v) (x : (LocalField F v)ˣ) :

@@ -24,17 +24,17 @@ The project audit fails if `sorryAx` reaches the normalized Hilbert family, its 
 
 The project theorem `MetaplecticPoisson.existsUnique_hilbert` now combines the constructed family with weak approximation. The proof of uniqueness imports only the local arithmetic and the definition of a normalized family. [Arithmetic.lean](../../MetaplecticSummation/Arithmetic.lean) · [HilbertUniqueness.lean](../../MetaplecticSummation/HilbertUniqueness.lean)
 
-For the project's chosen symbol, `Datum.finite_symbol_power` identifies its right radical using the injective complex embedding. The unconditional theorem `Datum.reverse_marginal_finite` proves Lemma A.2 for arbitrary finite primes, including wild ones. The all-place statement specializes to that theorem at finite places. On the vendored rc2 build Lean reports only the standard axioms for existence and uniqueness and for the unconditional finite marginal. At every real and complex place, `Datum.arch_root_sum` now proves the root-sum identity for every nonzero coefficient, including the empty sum for a real nonpower. The passage from that identity for Schwartz frequency tests to the full pointwise two-chart marginal remains open. [RootSum.lean](../../MetaplecticSummation/Marginals/RootSum.lean) · [FiniteTestInversion.lean](../../MetaplecticSummation/Marginals/FiniteTestInversion.lean) · [TestInversion.lean](../../MetaplecticSummation/Marginals/TestInversion.lean)
+For the project's chosen symbol, `Datum.finite_symbol_power` identifies its right radical using the injective complex embedding. The unconditional theorem `Datum.reverse_marginal_finite` proves Lemma A.2 for arbitrary finite primes, including wild ones. The all-place statement specializes to that theorem at finite places. On the vendored rc2 build Lean reports only the standard axioms for existence and uniqueness and for the unconditional finite marginal. At every real and complex place, `Datum.arch_root_sum` now proves the root-sum identity for every nonzero coefficient, including the empty sum for a real nonpower. Pairing with smooth tests supported away from zero, the change of variables y = −rⁿ/s over the roots turns the root sum into the Fourier transform of the axis density. Continuity of both sides on the units then gives the pointwise marginal, `Datum.arch_reverse_marginal`. [ArchimedeanTestInversion.lean](../../MetaplecticSummation/Marginals/ArchimedeanTestInversion.lean) [RootSum.lean](../../MetaplecticSummation/Marginals/RootSum.lean) · [FiniteTestInversion.lean](../../MetaplecticSummation/Marginals/FiniteTestInversion.lean) · [TestInversion.lean](../../MetaplecticSummation/Marginals/TestInversion.lean)
 
 The full build completed on the pinned archive. The direct project admissions reachable from each theorem are
 
 | Main theorem | Reachable admissions |
 | --- | --- |
-| `Datum.poisson` | `arch_reverse_marginal_on_test` |
-| `Datum.lineSummation` | `arch_reverse_marginal_on_test` |
-| `Datum.twistedGaussSummation` | `arch_reverse_marginal_on_test` |
+| `Datum.poisson` | None |
+| `Datum.lineSummation` | None |
+| `Datum.twistedGaussSummation` | None |
 
-After proving Proposition B.6, the local Kubota projection, the degree-one boundary value and the Archimedean shear estimate there are four direct admissions in the library. The three outside these three dependency chains are `fourier_mass`, `fourier_root_kernel`, and `mellin_dual`. Like `Datum.poisson`, whose functional it evaluates, `boundary_degree_one` reaches only `arch_reverse_marginal_on_test`. At finite places, the defining-integral version of the root formula uses the proved right-kernel theorem directly. The version stated with `d.fourier` also references the construction of the all-place Fourier endomorphism, whose axiom audit still reaches the Archimedean marginal. [Finite root formulas](../../MetaplecticSummation/MarginalRootFormula.lean)
+After proving Proposition B.6, the local Kubota projection, the degree-one boundary value, the Archimedean shear estimate and the Archimedean reverse marginal there are three direct admissions in the library: `fourier_mass`, `fourier_root_kernel`, and `mellin_dual`. None of them lies in these three dependency chains or in that of `boundary_degree_one`. At finite places, the defining-integral version of the root formula uses the proved right-kernel theorem directly. [Finite root formulas](../../MetaplecticSummation/MarginalRootFormula.lean)
 
 ## The arithmetic comparison
 
