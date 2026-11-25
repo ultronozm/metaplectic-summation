@@ -23,3 +23,4 @@ import MetaplecticSummation.Reduction.CompactBounds
 import MetaplecticSummation.Cusp.Localization
 import MetaplecticSummation.Marginals.ArchimedeanDifferenceBounds
 import MetaplecticSummation.Marginals.ArchimedeanRootSum
+import MetaplecticSummation.Marginals.ArchimedeanPowerRoots

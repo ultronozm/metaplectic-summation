@@ -11,7 +11,7 @@ open scoped Topology ENNReal NNReal
 open Classical
 namespace MetaplecticPoisson
 
-private theorem unitPower_proper {K : Type*} [NormedField K] [ProperSpace K]
+theorem unitPower_proper {K : Type*} [NormedField K] [ProperSpace K]
     (n : ℕ) (hn : n ≠ 0) :
     Tendsto (powMonoidHom n : Kˣ →* Kˣ).rangeRestrict (cocompact _) (cocompact _) := by
   let H := (powMonoidHom n : Kˣ →* Kˣ).range
