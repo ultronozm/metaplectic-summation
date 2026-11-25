@@ -39,7 +39,7 @@ products and rational evaluations all depend on these inputs.
 | [LocalCharacters](MetaplecticSummation/LocalCharacters.lean) | Continuity, additivity and unitarity of the restrictions of the adelic character |
 | [CharacterNontrivial](MetaplecticSummation/CharacterNontrivial.lean) | Nontriviality of a character satisfying the local Plancherel identity |
 | [ArchimedeanSlice](MetaplecticSummation/ArchimedeanSlice.lean), [SchwartzSliceIntegral](MetaplecticSummation/SchwartzSliceIntegral.lean), [SchwartzSliceFamily](MetaplecticSummation/SchwartzSliceFamily.lean) | Differentiation of affine line integrals and compact-uniform Schwartz bounds under the determinant substitution τ ↦ τⁿ |
-| [LineSmoothness](MetaplecticSummation/LineSmoothness.lean), [RadonDerivatives](MetaplecticSummation/RadonDerivatives.lean), [ArchimedeanSmoothness](MetaplecticSummation/ArchimedeanSmoothness.lean) | Joint smoothness of the archimedean Radon charts and rapid decay of all their derivatives in τ (Lemma 4.2(iii)), smoothness of the transform (Proposition 4.5), smoothness of the local Schwartz space and of its leading terms at real and complex places |
+| [LineSmoothness](MetaplecticSummation/LineSmoothness.lean), [RadonDerivatives](MetaplecticSummation/RadonDerivatives.lean), [ArchimedeanSmoothness](MetaplecticSummation/ArchimedeanSmoothness.lean), [ArchimedeanRays](MetaplecticSummation/ArchimedeanRays.lean) | Joint smoothness of the archimedean Radon charts and rapid decay of all their derivatives in τ (Lemma 4.2(iii)), smoothness of the transform (Proposition 4.5), smoothness of the local Schwartz space and of its leading terms, and the uniform ray bounds of Proposition 8.1, at real and complex places |
 | [FourierDifferences](MetaplecticSummation/FourierDifferences.lean), [ArchimedeanFourierDecay](MetaplecticSummation/ArchimedeanFourierDecay.lean) | Fourier multipliers for translations and differences, integral decay estimates from real derivatives, and uniform Fourier decay for bounded Schwartz families |
 | [FiniteTransform](MetaplecticSummation/FiniteTransform.lean) | Absolute convergence of the outer transform integral on finite-place test sections and local constancy of both charts of every finite-place Schwartz section |
 | [FiniteSchwartzLines](MetaplecticSummation/FiniteSchwartzLines.lean) | Absolute convergence of both line integrals on the full Schwartz space at every finite place for nonzero line parameters |
@@ -342,6 +342,14 @@ element of the local Schwartz space has smooth charts (`schwartz_smooth_real`,
 `schwartz_smooth_complex`). At frequency zero the same argument shows that the
 leading term of every element of the Schwartz space is smooth, the smoothness
 bullet after Proposition 8.1 (`leading_smooth_real`, `leading_smooth_complex`).
+For Proposition 8.1 itself, the normalized rays μ ↦ |μ|^{n−1}Ψ(μⁿv) of every
+element of the Schwartz space are smooth in v. Every derivative in v decays
+rapidly in μ, uniformly for v in compact subsets of either chart
+(`schwartz_rayBound_real`, `schwartz_rayBound_complex`). For a transformed test
+section, these derivatives are Fourier transforms of the v-derivatives of the
+Radon slices, which form a bounded Schwartz family by the derivative clause of
+Lemma 4.2(iii). Smoothness of the extension across μ = 0, that is, derivatives in μ,
+is not formalized.
 
 For every nontrivial adelic character trivial on the diagonal, the annihilator
 of the local integers equals the local integers at almost every finite place.

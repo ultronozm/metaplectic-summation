@@ -1,5 +1,6 @@
 import MetaplecticSummation.Inversion
 import MetaplecticSummation.ArchimedeanSmoothness
+import MetaplecticSummation.ArchimedeanRays
 import MetaplecticSummation.UnitTransformBounds
 import MetaplecticSummation.Jacquet.FiniteShear
 import MetaplecticSummation.LocalWeights
