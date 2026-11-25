@@ -1,5 +1,5 @@
 name = "MetaplecticSummation"
-defaultTargets = ["MetaplecticSummation"]
+defaultTargets = ["MetaplecticSummation", "Challenge", "Solution"]
 
 [[require]]
 name = "mathlib"
@@ -25,3 +25,11 @@ name = "GroundTheory"
 srcDir = "vendor/ground-theory"
 leanOptions = {autoImplicit = false, relaxedAutoImplicit = false, maxSynthPendingDepth = 3, maxHeartbeats = 4000000}
 moreLeanArgs = ["--tstack=400000"]
+
+[[lean_lib]]
+name = "Challenge"
+roots = ["Challenge"]
+
+[[lean_lib]]
+name = "Solution"
+roots = ["Solution"]
