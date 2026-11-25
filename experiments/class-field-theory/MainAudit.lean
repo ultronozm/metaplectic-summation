@@ -14,6 +14,7 @@ assert_no_sorry MetaplecticPoisson.Datum.kubota_projection
 assert_no_sorry MetaplecticPoisson.Datum.hasLocalEvaluationLifts
 assert_no_sorry MetaplecticPoisson.Datum.integrable_arch_shear
 assert_no_sorry MetaplecticPoisson.Datum.reverse_marginal_on_test
+assert_no_sorry MetaplecticPoisson.Datum.fourier_root_kernel
 assert_no_sorry MetaplecticPoisson.Datum.poisson
 assert_no_sorry MetaplecticPoisson.Datum.lineSummation
 assert_no_sorry MetaplecticPoisson.Datum.twistedGaussSummation

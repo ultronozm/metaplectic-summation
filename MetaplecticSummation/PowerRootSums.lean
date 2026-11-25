@@ -191,7 +191,7 @@ open NumberField
 variable {F : Type} [Field F] [NumberField F] {n : ℕ} [NeZero n] (d : Datum F n) (v : Place F)
 local notation "Kv" => LocalField F v
 
-private theorem place_proper : ProperSpace Kv := by
+theorem place_proper : ProperSpace Kv := by
   cases v with
   | inl w =>
     let : LocallyCompactSpace (LocalField F (.inl w)) := inferInstanceAs (LocallyCompactSpace w.Completion)
@@ -201,7 +201,7 @@ private theorem place_proper : ProperSpace Kv := by
     let := FinitePlace.nontriviallyNormedCompletion p
     exact .of_nontriviallyNormedField_of_weaklyLocallyCompactSpace (p.adicCompletion F)
 
-private theorem place_powers_open : IsOpen ((powMonoidHom n : Kvˣ →* Kvˣ).range : Set Kvˣ) := by
+theorem place_powers_open : IsOpen ((powMonoidHom n : Kvˣ →* Kvˣ).range : Set Kvˣ) := by
   cases v with
   | inl w =>
     let : NontriviallyNormedField w.Completion := { (inferInstance : NormedField w.Completion) with

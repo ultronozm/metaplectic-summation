@@ -34,7 +34,7 @@ The full build completed on the pinned archive. The direct project admissions re
 | `Datum.lineSummation` | None |
 | `Datum.twistedGaussSummation` | None |
 
-After proving Proposition B.6, the local Kubota projection, the degree-one boundary value, the Archimedean shear estimate and the Archimedean reverse marginal there are three direct admissions in the library: `fourier_mass`, `fourier_root_kernel`, and `mellin_dual`. None of them lies in these three dependency chains or in that of `boundary_degree_one`. At finite places, the defining-integral version of the root formula uses the proved right-kernel theorem directly. [Finite root formulas](../../MetaplecticSummation/MarginalRootFormula.lean)
+After proving Proposition B.6, the local Kubota projection, the degree-one boundary value, the Archimedean shear estimate, the Archimedean reverse marginal and the root-kernel formula there are two direct admissions in the library: `fourier_mass` and `mellin_dual`. Neither lies in these three dependency chains or in that of `boundary_degree_one`. At finite places, the defining-integral version of the root formula uses the proved right-kernel theorem directly. [Finite root formulas](../../MetaplecticSummation/MarginalRootFormula.lean)
 
 ## The arithmetic comparison
 
