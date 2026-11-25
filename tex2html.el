@@ -192,6 +192,12 @@ are included and later treated as empty label tables."
     ;; (replace-match "</span>\n</div>")
     ))
 
+(defvar tex2html-postprocess-html-functions nil
+  "Functions run at the end of `tex2html-postprocess-html-buffer'.
+Each function is called in the HTML buffer with one argument, the
+note's aux file.  A child site can add to this hook from the file
+named by `tex2html-local-file'.")
+
 (defun tex2html-postprocess-html-buffer (&optional auxfile external-auxfiles)
   "Update an HTML buffer with MathJax created using pandoc from a LaTeX
 file."
@@ -265,10 +271,9 @@ file."
     ;;     (replace-match (concat external-html link) t t nil 1))))))
 
     (while (search-forward-regexp "href=\"\\([^\"]+\\)\"[^>]+data-reference-type=\"\\(ref\\|eqref\\)\"[^>]+data-reference=\"\\([^\"]+\\)\"[^>]*>\\([^<]+\\)</a>" nil t)
-      (let* ((link (match-string 1))
-             (ref-type (match-string 2))
+      (let* ((ref-type (match-string 2))
              (label (match-string 3))
-             tag-number external-html
+             tag-number external-html external-anchor
              )
         (unless (setq tag-number (gethash label label-number-hash))
           (cl-loop
@@ -285,7 +290,10 @@ file."
                              (gethash external-label hash))
            when number
            do (setq tag-number number
-                    external-html html-file)))
+                    external-html html-file
+                    ;; The target document knows the label without
+                    ;; the \externaldocument prefix.
+                    external-anchor external-label)))
         (let* ((display-number (or tag-number "??"))
                (new-content
                 (if (string= ref-type "ref")
@@ -303,7 +311,8 @@ file."
            ;;   new-content)
            t t nil 4)
           (if external-html
-              (replace-match (concat external-html link) t t nil 1)))))
+              (replace-match (concat external-html "#" external-anchor)
+                             t t nil 1)))))
     ;; Step 3: put braces around mathop's followed by subscripts and superscripts
     (goto-char (point-min))
     (while (re-search-forward "\\\\mathop" nil t)
@@ -375,7 +384,10 @@ file."
     ;;       (when (re-search-forward "<strong>\\([A-Za-z]+\\)\\( [0-9]+\\)</strong>"
     ;;              closing t)
     ;;         (replace-match (or number "") t t nil 2))))))
-    ))
+
+    ;; Step 10: site-specific postprocessing
+    (goto-char (point-min))
+    (run-hook-with-args 'tex2html-postprocess-html-functions auxfile)))
 
 (defcustom giscus-comment-script
   ""
@@ -403,7 +415,7 @@ document.querySelectorAll(\".toggle-proof\").forEach(function(toggle) {
 });
 </script>
 <script>
-document.querySelector(\"#toggle-all-proofs\").addEventListener(\"click\", function(e) {
+document.querySelector(\"#toggle-all-proofs\")?.addEventListener(\"click\", function(e) {
   e.preventDefault();
   const proofs = document.querySelectorAll(\".proof-content\");
   proofs.forEach(function(proof) {
@@ -1001,4 +1013,20 @@ The check is warning-only; it returns the number of issues found."
 
 
 (provide 'tex2html)
+
+(defcustom tex2html-local-file "tex2html-local.el"
+  "Site-specific Emacs Lisp file loaded after tex2html.el, if present.
+It is looked up next to tex2html.el.  A child site can keep its own
+postprocessing there, e.g. on `tex2html-postprocess-html-functions',
+instead of editing this file."
+  :type 'string
+  :group 'tex2html)
+
+(let ((local (expand-file-name
+              tex2html-local-file
+              (if load-file-name
+                  (file-name-directory load-file-name)
+                default-directory))))
+  (when (file-readable-p local)
+    (load local nil t)))
 ;;; tex2html.el ends here
