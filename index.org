@@ -15,22 +15,6 @@ Poisson summation on the plane gives the functional equation for Eisenstein seri
 
 *The paper:* [[file:schwartz-space-n-fold-cover-sl2.html][HTML]] · [[file:schwartz-space-n-fold-cover-sl2.pdf][PDF]] · [[file:schwartz-space-n-fold-cover-sl2.tex][TeX]]
 
-* Exercises
-# TODO(orchestrator): the sheets build cleanly and render here, but have
-# not yet been worked by an independent solver.  After the solver runs,
-# keep this section, revise it, or remove it.
-
-The main thread of the paper as exercise sheets, drafted by AI agents.  The problems are short, the hints are at the end of each sheet, and there are no solutions.
-
-1. From Poisson summation on the plane to a Fourier transform for the $n$-fold cover of $\mathrm{SL}_2$ \\
-   [[file:20261124T213000--schwartz-space-cover-exercises__workbook.html][HTML]] · [[file:20261124T213000--schwartz-space-cover-exercises__workbook.pdf][PDF]]
-2. The Schwartz space of the $n$-fold cover of $\mathrm{SL}_2$: symmetries, the basic vector and inversion \\
-   [[file:20261124T213100--schwartz-space-cover-inversion__workbook.html][HTML]] · [[file:20261124T213100--schwartz-space-cover-inversion__workbook.pdf][PDF]]
-3. Leading terms and a Poisson formula for the $n$-fold cover of $\mathrm{SL}_2$ \\
-   [[file:20261124T213200--schwartz-space-cover-poisson__workbook.html][HTML]] · [[file:20261124T213200--schwartz-space-cover-poisson__workbook.pdf][PDF]]
-4. Voronoi formulas for Gauss sums from the $n$-fold cover of $\mathrm{SL}_2$ \\
-   [[file:20261124T213300--schwartz-space-cover-voronoi__workbook.html][HTML]] · [[file:20261124T213300--schwartz-space-cover-voronoi__workbook.pdf][PDF]]
-
 * Lean formalization
 For number fields, the main results of the paper are formalized in Lean 4 with Mathlib, in the directory [[https://github.com/ultronozm/metaplectic-summation/tree/main/lean][lean/]] of the repository.  The development has no ~sorry~, and the statements below depend only on the standard axioms ~propext~, ~Classical.choice~ and ~Quot.sound~.
 

@@ -1,5 +1,5 @@
 # Build the paper's PDF into build/ and output/pdf/.  The site build (PDF and
-# HTML of the paper and the exercises, and the landing page) is preview-site.sh.
+# HTML of the paper, and the landing page) is preview-site.sh.
 PAPER := schwartz-space-n-fold-cover-sl2
 
 .PHONY: all paper clean

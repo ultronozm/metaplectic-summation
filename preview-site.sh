@@ -2,9 +2,8 @@
 # Build a local preview of the deploy snapshot into _site/.
 #
 # Mirrors .github/workflows/build.yml (dispatch with rebuild_all, no
-# carried-forward artifacts) followed by make-index.yml: the exercise
-# sheets are staged at the top level, every note is compiled and
-# converted in CI order, failures are retried once, notes that import a
+# carried-forward artifacts) followed by make-index.yml: every note is
+# compiled and converted in CI order, failures are retried once, notes that import a
 # later note with \externaldocument get the second xr pass, the link
 # check runs, and index.html and listing.json are made.  The result holds
 # what the deploy branch would: the tracked sources plus *.pdf, *.html,
@@ -49,7 +48,6 @@ git diff --name-only --diff-filter=D HEAD -z |
 
 cd "$site"
 export LC_ALL=C
-scripts/stage-exercises.sh
 
 # Determine files to build (rebuild_all).
 EXCLUDE=$(jq -r '.exclude[]' config.json)
