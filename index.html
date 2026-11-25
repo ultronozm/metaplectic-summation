@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2026-11-25 Wed 15:02 -->
+<!-- 2026-11-25 Wed 19:27 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>A Schwartz space for the $n$-fold cover of $\mathrm{SL}_2$</title>
@@ -240,9 +240,9 @@ Poisson summation on the plane gives the functional equation for Eisenstein seri
 <p>
 <b>The paper:</b> <a href="schwartz-space-n-fold-cover-sl2.html">HTML</a> · <a href="schwartz-space-n-fold-cover-sl2.pdf">PDF</a> · <a href="schwartz-space-n-fold-cover-sl2.tex">TeX</a>
 </p>
-<div id="outline-container-org50948f0" class="outline-2">
-<h2 id="org50948f0">Lean formalization</h2>
-<div class="outline-text-2" id="text-org50948f0">
+<div id="outline-container-org7828b9d" class="outline-2">
+<h2 id="org7828b9d">Lean formalization</h2>
+<div class="outline-text-2" id="text-org7828b9d">
 <p>
 For number fields, the main results of the paper are formalized in Lean 4 with Mathlib, in the directory <a href="https://github.com/ultronozm/metaplectic-summation/tree/main/lean">lean/</a> of the repository.  The development has no <code>sorry</code>, and the statements below depend only on the standard axioms <code>propext</code>, <code>Classical.choice</code> and <code>Quot.sound</code>.
 </p>
@@ -279,73 +279,73 @@ The table follows <a href="schwartz-space-n-fold-cover-sl2.html#sec:lean">Append
 <tbody>
 <tr>
 <td class="org-left"><a href="schwartz-space-n-fold-cover-sl2.html#theorem:gauss-sums">Theorem 10.33</a></td>
-<td class="org-left"><a href="https://github.com/ultronozm/metaplectic-summation/blob/3b301a97286276f336773d5d16b00d96d020b185/lean/Challenge.lean#L344"><code>NFoldCover.twistedGaussSummation</code></a></td>
-<td class="org-left">The setting of §10.6. The constants \(\rho(\beta)\) in \(M_b\) are asserted to exist, independently of \(T\), \(\chi\), \(f\) and \(W_S\), rather than identified with those of Theorem 10.16; the absolute convergence of both sums is included.</td>
+<td class="org-left"><a href="https://github.com/ultronozm/metaplectic-summation/blob/5a05b06c1e61a0fddc2ba44a36cc81f45ef7db3f/lean/Challenge.lean#L345"><code>NFoldCover.twistedGaussSummation</code></a></td>
+<td class="org-left">The setting of §10.6. The constants \(\rho(\beta)\) in \(M_b\) are characterized as the unique family, independent of \(T\), \(\chi\), \(f\) and \(W_S\), for which the identity holds; they are not identified with \(\lvert b \rvert_S\) times those of Theorem 10.16 for \(\psi(b \, \cdot)\). The absolute convergence of both sums is included.</td>
 </tr>
 
 <tr>
 <td class="org-left"><a href="schwartz-space-n-fold-cover-sl2.html#corollary:quadratic-dual">Corollary 10.39</a></td>
-<td class="org-left"><a href="https://github.com/ultronozm/metaplectic-summation/blob/3b301a97286276f336773d5d16b00d96d020b185/lean/Challenge.lean#L377"><code>NFoldCover.quadraticDual</code></a></td>
-<td class="org-left">The setting of §10.7.2.</td>
+<td class="org-left"><a href="https://github.com/ultronozm/metaplectic-summation/blob/5a05b06c1e61a0fddc2ba44a36cc81f45ef7db3f/lean/Challenge.lean#L379"><code>NFoldCover.quadraticDual</code></a></td>
+<td class="org-left">The setting of §10.7.2; the absolute convergence of both sums is included.</td>
 </tr>
 
 <tr>
 <td class="org-left"><a href="schwartz-space-n-fold-cover-sl2.html#item:lines-smooth">Lemma 4.2(iii)</a></td>
-<td class="org-left"><a href="https://github.com/ultronozm/metaplectic-summation/blob/3b301a97286276f336773d5d16b00d96d020b185/lean/MetaplecticSummation/ArchimedeanSmoothness.lean#L450"><code>MetaplecticPoisson.Datum.radon_smooth_real</code></a> <a href="https://github.com/ultronozm/metaplectic-summation/blob/3b301a97286276f336773d5d16b00d96d020b185/lean/MetaplecticSummation/ArchimedeanSmoothness.lean#L469"><code>MetaplecticPoisson.Datum.radon_smooth_complex</code></a></td>
+<td class="org-left"><a href="https://github.com/ultronozm/metaplectic-summation/blob/5a05b06c1e61a0fddc2ba44a36cc81f45ef7db3f/lean/MetaplecticSummation/ArchimedeanSmoothness.lean#L450"><code>MetaplecticPoisson.Datum.radon_smooth_real</code></a> <a href="https://github.com/ultronozm/metaplectic-summation/blob/5a05b06c1e61a0fddc2ba44a36cc81f45ef7db3f/lean/MetaplecticSummation/ArchimedeanSmoothness.lean#L469"><code>MetaplecticPoisson.Datum.radon_smooth_complex</code></a></td>
 <td class="org-left">Real and complex places: joint smoothness, and rapid decay in \(\tau\) of every derivative, uniformly for \(v'\) in compact sets.</td>
 </tr>
 
 <tr>
 <td class="org-left"><a href="schwartz-space-n-fold-cover-sl2.html#proposition:fourier-transform-genuine">Proposition 4.5</a></td>
-<td class="org-left"><a href="https://github.com/ultronozm/metaplectic-summation/blob/3b301a97286276f336773d5d16b00d96d020b185/lean/MetaplecticSummation/ArchimedeanSmoothness.lean#L338"><code>MetaplecticPoisson.Datum.arch_transform_smooth</code></a></td>
+<td class="org-left"><a href="https://github.com/ultronozm/metaplectic-summation/blob/5a05b06c1e61a0fddc2ba44a36cc81f45ef7db3f/lean/MetaplecticSummation/ArchimedeanSmoothness.lean#L338"><code>MetaplecticPoisson.Datum.arch_transform_smooth</code></a></td>
 <td class="org-left">Real and complex places: the smoothness of \(\mathcal{F} \Phi\) for \(\Phi \in \mathcal{D}\).</td>
 </tr>
 
 <tr>
 <td class="org-left"><a href="schwartz-space-n-fold-cover-sl2.html#definition:schwartz-space">Definition 4.11</a></td>
-<td class="org-left"><a href="https://github.com/ultronozm/metaplectic-summation/blob/3b301a97286276f336773d5d16b00d96d020b185/lean/MetaplecticSummation/ArchimedeanSmoothness.lean#L423"><code>MetaplecticPoisson.Datum.schwartz_smooth_real</code></a> <a href="https://github.com/ultronozm/metaplectic-summation/blob/3b301a97286276f336773d5d16b00d96d020b185/lean/MetaplecticSummation/ArchimedeanSmoothness.lean#L429"><code>MetaplecticPoisson.Datum.schwartz_smooth_complex</code></a></td>
+<td class="org-left"><a href="https://github.com/ultronozm/metaplectic-summation/blob/5a05b06c1e61a0fddc2ba44a36cc81f45ef7db3f/lean/MetaplecticSummation/ArchimedeanSmoothness.lean#L423"><code>MetaplecticPoisson.Datum.schwartz_smooth_real</code></a> <a href="https://github.com/ultronozm/metaplectic-summation/blob/5a05b06c1e61a0fddc2ba44a36cc81f45ef7db3f/lean/MetaplecticSummation/ArchimedeanSmoothness.lean#L429"><code>MetaplecticPoisson.Datum.schwartz_smooth_complex</code></a></td>
 <td class="org-left">Real and complex places: the elements of \(\mathcal{S}\) are smooth.</td>
 </tr>
 
 <tr>
 <td class="org-left"><a href="schwartz-space-n-fold-cover-sl2.html#proposition:basic-vector-fixed">Proposition 6.3</a></td>
-<td class="org-left"><a href="https://github.com/ultronozm/metaplectic-summation/blob/3b301a97286276f336773d5d16b00d96d020b185/lean/MetaplecticSummation/BasicFixed.lean#L103"><code>MetaplecticPoisson.Datum.basicCharts_fourier_fixed</code></a> <a href="https://github.com/ultronozm/metaplectic-summation/blob/3b301a97286276f336773d5d16b00d96d020b185/lean/MetaplecticSummation/BasicMembership.lean#L184"><code>MetaplecticPoisson.Datum.basic_mem</code></a></td>
+<td class="org-left"><a href="https://github.com/ultronozm/metaplectic-summation/blob/5a05b06c1e61a0fddc2ba44a36cc81f45ef7db3f/lean/MetaplecticSummation/BasicFixed.lean#L103"><code>MetaplecticPoisson.Datum.basicCharts_fourier_fixed</code></a> <a href="https://github.com/ultronozm/metaplectic-summation/blob/5a05b06c1e61a0fddc2ba44a36cc81f45ef7db3f/lean/MetaplecticSummation/BasicMembership.lean#L184"><code>MetaplecticPoisson.Datum.basic_mem</code></a></td>
 <td class="org-left">Finite places prime to \(n\).</td>
 </tr>
 
 <tr>
 <td class="org-left"><a href="schwartz-space-n-fold-cover-sl2.html#theorem:schwartz-space">Theorem 7.1</a></td>
-<td class="org-left"><a href="https://github.com/ultronozm/metaplectic-summation/blob/3b301a97286276f336773d5d16b00d96d020b185/lean/MetaplecticSummation/Inversion.lean#L500"><code>MetaplecticPoisson.Datum.schwartz_inversion</code></a></td>
+<td class="org-left"><a href="https://github.com/ultronozm/metaplectic-summation/blob/5a05b06c1e61a0fddc2ba44a36cc81f45ef7db3f/lean/MetaplecticSummation/Inversion.lean#L500"><code>MetaplecticPoisson.Datum.schwartz_inversion</code></a></td>
 <td class="org-left">Every place; \(\widetilde{\mathrm{SL}}_2(F_{\mathfrak{p}})\) is the group generated by \(\mu_n\), \(n(u)\) and \(n^-(u)\).</td>
 </tr>
 
 <tr>
 <td class="org-left"><a href="schwartz-space-n-fold-cover-sl2.html#proposition:schwartz-origin">Proposition 8.1</a></td>
-<td class="org-left"><a href="https://github.com/ultronozm/metaplectic-summation/blob/3b301a97286276f336773d5d16b00d96d020b185/lean/MetaplecticSummation/ArchimedeanRays.lean#L683"><code>MetaplecticPoisson.Datum.schwartz_rayBound_real</code></a> <a href="https://github.com/ultronozm/metaplectic-summation/blob/3b301a97286276f336773d5d16b00d96d020b185/lean/MetaplecticSummation/ArchimedeanRays.lean#L690"><code>MetaplecticPoisson.Datum.schwartz_rayBound_complex</code></a> <a href="https://github.com/ultronozm/metaplectic-summation/blob/3b301a97286276f336773d5d16b00d96d020b185/lean/MetaplecticSummation/ArchimedeanSmoothness.lean#L436"><code>MetaplecticPoisson.Datum.leading_smooth_real</code></a> <a href="https://github.com/ultronozm/metaplectic-summation/blob/3b301a97286276f336773d5d16b00d96d020b185/lean/MetaplecticSummation/ArchimedeanSmoothness.lean#L442"><code>MetaplecticPoisson.Datum.leading_smooth_complex</code></a></td>
+<td class="org-left"><a href="https://github.com/ultronozm/metaplectic-summation/blob/5a05b06c1e61a0fddc2ba44a36cc81f45ef7db3f/lean/MetaplecticSummation/ArchimedeanRays.lean#L683"><code>MetaplecticPoisson.Datum.schwartz_rayBound_real</code></a> <a href="https://github.com/ultronozm/metaplectic-summation/blob/5a05b06c1e61a0fddc2ba44a36cc81f45ef7db3f/lean/MetaplecticSummation/ArchimedeanRays.lean#L690"><code>MetaplecticPoisson.Datum.schwartz_rayBound_complex</code></a> <a href="https://github.com/ultronozm/metaplectic-summation/blob/5a05b06c1e61a0fddc2ba44a36cc81f45ef7db3f/lean/MetaplecticSummation/ArchimedeanSmoothness.lean#L436"><code>MetaplecticPoisson.Datum.leading_smooth_real</code></a> <a href="https://github.com/ultronozm/metaplectic-summation/blob/5a05b06c1e61a0fddc2ba44a36cc81f45ef7db3f/lean/MetaplecticSummation/ArchimedeanSmoothness.lean#L442"><code>MetaplecticPoisson.Datum.leading_smooth_complex</code></a></td>
 <td class="org-left">Real and complex places: the functions (8.1) are smooth in \(v\), and each derivative in \(v\) decays rapidly in \(\mu\), uniformly for \(v\) in compact sets; the leading term \(b \Psi\) is smooth. The smoothness of the extensions in \(\mu\) across \(\mu = 0\) is not formalized.</td>
 </tr>
 
 <tr>
 <td class="org-left"><a href="schwartz-space-n-fold-cover-sl2.html#theorem:poisson">Theorem 9.1</a></td>
-<td class="org-left"><a href="https://github.com/ultronozm/metaplectic-summation/blob/3b301a97286276f336773d5d16b00d96d020b185/lean/MetaplecticSummation/Poisson.lean#L85"><code>MetaplecticPoisson.Datum.poisson</code></a></td>
+<td class="org-left"><a href="https://github.com/ultronozm/metaplectic-summation/blob/5a05b06c1e61a0fddc2ba44a36cc81f45ef7db3f/lean/MetaplecticSummation/Poisson.lean#L85"><code>MetaplecticPoisson.Datum.poisson</code></a></td>
 <td class="org-left">The reference vector at the places dividing \(n\) is \(0\), which does not change \(\mathcal{S}_{\mathbb{A}}\).</td>
 </tr>
 
 <tr>
 <td class="org-left"><a href="schwartz-space-n-fold-cover-sl2.html#corollary:poisson-vanishing">Corollary 9.2</a></td>
-<td class="org-left"><a href="https://github.com/ultronozm/metaplectic-summation/blob/3b301a97286276f336773d5d16b00d96d020b185/lean/MetaplecticSummation/Poisson.lean#L96"><code>MetaplecticPoisson.Datum.poisson_of_leading_eq_zero</code></a> <a href="https://github.com/ultronozm/metaplectic-summation/blob/3b301a97286276f336773d5d16b00d96d020b185/lean/MetaplecticSummation/Poisson.lean#L104"><code>MetaplecticPoisson.Datum.poisson_pure_of_local_vanishing</code></a></td>
+<td class="org-left"><a href="https://github.com/ultronozm/metaplectic-summation/blob/5a05b06c1e61a0fddc2ba44a36cc81f45ef7db3f/lean/MetaplecticSummation/Poisson.lean#L96"><code>MetaplecticPoisson.Datum.poisson_of_leading_eq_zero</code></a> <a href="https://github.com/ultronozm/metaplectic-summation/blob/5a05b06c1e61a0fddc2ba44a36cc81f45ef7db3f/lean/MetaplecticSummation/Poisson.lean#L104"><code>MetaplecticPoisson.Datum.poisson_pure_of_local_vanishing</code></a></td>
 <td class="org-left">As for Theorem 9.1.</td>
 </tr>
 
 <tr>
 <td class="org-left"><a href="schwartz-space-n-fold-cover-sl2.html#corollary:jacquet-decay">Corollary 10.4</a></td>
-<td class="org-left"><a href="https://github.com/ultronozm/metaplectic-summation/blob/3b301a97286276f336773d5d16b00d96d020b185/lean/MetaplecticSummation/Jacquet/ArchDecay.lean#L37"><code>MetaplecticPoisson.Datum.jacquet_decay_arch</code></a></td>
+<td class="org-left"><a href="https://github.com/ultronozm/metaplectic-summation/blob/5a05b06c1e61a0fddc2ba44a36cc81f45ef7db3f/lean/MetaplecticSummation/Jacquet/ArchDecay.lean#L37"><code>MetaplecticPoisson.Datum.jacquet_decay_arch</code></a></td>
 <td class="org-left">Real and complex places.</td>
 </tr>
 
 <tr>
 <td class="org-left"><a href="schwartz-space-n-fold-cover-sl2.html#theorem:main">Theorem 10.16</a></td>
-<td class="org-left"><a href="https://github.com/ultronozm/metaplectic-summation/blob/3b301a97286276f336773d5d16b00d96d020b185/lean/MetaplecticSummation/Jacquet.lean#L133"><code>MetaplecticPoisson.Datum.lineSummation</code></a></td>
+<td class="org-left"><a href="https://github.com/ultronozm/metaplectic-summation/blob/5a05b06c1e61a0fddc2ba44a36cc81f45ef7db3f/lean/MetaplecticSummation/Jacquet.lean#L133"><code>MetaplecticPoisson.Datum.lineSummation</code></a></td>
 <td class="org-left">The setting of §9.1.</td>
 </tr>
 </tbody>
@@ -355,7 +355,7 @@ The table follows <a href="schwartz-space-n-fold-cover-sl2.html#sec:lean">Append
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Paul D. Nelson</p>
-<p class="date">Created: 2026-11-25 Wed 15:02</p>
+<p class="date">Created: 2026-11-25 Wed 19:27</p>
 </div>
 </body>
 </html>
