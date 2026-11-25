@@ -1,0 +1,390 @@
+\documentclass[reqno]{amsart}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage[shortlabels]{enumitem}
+\usepackage[hidelinks]{hyperref}
+
+\providecommand{\vol}{\operatorname{vol}}
+\providecommand{\qr}[2]{\left(\frac{#1}{#2}\right)}
+\newcommand{\SL}{\mathrm{SL}_2}
+\newcommand{\tSL}{\widetilde{\mathrm{SL}}_2}
+\newcommand{\Fc}{\mathcal{F}}
+\newcommand{\Dc}{\mathcal{D}}
+\newcommand{\Sc}{\mathcal{S}}
+\newcommand{\Wc}{\mathcal{W}}
+\newcommand{\Ab}{\mathbb{A}}
+\newcommand{\oo}{\mathfrak{o}}
+\newcommand{\pp}{\mathfrak{p}}
+
+% Chapter number; \ref{chap} gives it.
+\newcounter{chap}
+\renewcommand{\thechap}{1}
+\renewcommand{\thesection}{\thechap.\arabic{section}}
+\numberwithin{equation}{section}
+\theoremstyle{definition}
+\newtheorem{problem}{Problem}[section]
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+
+\newenvironment{hints}{\begin{description}[font=\normalfont\bfseries]}{\end{description}}
+\newenvironment{exercises}{\subsection*{Exercises}\begin{enumerate}[1.]}{\end{enumerate}}
+
+\setlength{\emergencystretch}{3em}
+\title[A Fourier transform for the $n$-fold cover of $\mathrm{SL}_2$]{From Poisson
+  summation on the plane to a Fourier transform for the $n$-fold cover of
+  $\mathrm{SL}_2$}
+\author{}
+\date{November 24, 2026}
+
+\begin{document}
+\maketitle
+\refstepcounter{chap}\label{chap}
+
+Poisson summation on $\mathbb{Z}^2$, applied to the translates of a Schwartz function by $\mathrm{SL}_2(\mathbb{R})$, is the functional equation of a pseudo-Eisenstein series.  What is the analogue for Kubota's Eisenstein series on the $n$-fold cover of $\SL$, whose coefficients are $n$th power residue symbols?  This sheet constructs the local Fourier transform of \cite{N}: on genuine functions over the punctured plane, integrate over lines and take a Fourier transform in an $n$th root of the level.  Three sequels prove inversion, a Poisson formula and Voronoi formulas for Gauss sums.
+
+\paragraph{Prerequisites.}
+Local fields, and Tate's local functional equation \cite[Theorem~2.4.1]{Tate}.  The Hilbert symbol \cite[Ch.~V, \S3]{Neu}.  Deligne's account of Kubota's cover \cite{Del} explains where the formulas come from, but is not needed to do the problems.  The results are proved in \cite{N}, and the text gives a pinpoint for each theorem.
+
+\paragraph{Conventions.}
+Matrices act on row vectors from the right.  For $v = (x, y)$ and $w = (x', y')$, let $[v, w] := x y' - y x'$ and $\lVert v \rVert := \max(\lvert x \rvert, \lvert y \rvert)$.  For a local field $F$, $\lvert \cdot \rvert$ is the normalized absolute value (on $\mathbb{C}$, the square of the usual one), $\psi$ is a nontrivial unitary character, $d x$ is the $\psi$-self-dual measure, $d^\times x := d x / \lvert x \rvert$, and $\hat{g}(y) := \int_F g(x) \psi(x y) \, d x$.  When $F$ is non-archimedean, $\oo$, $\varpi$, $v$ and $q$ denote its ring of integers, a uniformizer, the valuation and the residue cardinality; $\psi$ is \emph{unramified} if it is trivial on $\oo$ but not on $\varpi^{-1} \oo$; and $L(s) := (1 - q^{-s})^{-1}$.
+
+
+%======================================================================
+\section{The linear prototype}\label{sec:linear}
+
+In this section $n = 1$.  We recall Poisson summation on the plane in a form that will survive the passage to the cover.  Let $F$ be a local field.  The \emph{symplectic Fourier transform} of a Schwartz--Bruhat function $\Phi$ on $F^2$ is
+\begin{equation*}
+  \Fc \Phi(w) := \int_{F^2} \Phi(v) \psi([v, w]) \, d v.
+\end{equation*}
+It commutes with $\Phi \mapsto \Phi(\cdot \, g)$ for $g \in \SL(F)$, and $\Fc^2 = 1$ because $[\cdot, \cdot]$ is alternating.  For $w = (x', y') \neq 0$ and $\tau \in F$, let $R \Phi(w, \tau)$ denote the integral of $\Phi$ over the line $[v, w] = \tau$, with the measure $d x / \lvert x' \rvert$ in the parameter $x$ if $x' \neq 0$, and $d y / \lvert y' \rvert$ in the parameter $y$ if $y' \neq 0$.
+
+\begin{problem}\label{pr:lin-lines}
+  The two measures on the line agree when $x' y' \neq 0$, and $\Fc \Phi(w) = \int_F \psi(\tau) R \Phi(w, \tau) \, d \tau$.
+\end{problem}
+
+Let $F = \mathbb{R}$, $\psi(x) = e^{2 \pi i x}$, $\Gamma := \SL(\mathbb{Z})$, and let $\Gamma_\infty$ be the stabilizer of $(0, 1)$.  The lattice $\mathbb{Z}^2$ is its own dual for $[\cdot, \cdot]$, so Poisson summation reads $\sum_{v \in \mathbb{Z}^2} \Phi(v) = \sum_{v \in \mathbb{Z}^2} \Fc \Phi(v)$.
+
+\begin{problem}\label{pr:lin-eisenstein}
+  Every nonzero $v \in \mathbb{Z}^2$ is $t (0, 1) \gamma$ for a unique integer $t \geq 1$ and a unique coset $\Gamma_\infty \gamma \in \Gamma_\infty \backslash \Gamma$.
+\end{problem}
+
+Thus $E_\Phi(g) := \sum_{v \neq 0} \Phi(v g)$ is a pseudo-Eisenstein series, and Poisson summation gives its functional equation
+\begin{equation}\label{eq:lin-eisenstein}
+  E_\Phi(g) + \Phi(0) = E_{\Fc \Phi}(g) + \Fc \Phi(0).
+\end{equation}
+Applied to dilates and followed by a Mellin transform, it gives the continuation of the Eisenstein series for $\Gamma$, the terms $\Phi(0)$ and $\Fc \Phi(0)$ producing its poles \cite[\S\S3--5]{God}.
+
+Next we isolate the local normalization.  For a continuous function $f$ on $F^\times$ and a unitary character $\omega$ of $F^\times$, let $Z(f, \omega, z) := \int_{F^\times} f(\lambda) \omega(\lambda) \lvert \lambda \rvert^z \, d^\times \lambda$.  Tate's local functional equation \cite[Theorem~2.4.1]{Tate} provides a meromorphic function $\gamma(z, \omega, \psi)$ with
+\begin{equation}\label{eq:tate}
+  Z(\hat{g}, \omega^{-1}, 1 - z) = \gamma(z, \omega, \psi) Z(g, \omega, z)
+  \qquad (0 < \Re(z) < 1)
+\end{equation}
+for every Schwartz--Bruhat function $g$ on $F$.
+
+\begin{problem}\label{pr:lin-tate}
+  If $F$ is non-archimedean and $\psi$ is unramified, then $\gamma(z, 1, \psi) = L(1 - z) / L(z)$.
+\end{problem}
+
+For $0 < \Re(s) < 1$, the integrals $\int_{\lvert \tau \rvert \leq q^m} \psi(\tau) \lvert \tau \rvert^{-s} \, d \tau$ do not depend on $m \geq 1$, and their common value is $\gamma(s, 1, \psi)$.  We write it as $\int_F \psi(\tau) \lvert \tau \rvert^{-s} \, d \tau$; over $\mathbb{R}$ and $\mathbb{C}$ the same notation is understood distributionally.
+
+Keep $F$ non-archimedean and $\psi$ unramified.  Let $\Phi^1$ be the characteristic function of the primitive vectors of $\oo^2$, and for an $\oo^\times$-invariant function $\Phi$ on $F^2 - \{0\}$ let $\Phi[s](v) := \sum_{k \in \mathbb{Z}} q^{k (1 + s)} \Phi(\varpi^{-k} v)$.  Let $e_s := \Phi^1[s]$; it satisfies $e_s(\mu v) = \lvert \mu \rvert^{-1-s} e_s(v)$ and $e_s(0, 1) = 1$.
+
+\begin{problem}\label{pr:lin-spherical}
+  For $\Re(s) > 0$, $\int_F e_s(1, y) \, d y = L(s) / L(1 + s)$.
+\end{problem}
+
+Since $1_{\oo^2} = \sum_{k \geq 0} \Phi^1(\varpi^{-k} \, \cdot)$ on $F^2 - \{0\}$, we have $1_{\oo^2}[s] = L(1 + s) e_s$.  The integral in Problem~\ref{pr:lin-spherical} is $R e_s((0, 1), 1)$, and $R e_s((0, 1), \tau) = \lvert \tau \rvert^{-s} R e_s((0, 1), 1)$.  Combining with Problem~\ref{pr:lin-tate},
+\begin{equation}\label{eq:lin-forced}
+  \int_F \psi(\tau) R(1_{\oo^2}[s])((0, 1), \tau) \, d \tau
+  = L(s) \frac{L(1 - s)}{L(s)}
+  = 1_{\oo^2}[-s](0, 1).
+\end{equation}
+The intertwining integral supplies $L(s) / L(1 + s)$, and the Fourier transform in $\tau$ supplies $L(1 - s) / L(s)$.
+
+Finally, the Fourier coefficients.  For $c \in F^\times$, let $J \Phi(c) := \int_F \Phi(c, y) \psi(- y / c) \, d y$.
+
+\begin{problem}\label{pr:lin-voronoi}
+  Let $b \geq 1$ be an integer and $\Phi$ a Schwartz function on $\mathbb{R}^2$, and let $W(c) := \int_{\mathbb{R}} \Phi(c, y) e(- b y / c) \, d y$.  Then $\sum_{c \mid b} W(c) = \sum_{c \mid b} W(b / c)$, the sums running over the positive and negative divisors of $b$; this is the integral of \eqref{eq:lin-eisenstein} for $\Phi(\cdot \, n(u))$ against $e(- b u)$ over $u \in [0, 1]$, where $n(u)$ is the upper unipotent matrix with entry $u$.
+\end{problem}
+
+Kubota's Eisenstein series on the $n$-fold cover are sums, over coprime pairs $(c, d)$ modulo $n$th powers of units, of $\qr{d}{c}_n$ times a function of $(c, d)$ homogeneous under dilation by $n$th powers \cite{Kub69}.  To imitate Problem~\ref{pr:lin-voronoi}, we would write $\qr{d}{c}_n$ as a product over primes $\pp$ of a function of the local pair $(c, d)$.  For $n = 1$ that function is $1_{\oo_\pp^2}$.  For $n \geq 2$ it is a Hilbert symbol.
+
+%======================================================================
+\section{The Hilbert symbol}\label{sec:hilbert}
+
+Let $F$ be a local field containing the group $\mu_n$ of $n$th roots of unity: thus $F$ is non-archimedean, or $F = \mathbb{C}$, or $F = \mathbb{R}$ and $n \leq 2$.  Denote by $\{x, y\}_n$ the Hilbert symbol of $x, y \in F^\times$, made complex-valued by a fixed embedding $\mu_n \hookrightarrow \mathbb{C}^\times$.  We use the following properties \cite[Ch.~V, Proposition~3.2]{Neu}.
+\begin{enumerate}[(a)]
+\item\label{h:bimult} The symbol is bimultiplicative and continuous, and $\{x, y\}_n \{y, x\}_n = 1$.
+\item\label{h:powers} $\{x, y\}_n = 1$ for all $x$ if and only if $y \in F^{\times n}$.
+\item\label{h:units} If $F$ is non-archimedean of residue characteristic prime to $n$, then $\{x, y\}_n = 1$ for $x, y \in \oo^\times$.
+\item\label{h:steinberg} $\{x, y\}_n = 1$ if $x + y = 1$, and $\{x, -x\}_n = 1$.
+\item\label{h:open} $F^{\times n}$ is open in $F^\times$.
+\item\label{h:tame} If $F$ is non-archimedean of residue characteristic prime to $n$, then $1 + \varpi \oo \subset F^{\times n}$, and $u \mapsto \{\varpi, u\}_n$ is a character of $\oo^\times$ of order $n$.
+\end{enumerate}
+In particular the symbol is trivial when either argument lies in $F^{\times n}$.  For $F = \mathbb{R}$ and $n = 2$, $\{x, y\}_2 = -1$ exactly when $x, y < 0$; for $F = \mathbb{C}$ the symbol is trivial.  If $F$ is non-archimedean of residue characteristic prime to $n$, then, up to inversion, $\{a, b\}_n$ is the $n$th root of unity congruent to $\bigl( (-1)^{v(a) v(b)} a^{v(b)} / b^{v(a)} \bigr)^{(q-1)/n}$ modulo $\varpi$ \cite[Ch.~V, Proposition~3.4]{Neu}.  This is the \emph{tame} case.
+
+\begin{problem}\label{pr:hilb-tame}
+  In the tame case, $\{\varpi, u\}_n$ is, up to inversion, the root of unity congruent to $u^{-(q-1)/n}$; hence properties \ref{h:units} and \ref{h:tame} hold.
+\end{problem}
+
+\begin{problem}\label{pr:hilb-q7}
+  In $\mathbb{Q}_7$, with $n = 3$, the symbol $\{7, 6\}_3$ is trivial, while $\{7, 2\}_3$ and $\{7, 3\}_3$ are not.
+\end{problem}
+
+Now let $F$ be a global field containing $\mu_n$, $S$ a finite set of places containing the archimedean ones, and $\mathcal{O}_S$ the ring of $S$-integers.  For $c \in \mathcal{O}_S - \{0\}$ and $d \in F$, the \emph{$n$th power residue symbol} is
+\begin{equation*}
+  \qr{d}{c}_n :=
+  \begin{cases}
+    \prod_{\pp \mid c} \{c, d\}_{\pp, n} & \text{if $d$ is a unit at each $\pp \mid c$,} \\
+    0 & \text{otherwise,}
+  \end{cases}
+\end{equation*}
+where $\pp$ runs over the primes not in $S$.  It is multiplicative in $d$, depends only on $d$ modulo $c$, and is multiplicative in $c$ for coprime arguments.
+
+\begin{problem}\label{pr:hilb-residue}
+  Let $F = \mathbb{Q}(\omega)$ with $\omega^2 + \omega + 1 = 0$, $n = 3$, and let $\pi$ be a prime of $\mathbb{Z}[\omega]$ not dividing $3$.  Up to inversion, $\qr{d}{\pi}_3$ is the cube root of unity congruent to $d^{(N \pi - 1)/3}$ modulo $\pi$.
+\end{problem}
+
+Let $\pp \nmid n$ be a prime outside $S$ and $(c, d)$ a coprime pair.  The $\pp$-factor of $\qr{d}{c}_n$ is $1$ if $c$ is a $\pp$-unit, and $\{c, d\}_{\pp, n}$ otherwise.  Exchanging the roles of $c$ and $d$ gives a second rule: $1$ if $d$ is a unit, and $\{d, c\}_{\pp, n}$ otherwise.  Where both apply, the two rules differ by the factor $\{c, d\}_{\pp, n}$.  The local object encoding $\qr{d}{c}_n$ is therefore not a function but a pair of functions related by a Hilbert symbol.
+
+%======================================================================
+\section{Genuine functions}\label{sec:genuine}
+
+The pairs of functions found at the end of \S\ref{sec:hilbert} are sections of a line bundle over the punctured plane.  Let $F$ be a local field containing $\mu_n$.  Let $U := F^2 - \{0\}$, and let $U_X$ and $U_Y$ be the open subsets on which $x \neq 0$ and $y \neq 0$.  A \emph{genuine function} is a pair $\Phi = (\Phi_X, \Phi_Y)$ of smooth functions on $U_X$ and $U_Y$ with
+\begin{equation}\label{eq:transition}
+  \Phi_X(x, y) = \{x, y\}_n \Phi_Y(x, y) \qquad \text{on } U_X \cap U_Y.
+\end{equation}
+These are the functions on Deligne's $\mu_n$-torsor over $U$ that are equivariant for the embedding of $\mu_n$ \cite[\S\S1.12, 3.7]{Del}.  The functions $\lvert \Phi_X \rvert$ and $\lvert \Phi_Y \rvert$ glue to a function $\lvert \Phi \rvert$ on $U$.  For $a \in F^{\times n}$ the dilate $\Phi(a \, \cdot)$ is again genuine; for $a \notin F^{\times n}$ it need not be.  Let $\Dc$ be the space of genuine functions such that $\Phi_X$ and $\Phi_Y$ vanish outside a compact subset of $U$ if $F$ is non-archimedean, and such that they and all their derivatives are $O(\min(\lVert v \rVert^N, \lVert v \rVert^{-N}))$ for every $N$ if $F$ is archimedean.
+
+For the tame case, let $\Phi^1_X$ and $\Phi^1_Y$ be supported on the primitive vectors of $\oo^2$, with $\Phi^1_X(x, y)$ equal to $1$ if $x \in \oo^\times$ and to $\{x, y\}_n$ otherwise, and $\Phi^1_Y(x, y)$ equal to $1$ if $y \in \oo^\times$ and to $\{y, x\}_n$ otherwise.
+
+\begin{problem}\label{pr:gen-primitive}
+  In the tame case, $\Phi^1 := (\Phi^1_X, \Phi^1_Y)$ is a genuine function in $\Dc$.
+\end{problem}
+
+\begin{problem}\label{pr:gen-real}
+  Let $F = \mathbb{R}$ and $n = 2$.  Gluing two copies of $U$ by the transition function of \eqref{eq:transition} gives a connected double cover of $U$, and genuine functions are the functions on it that change sign under the deck transformation.
+\end{problem}
+
+For $n = 1$, the Fourier transform integrates over the lines $[v, w] = \tau$ (Problem~\ref{pr:lin-lines}).  A genuine function cannot be integrated naively over such a line: $\Phi_X$ is undefined where the line meets $x = 0$, $\Phi_Y$ where it meets $y = 0$, and passing between them multiplies by $\{x, y\}_n$, which is not constant along the line.  The integrand needs a correcting Hilbert symbol.
+
+%======================================================================
+\section{Integration over lines}\label{sec:lines}
+
+Following Deligne's trivialization of the torsor along a line \cite[\S\S1.13--1.14, 6.3]{Del}, transported to the line $[v, v'] = \tau^n$ by dilation, \cite[Definition~4.1]{N} sets, for a genuine function $\Phi$, $\tau \in F$ and $v' = (x', y') \in U$,
+\begin{align*}
+  R_X \Phi(v', \tau)
+  &:= \int_F \Phi_X \Bigl( x, \frac{x y' - \tau^n}{x'} \Bigr) \{x, -x'\}_n \, \frac{d x}{\lvert x' \rvert}
+  && (x' \neq 0), \\
+  R_Y \Phi(v', \tau)
+  &:= \int_F \Phi_Y \Bigl( \frac{x' y + \tau^n}{y'}, y \Bigr) \{y, y'\}_n \{-1, y'\}_n \, \frac{d y}{\lvert y' \rvert}
+  && (y' \neq 0),
+\end{align*}
+whenever the integrals converge absolutely.  For $n = 1$ these are the integrals of Problem~\ref{pr:lin-lines}.  Write $(a, b) := (y', -x')$, so that the line is $a x + b y = \tau^n$, and let $I_X(x) := \Phi_X(x, y) \{x, b\}_n$ and $I_Y(y) := \Phi_Y(x, y) \{y, a\}_n \{-1, a\}_n$ be the two integrands.
+
+\begin{problem}\label{pr:lines-steinberg}
+  If $a b x y \tau \neq 0$, then $I_X(x) = \{x', y'\}_n I_Y(y)$.  Hence $R_X \Phi = \{x', y'\}_n R_Y \Phi$ where both converge.
+\end{problem}
+
+\begin{problem}\label{pr:lines-continuity}
+  For $\tau \neq 0$, the integrand $I_X$ agrees with $\Phi_Y$ near each point of the line with $x = 0$, so it extends smoothly across $x = 0$.
+\end{problem}
+
+In particular $R_Y \Phi((0, 1), \tau) = \int_F \Phi_Y(\tau^n, y) \, d y$.  The growth condition used throughout is
+\begin{equation}\label{eq:growth}
+  \lvert \Phi(v) \rvert \ll_N \min \bigl( \lVert v \rVert^{-1 + 1/n}, \lVert v \rVert^{-N} \bigr) \qquad (N \geq 1).
+\end{equation}
+On the line through $v' \in K$, for a compact set $K \subset U_X$, one has $\lVert v \rVert \asymp_K \max(\lvert x \rvert, \lvert \tau \rvert^n)$.  From this comparison one obtains the following \cite[Lemma~4.2]{N}.
+
+\begin{theorem}\label{th:lines}
+  Let $\Phi$ be genuine and satisfy \eqref{eq:growth}.  Then $R_X \Phi$ converges absolutely, is continuous on $U_X \times F$, and decays rapidly in $\tau$, uniformly for $v'$ in compact sets.  If $\Phi \in \Dc$, then $R_X \Phi$ is smooth, and for $v'$ in a compact set the functions $R_X \Phi(v', \cdot)$ form a bounded set of Schwartz--Bruhat functions.  The same holds for $R_Y$.
+\end{theorem}
+
+The line integrals depend on $\tau$ only through $\tau^n$, yet for $n = 1$ the transform was a Fourier transform in $\tau$.  To decide what to do with $\tau$ when $n \geq 2$, we test on the vector that the transform should fix, the analogue of $1_{\oo^2}$; as in \eqref{eq:lin-forced}, it is described through its Mellin coefficients, which are homogeneous genuine functions.
+
+%======================================================================
+\section{Homogeneous functions and the normalization}\label{sec:normalization}
+
+Let $\xi$ be a unitary character of $F^\times$, trivial on $\mu_n$, and $0 < \Re(s) < 1$.  Consider genuine functions $f$ with
+\begin{equation}\label{eq:homogeneous}
+  f(\mu^n v) = \xi(\mu)^{-1} \lvert \mu \rvert^{-n-s} f(v) \qquad (\mu \in F^\times).
+\end{equation}
+For such $f$ and $\tau \neq 0$ the line integrals converge.  Let $A f := R f(\cdot, 1)$, with $R = R_X$ or $R_Y$; this is the standard intertwining operator in Deligne's model \cite[\S6.3]{Del}.
+
+\begin{problem}\label{pr:homog-radon}
+  For $f$ satisfying \eqref{eq:homogeneous} and $\tau \neq 0$, $R f(v', \tau) = \xi(\tau)^{-1} \lvert \tau \rvert^{-s} A f(v')$.
+\end{problem}
+
+With \eqref{eq:tate}, this gives $\int_F \psi(\tau) R f(v', \tau) \, d \tau = \gamma(s, \xi, \psi) A f(v')$.
+
+For the rest of this section, $F$ is non-archimedean of residue characteristic prime to $n$, and $\psi$ is unramified.  For a genuine function $\Phi$ invariant under dilation by $(\oo^\times)^n$, its \emph{Mellin coefficient} is
+\begin{equation*}
+  \Phi[s](v) := \sum_{k \in \mathbb{Z}} q^{k (n + s)} \Phi(\varpi^{-n k} v).
+\end{equation*}
+The \emph{spherical section} $e_s := \Phi^1[s]$ satisfies \eqref{eq:homogeneous} with $\xi = 1$, and $(e_s)_Y(0, 1) = 1$.
+
+\begin{problem}\label{pr:spherical-axis}
+  For $\Re(s) > 0$, $(A e_s)_Y(0, 1) = L(s) / L(1 + s)$.
+\end{problem}
+
+\begin{problem}\label{pr:basic-weights}
+  The Mellin coefficient of $\Phi^1(\varpi^{-n k} \, \cdot)$ is $q^{-k (n + s)} e_s$.
+\end{problem}
+
+To obtain the factor $L(1 + s)$ of \S\ref{sec:linear}, the $k$th dilate must therefore carry the weight $q^{(n-1) k}$.  The \emph{basic vector} is
+\begin{equation*}
+  \Phi^0 := \sum_{k \geq 0} q^{(n-1) k} \, \Phi^1(\varpi^{-n k} \, \cdot),
+  \qquad
+  \Phi^0[s] = L(1 + s) e_s.
+\end{equation*}
+
+\begin{problem}\label{pr:basic-explicit}
+  Write $(x, y) = \varpi^k (x_0, y_0)$ with $(x_0, y_0)$ primitive.  Then $\Phi^0$ vanishes at $(x, y)$ unless $k \in n \mathbb{Z}_{\geq 0}$, in which case $\Phi^0_X(x, y)$ equals $q^{(n-1) k / n}$ if $x_0 \in \oo^\times$ and $q^{(n-1) k / n} \{x, y\}_n$ otherwise.  It does not depend on the choice of $\varpi$, and for $n = 1$ it is $1_{\oo^2}$.
+\end{problem}
+
+\begin{problem}\label{pr:basic-layer}
+  $\lvert \Phi^0(v) \rvert \leq \lVert v \rVert^{-1 + 1/n} 1_{\lVert v \rVert \leq 1}$, and $\Phi^1 = \Phi^0 - q^{n-1} \Phi^0(\varpi^{-n} \, \cdot)$.
+\end{problem}
+
+So $\Phi^0$ satisfies \eqref{eq:growth}, but $\Phi^0 \notin \Dc$.
+
+\begin{problem}\label{pr:forced}
+  For $0 < \Re(s) < 1$,
+  \begin{equation*}
+    \int_F \psi(\tau) R_Y(\Phi^0[s])((0, 1), \tau) \, d \tau = \Phi^0[-s]_Y(0, 1).
+  \end{equation*}
+\end{problem}
+
+As in \eqref{eq:lin-forced}, $A$ supplies $L(s) / L(1 + s)$ and the Fourier transform in $\tau$, the $n$th root of the level, supplies $L(1 - s) / L(s)$.  We take the left-hand side of Problem~\ref{pr:forced} as the definition of a transform for every genuine function satisfying \eqref{eq:growth}.
+
+%======================================================================
+\section{The Fourier transform and the Schwartz space}\label{sec:transform}
+
+Let $F$ be a local field containing $\mu_n$.  For a genuine function $\Phi$ satisfying \eqref{eq:growth}, \cite[Definition~4.4]{N} sets
+\begin{equation*}
+  \begin{aligned}
+    (\Fc \Phi)_X(v') &:= \lvert n \rvert^{-1/2} \int_F \psi(\tau) R_X \Phi(v', \tau) \, d \tau, \\
+    (\Fc \Phi)_Y(v') &:= \lvert n \rvert^{-1/2} \int_F \psi(\tau) R_Y \Phi(v', \tau) \, d \tau.
+  \end{aligned}
+\end{equation*}
+The integrals converge by Theorem~\ref{th:lines}, and $\lvert n \rvert^{-1/2} = 1$ in the tame case.
+
+\begin{problem}\label{pr:ft-genuine}
+  $\Fc \Phi$ satisfies \eqref{eq:transition}, and for $n = 1$ it is the symplectic Fourier transform.
+\end{problem}
+
+On a function satisfying \eqref{eq:homogeneous}, $\Fc f = \lvert n \rvert^{-1/2} \gamma(s, \xi, \psi) A f$, by Problem~\ref{pr:homog-radon}.
+
+\begin{problem}\label{pr:ft-kernel}
+  For $v = (x, y)$, $w = (x', y') \in U_X$ with $[v, w] \neq 0$, let
+  \begin{equation*}
+    K(w, v) := \{x, -x'\}_n \lvert n \rvert^{-3/2} \sum_{\tau^n = [v, w]} \psi(\tau) \lvert \tau \rvert^{1-n}.
+  \end{equation*}
+  Then $K(w, v) \ll \lvert [v, w] \rvert^{-1 + 1/n}$ and $(\Fc \Phi)_X(w) = \int_{U_X} \Phi_X(v) K(w, v) \, d v$.
+\end{problem}
+
+\begin{problem}\label{pr:ft-half-density}
+  Let $F$ be $\mathbb{R}$ or $\mathbb{C}$, and let $\tau = f(u)$ be a branch of the $n$th root of $u = [v, w]$.  Then $\det(\partial_v \partial_w \tau) = f'(u)^2 / n$, so that $\lvert n \rvert^{-3/2} \lvert \tau \rvert^{1-n} = \lvert \det(\partial_v \partial_w \tau) \rvert^{1/2}$.
+\end{problem}
+
+Thus each root carries the half-density weight of its phase \cite[Remark~4.7]{N}; this is what the factor $\lvert n \rvert^{-1/2}$ achieves.  The substitutions $x \mapsto x / a$ and $\tau \mapsto \tau / b$ give $\Fc(\Phi(a \, \cdot)) = \lvert a \rvert^{-2} (\Fc \Phi)(a^{-1} \, \cdot)$ for $a \in F^{\times n}$, and $\Fc_{\psi(b \, \cdot)} \Phi = \lvert b \rvert^n (\Fc \Phi)(b^n \, \cdot)$ for $b \in F^\times$ \cite[Lemma~4.8]{N}.
+
+\begin{problem}\label{pr:ft-root}
+  For $v' \in U_X$ and $\mu \in F^\times$,
+  \begin{equation*}
+    (\Fc \Phi)_X(\mu^n v') = \lvert n \rvert^{-1/2} \lvert \mu \rvert^{1-n} \int_F R_X \Phi(v', \tau) \psi(\mu \tau) \, d \tau,
+  \end{equation*}
+  and likewise in the $Y$-chart.
+\end{problem}
+
+Along each orbit of the dilations by $F^{\times n}$, $\Fc \Phi$ is thus an ordinary Fourier transform in an $n$th root variable.  With Theorem~\ref{th:lines} it follows that $\Fc \Phi$ satisfies \eqref{eq:growth} for $\Phi \in \Dc$, and vanishes outside a compact subset of $F^2$ when $F$ is non-archimedean \cite[Corollary~4.10]{N}.  Following Braverman and Kazhdan \cite[\S3.1]{BK99}, the \emph{Schwartz space} is
+\begin{equation*}
+  \Sc := \Dc + \Fc \Dc.
+\end{equation*}
+It is preserved by the dilations by $F^{\times n}$ and does not depend on $\psi$, by the two formulas above \cite[Lemma~4.12]{N}.
+
+\begin{problem}\label{pr:schwartz-not-D}
+  For $\Phi \in \Dc$ and $v' \in U_X$,
+  \begin{equation*}
+    \lvert \mu \rvert^{n-1} (\Fc \Phi)_X(\mu^n v') \to \lvert n \rvert^{-1/2} \int_F R_X \Phi(v', \tau) \, d \tau
+    \qquad (\mu \to 0);
+  \end{equation*}
+  this limit is not identically zero on $\Dc$, so $\Fc \Dc \not\subset \Dc$.
+\end{problem}
+
+Problem~\ref{pr:forced} computes $\Fc \Phi^0$ at the single point $(0, 1)$.  To reach the other points of $U$ one needs operators lifting the action of $\SL(F)$ and commuting with the line integrals.  The shears $(x, y) \mapsto (x, y + u x)$ preserve $[v, v']$ and fix $x$, so their natural lift acts in the $X$-chart alone; this is the starting point of the sequel.
+
+
+%======================================================================
+\section*{Hints}
+
+\subsection*{\S\ref{sec:linear}}
+\begin{hints}
+\item[\ref{pr:lin-lines}] Change variables from $(x, y)$ to $(x, \tau)$.
+\item[\ref{pr:lin-tate}] Take $g = 1_\oo$ in \eqref{eq:tate}.
+\item[\ref{pr:lin-spherical}] Split the $y$-integral into $\oo$ and the shells $v(y) = -k$, $k \geq 1$.
+\item[\ref{pr:lin-voronoi}] First show that $J(\Fc \Phi)(c) = J \Phi(1/c)$, then repeat with $\psi(b \, \cdot)$ in place of $\psi$.
+\end{hints}
+
+\subsection*{\S\ref{sec:hilbert}}
+\begin{hints}
+\item[\ref{pr:hilb-tame}] Take $a = \varpi$ and $b = u$ in the tame formula; the residue field is cyclic of order $q - 1$, and $n \mid q - 1$.
+\item[\ref{pr:hilb-q7}] Which residues modulo $7$ are cubes?
+\item[\ref{pr:hilb-residue}] Apply the tame formula at $\pi$ with $a = \pi$.
+\end{hints}
+
+\subsection*{\S\ref{sec:genuine}}
+\begin{hints}
+\item[\ref{pr:gen-primitive}] Where both coordinates are units, use property \ref{h:units}.
+\item[\ref{pr:gen-real}] Follow a loop around the origin through the four quadrants.
+\end{hints}
+
+\subsection*{\S\ref{sec:lines}}
+\begin{hints}
+\item[\ref{pr:lines-steinberg}] Apply the Steinberg relation to $a x / \tau^n$ and $b y / \tau^n$.
+\item[\ref{pr:lines-continuity}] Near such a point, $b y = \tau^n - a x$ lies in the open subgroup $F^{\times n}$.
+\end{hints}
+
+\subsection*{\S\ref{sec:normalization}}
+\begin{hints}
+\item[\ref{pr:homog-radon}] Substitute $x \mapsto \tau^n x$.
+\item[\ref{pr:spherical-axis}] Use the formula for $R_Y \Phi((0, 1), \tau)$ in \S\ref{sec:lines}, and split into $\oo$ and the shells $v(y) = -n k$.
+\item[\ref{pr:basic-explicit}] Only the term with $n k$ equal to the exponent contributes; then use that $\varpi^{k}$ is an $n$th power.
+\item[\ref{pr:forced}] Problems~\ref{pr:homog-radon}, \ref{pr:spherical-axis} and~\ref{pr:lin-tate}.
+\end{hints}
+
+\subsection*{\S\ref{sec:transform}}
+\begin{hints}
+\item[\ref{pr:ft-genuine}] Problem~\ref{pr:lines-steinberg}, and Problem~\ref{pr:lin-lines} for $n = 1$.
+\item[\ref{pr:ft-kernel}] Fix $x$ and change variables from $\tau$ to $y$.
+\item[\ref{pr:ft-half-density}] Differentiate $u f'(u) = f(u) / n$.
+\item[\ref{pr:ft-root}] $R_X \Phi(\mu^n v', \mu \tau) = \lvert \mu \rvert^{-n} R_X \Phi(v', \tau)$.
+\item[\ref{pr:schwartz-not-D}] For the last assertion, choose $\Phi$ supported where $\{x, -x'\}_n = 1$.
+\end{hints}
+
+\begin{thebibliography}{McN}
+
+\bibitem[BK99]{BK99}
+A.~Braverman and D.~Kazhdan, \emph{On the {S}chwartz space of the basic affine space}, Selecta Math. (N.S.) \textbf{5} (1999), no.~1, 1--28.
+
+\bibitem[Del]{Del}
+P.~Deligne, \emph{Sommes de {G}auss cubiques et rev\^etements de {$\mathrm{SL}(2)$}, d'apr\`es {S}.~{J}. {P}atterson}, S\'eminaire Bourbaki, Exp.~539, Lecture Notes in Math., vol.~770, Springer, 1980, pp.~244--277.
+
+\bibitem[God]{God}
+R.~Godement, \emph{The decomposition of {$L^2(G/\Gamma)$} for {$\Gamma = \mathrm{SL}(2, \mathbf{Z})$}}, Algebraic Groups and Discontinuous Subgroups, Proc. Sympos. Pure Math., vol.~9, Amer. Math. Soc., 1966, pp.~211--224.
+
+\bibitem[Kub69]{Kub69}
+T.~Kubota, \emph{On automorphic functions and the reciprocity law in a number field}, Lectures in Mathematics, Department of Mathematics, Kyoto University, No.~2, Kinokuniya, 1969.
+
+\bibitem[N]{N}
+P.~D. Nelson, \emph{A {S}chwartz space for the $n$-fold cover of $\mathrm{SL}_2$}, preprint, 2026.
+
+\bibitem[Neu]{Neu}
+J.~Neukirch, \emph{Algebraic number theory}, Grundlehren der mathematischen Wissenschaften, vol.~322, Springer, 1999.
+
+\bibitem[Tate]{Tate}
+J.~T. Tate, \emph{Fourier analysis in number fields, and {H}ecke's zeta-functions}, Algebraic Number Theory (Proc. Instructional Conf., Brighton, 1965), Thompson, 1967, pp.~305--347.
+
+\end{thebibliography}
+
+\end{document}

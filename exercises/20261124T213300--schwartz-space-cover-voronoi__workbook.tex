@@ -1,0 +1,330 @@
+\documentclass[reqno]{amsart}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage[shortlabels]{enumitem}
+\usepackage{xr-hyper}
+\usepackage[hidelinks]{hyperref}
+\externaldocument[ft-]{20261124T213000--schwartz-space-cover-exercises__workbook}
+\externaldocument[in-]{20261124T213100--schwartz-space-cover-inversion__workbook}
+\externaldocument[po-]{20261124T213200--schwartz-space-cover-poisson__workbook}
+
+\providecommand{\vol}{\operatorname{vol}}
+\providecommand{\qr}[2]{\left(\frac{#1}{#2}\right)}
+\newcommand{\SL}{\mathrm{SL}_2}
+\newcommand{\tSL}{\widetilde{\mathrm{SL}}_2}
+\newcommand{\Fc}{\mathcal{F}}
+\newcommand{\Dc}{\mathcal{D}}
+\newcommand{\Sc}{\mathcal{S}}
+\newcommand{\Wc}{\mathcal{W}}
+\newcommand{\Ab}{\mathbb{A}}
+\newcommand{\oo}{\mathfrak{o}}
+\newcommand{\pp}{\mathfrak{p}}
+
+% Chapter number; \ref{chap} gives it.
+\newcounter{chap}
+\renewcommand{\thechap}{4}
+\renewcommand{\thesection}{\thechap.\arabic{section}}
+\numberwithin{equation}{section}
+\theoremstyle{definition}
+\newtheorem{problem}{Problem}[section]
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+
+\newenvironment{hints}{\begin{description}[font=\normalfont\bfseries]}{\end{description}}
+\newenvironment{exercises}{\subsection*{Exercises}\begin{enumerate}[1.]}{\end{enumerate}}
+
+\setlength{\emergencystretch}{3em}
+\title[Voronoi formulas from the $n$-fold cover]{Voronoi formulas for Gauss
+  sums from the $n$-fold cover of $\mathrm{SL}_2$}
+\author{}
+\date{November 24, 2026}
+
+\begin{document}
+\maketitle
+\refstepcounter{chap}\label{chap}
+
+For $n = 1$, the Fourier coefficients of Poisson summation on the plane give the symmetry $\sum_{c \mid b} W(c) = \sum_{c \mid b} W(b / c)$ of Problem~\ref{ft-pr:lin-voronoi}.  What do the Fourier coefficients of the Poisson formula for the $n$-fold cover of $\SL$ give?  This sheet computes them, following \cite{N}, and obtains Voronoi formulas for sums of Gauss sums of order $n$, possibly twisted.
+
+\paragraph{Prerequisites.}
+The sheets \emph{From Poisson summation on the plane to a Fourier transform for the $n$-fold cover of $\mathrm{SL}_2$} (Chapter~\ref{ft-chap}), \emph{The Schwartz space of the $n$-fold cover of $\mathrm{SL}_2$: symmetries, the basic vector and inversion} (Chapter~\ref{in-chap}) and \emph{Leading terms and a Poisson formula for the $n$-fold cover of $\mathrm{SL}_2$} (Chapter~\ref{po-chap}), whose notation we keep.  Hilbert's reciprocity law \cite[Ch.~VI, Theorem~8.1]{Neu}, and the absolute value of a Gauss sum \cite[\S23.6]{BH}.
+
+
+%======================================================================
+\section{Jacquet integrals}\label{sec:jacquet}
+
+Integrating Theorem~\ref{po-th:poisson} for $n(u) \Phi$ against $\psi(-u)$ over $\Ab / F$ isolates the terms with $x \neq 0$.
+
+\begin{problem}\label{pr:fourier-coeff}
+  For a pure tensor $\Psi$,
+  \begin{equation*}
+    \int_{\Ab / F} \sum_{v \in F^2 - \{0\}} (n(u) \Psi)(v) \, \psi(-u) \, d u
+    = \sum_{c \in F^\times} \prod_\pp \int_{F_\pp} \Psi_{\pp, X}(c, y) \psi_\pp(- y / c) \, d y.
+  \end{equation*}
+\end{problem}
+
+Let $F$ be a local field containing $\mu_n$.  For $\Phi \in \Sc$ and $c \in F^\times$, let $J \Phi(c) := \int_F \Phi_X(c, y) \psi(- y / c) \, d y$, and $\Wc := J \Sc$.  As for $n = 1$, $J(n(u) \Phi) = \psi(u) J \Phi$.
+
+\begin{problem}\label{pr:jacquet-surj}
+  Let $W \in C_c^\infty(F^\times)$ and $\beta \in C_c^\infty(F)$ with $\int \beta(u) \psi(-u) \, d u = 1$.  Then $\Phi_X(x, y) := \lvert x \rvert^{-1} W(x) \beta(y / x)$ and $\Phi_Y := \{y, x\}_n \Phi_X$ define $\Phi \in \Dc$ with $J \Phi = W$, and
+  \begin{equation*}
+    (P \Phi)_X(x, y) = \frac{\beta(y / x)}{\lvert x \rvert^{1 + 1/n}} \int_{x F^{\times n}} W(t) \lvert t \rvert^{1/n} \, d^\times t.
+  \end{equation*}
+\end{problem}
+
+In particular $\Phi$ satisfies the vanishing condition if the integrals of $W(x) \lvert x \rvert^{1/n}$ over the cosets of $F^{\times n}$ vanish.  Let $W := J \Phi$ and
+\begin{equation*}
+  H_c(t) := \int_{F^\times} W(x) \{x, -c\}_n \psi(- t^n / c x) \, d^\times x.
+\end{equation*}
+
+\begin{problem}\label{pr:formal-kernel}
+  If the integrals may be interchanged, then
+  \begin{equation*}
+    \int_F R_X \Phi((c, y'), t) \psi(- y' / c) \, d y' = H_c(t).
+  \end{equation*}
+\end{problem}
+
+This is Deligne's calculation \cite[(6.5.4)]{Del} for homogeneous functions and $t = 1$, and it suggests $J(\Fc \Phi)(c) = \lvert n \rvert^{-1/2} \int_F \psi(t) H_c(t) \, d t$.  The interchange fails near the line $x = 0$.  To repair it, choose $u$ with $\psi(u) \neq 1$, and let $\Delta := (n(u) - 1) / (\psi(u) - 1)$.
+
+\begin{problem}\label{pr:third-difference}
+  $J \Delta \Psi = J \Psi$ and $J \Fc \Delta \Psi = J \Fc \Psi$ for $\Psi \in \Sc$, and $(\Delta \Psi)_Y$ vanishes on the line $x = 0$.
+\end{problem}
+
+For $\Xi := \Delta^3 \Phi$ one has $\int_F \lvert \Xi_X(c, y) \rvert \, d y \ll \min(\lvert c \rvert^{1/n}, \lvert c \rvert^{-A})$, which justifies the interchange for $\Xi$ \cite[Lemma~10.3]{N}; three differences are needed at the archimedean places.  It follows that $W \in \Wc$ satisfies the same bound, that $J \Phi = 0$ implies $J \Fc \Phi = 0$, and hence that $W^\vee := J(\Fc \Phi)$, for any $\Phi$ with $J \Phi = W$, is well defined \cite[Proposition~10.5, Corollary~10.6]{N}.  For $W \in C_c^\infty(F^\times)$ we obtain \cite[Proposition~10.8]{N}:
+
+\begin{theorem}\label{th:transform}
+  For $W \in C_c^\infty(F^\times)$ and $c, \lambda \in F^\times$, the function $H_c$ is Schwartz--Bruhat, $W^\vee(c \lambda^n) = \lvert n \rvert^{-1/2} \lvert \lambda \rvert \hat{H}_c(\lambda)$, and
+  \begin{equation*}
+    W^\vee(c) = \lvert n \rvert^{-1/2} \int_F \psi(t) \Bigl( \int_{F^\times} W(x) \{x, -c\}_n \psi\bigl(- t^n / c x\bigr) \, d^\times x \Bigr) \, d t.
+  \end{equation*}
+\end{theorem}
+
+For $n = 1$, $W^\vee(c) = W(1/c)$, as in Problem~\ref{ft-pr:lin-voronoi}.  By Theorem~\ref{in-th:schwartz} and Problem~\ref{in-pr:torus-formula}, $W^{\vee \vee}(c) = \{-c, \varepsilon\}_n W(\varepsilon c)$, so $W \mapsto W^\vee$ is a bijection of $\Wc$.  At a finite place $J \Dc = C_c^\infty(F^\times)$, and each $W \in \Wc$ satisfies $W(d \lambda^n) = C_d \lvert \lambda \rvert$ for small $\lambda$ \cite[Lemma~10.11]{N}.
+
+At $\pp \notin S$, the factor of Problem~\ref{pr:fourier-coeff} is $J \Phi_\pp^0$, which we now compute.
+
+%======================================================================
+\section{The basic function and the main formula}\label{sec:main}
+
+Let $(F, \psi, n)$ be good.  For $c \in \oo - \{0\}$, the \emph{Gauss--Ramanujan sum} is $g_\psi(c) := \sum_{d \in (\oo / c)^\times} \{c, d\}_n \psi(- d / c)$; let $g_\psi(c) := 0$ for $c \notin \oo$.  The \emph{basic function} is $W_\psi^0 := J \Phi^0$.
+
+\begin{problem}\label{pr:gr-sums}
+  $W_\psi^0(c) = \vol(\oo) \lvert c \rvert \sum_{k \geq 0} q^{(n-1) k} g_\psi(c / \varpi^{n k})$.
+\end{problem}
+
+For a character $\theta$ of $\oo^\times$ and $\alpha \in F^\times$, let $G(\theta, \alpha) := \int_{\oo^\times} \theta(x) \psi(\alpha x) \, d x$.  If $\psi$ is unramified and $\theta$ has conductor exponent $e \geq 1$, then $\lvert G(\theta, \alpha) \rvert = q^{-e/2}$ when $v(\alpha) = -e$ \cite[\S23.6, (23.6.3)]{BH}.
+
+\begin{problem}\label{pr:gr-values}
+  Let $\psi$ be unramified.  Then $g_\psi(u c) = \{c, u\}_n g_\psi(c)$ for $u \in \oo^\times$; $g_\psi(c) = 1$ if $v(c) = 0$ and $0$ if $v(c) \geq 2$; and if $v(c) = 1$, then $g_\psi(c) = -1$ for $n = 1$, while $\lvert g_\psi(c) \rvert = q^{1/2}$ for $n \geq 2$.
+\end{problem}
+
+Consequently, for $n \geq 2$ and $c = u \varpi^{n k + r}$ with $u \in \oo^\times$ and $0 \leq r < n$, $W_\psi^0(c) = 1_{k \geq 0} \, q^{-k-r} \bigl( 1_{r = 0} + 1_{r = 1} g_\psi(u \varpi) \bigr)$; for $n = 1$, $W_\psi^0 = 1_{\oo^\times}$.
+
+\begin{problem}\label{pr:basic-dual}
+  If $b^{-1} \oo$ is the largest fractional ideal on which $\psi$ is trivial, then $(W_\psi^0)^\vee(c) = W_\psi^0(b^n c)$.
+\end{problem}
+
+Now return to the global setting of \S\ref{po-sec:adelic}.  Let $W = \prod_\pp W_\pp$ with $W_\pp \in C_c^\infty(F_\pp^\times)$ for $\pp \in S$ and $W_\pp = W_{\psi_\pp}^0$ for $\pp \notin S$, and let $W^\vee := \prod_\pp W_\pp^\vee$.  Apply Theorem~\ref{po-th:poisson} to $n(u) \Phi$, with $\Phi_\pp$ given by Problem~\ref{pr:jacquet-surj} for $\pp \in S$, and take the Fourier coefficient by Problem~\ref{pr:fourier-coeff}.  Since $b(n(u) \Phi) = 0$, only the boundary term of $\Fc \Phi$ survives; by Problem~\ref{pr:jacquet-surj} and Problem~\ref{po-pr:germ-average} it depends on $W_\pp$ only through the integrals of $W_\pp(x) \lvert x \rvert_\pp^{1/n}$ over the cosets of $F_\pp^{\times n}$.  This gives \cite[Theorem~10.16]{N}:
+
+\begin{theorem}\label{th:main}
+  There are unique constants $\rho_S(\beta)$, indexed by tuples $\beta = (\beta_\pp)_{\pp \in S}$ of cosets of $F_\pp^{\times n}$ in $F_\pp^\times$, such that
+  \begin{equation*}
+    \sum_{c \in F^\times} W(c) = \sum_{c \in F^\times} W^\vee(c)
+    + \sum_\beta \rho_S(\beta) \prod_{\pp \in S} \int_{\beta_\pp} W_\pp(x) \lvert x \rvert_\pp^{1/n} \, d^\times x,
+  \end{equation*}
+  both sums converging absolutely.
+\end{theorem}
+
+The last sum is the \emph{main term}.  It vanishes for $n = 1$, and when some $\pp \in S$ is complex with $W_\pp(e^{i \theta} x) = e^{i \ell \theta} W_\pp(x)$, $\ell \neq 0$.
+
+Suppose further that $\psi_\pp$ is unramified for $\pp \notin S$ and that $\mathcal{O}_S$ is a principal ideal domain.  For $b, c \in \mathcal{O}_S - \{0\}$, let $\psi_S := \prod_{\pp \in S} \psi_\pp$ and
+\begin{equation*}
+  g_\psi^S(b, c) := \sum_{d \in (\mathcal{O}_S / c)^\times} \qr{d}{c}_n \psi_S(b d / c),
+  \qquad
+  \tilde{g}_\psi^S(b, c) := \frac{1}{\lvert c \rvert_S} \sum_{\tau^n \mid c} \lvert \tau \rvert_S^{n-1} g_\psi^S(b, c / \tau^n),
+\end{equation*}
+with $\tau$ running over $(\mathcal{O}_S - \{0\}) / \mathcal{O}_S^\times$.
+
+\begin{problem}\label{pr:product-basic}
+  Let $b \in \mathcal{O}_S - \{0\}$ and $\psi_b := \psi(b \, \cdot)$.  For $c \in F^\times$, $\prod_{\pp \notin S} W_{\psi_{b, \pp}}^0(c)$ vanishes unless $c \in \mathcal{O}_S$, in which case it equals $\lvert b \rvert_S^{-1/2} \tilde{g}_\psi^S(b, c)$.
+\end{problem}
+
+With $b = 1$, Theorem~\ref{th:main} thus reads
+\begin{equation*}
+  \sum_{c \in \mathcal{O}_S - \{0\}} W_S(c) \, \tilde{g}_\psi^S(1, c)
+  = \sum_{c \in \mathcal{O}_S - \{0\}} W_S^\vee(c) \, \tilde{g}_\psi^S(1, c) + M(W),
+\end{equation*}
+where $W_S := \prod_{\pp \in S} W_\pp$, $W_S^\vee := \prod_{\pp \in S} W_\pp^\vee$, and $M(W)$ is the main term.  The sum over $\tau$ in $\tilde{g}_\psi^S$ is the sum over $\tau$ in Problem~\ref{po-pr:theta-S}.
+
+Theorem~\ref{th:main} is explicit only once $W_\pp^\vee$ is known for $\pp \in S$.  Twisting the sum over $c$ by a character at further places means taking $W_\pp = 1_{\oo_\pp^\times} \chi_\pp$ there, so we need the transforms of characters of the unit group, and the effect of changing $\psi$.
+
+%======================================================================
+\section{Local transforms of unit characters}\label{sec:local}
+
+Let $F$ be a local field containing $\mu_n$.  Substituting $x \mapsto X x$ in Theorem~\ref{th:transform} gives $(W(\cdot / X))^\vee(c) = \{X, -c\}_n (W \{\cdot, X\}_n^{-1})^\vee(X c)$ \cite[Lemma~10.17]{N}.
+
+\begin{problem}\label{pr:change-character}
+  For $b \in F^\times$ and $\psi_b := \psi(b \, \cdot)$, $W^{\vee, \psi_b}(c) = (W \{\cdot, b\}_n)^{\vee, \psi}(b^{n-1} c)$.
+\end{problem}
+
+For $n = 3$ and $F = \mathbb{C}$, the transform $W \mapsto W^\vee$ agrees, after a change of variables, with that of Kubota \cite[(5)]{Kub74} \cite[Remark~10.21]{N}.
+
+For the rest of this section, $(F, \psi, n)$ is good and $\psi$ is unramified.
+
+\begin{problem}\label{pr:gauss-vanish}
+  If $\theta$ has conductor exponent $e \geq 1$, then $G(\theta, \alpha) = 0$ unless $v(\alpha) = -e$.
+\end{problem}
+
+\begin{problem}\label{pr:twisted-reduction}
+  For a character $\chi$ of $\oo^\times$ and $W := 1_{\oo^\times} \chi$,
+  \begin{equation*}
+    W^\vee(c) = \int_F \psi(t) G(\overline{\chi} \{c, \cdot\}_n, - t^n / c) \, d t,
+  \end{equation*}
+  and $W^\vee(u c) = \overline{\chi(u)} \{c, u\}_n W^\vee(c)$ for $u \in \oo^\times$.
+\end{problem}
+
+\begin{problem}\label{pr:twisted-support}
+  If $\chi^n$ is ramified with conductor exponent $e$, then $(1_{\oo^\times} \chi)^\vee$ is supported on $v(c) = -(n-1) e$, and has absolute value $1$ there.
+\end{problem}
+
+\begin{problem}\label{pr:twisted-vanishing}
+  If $\chi^n$ is ramified, the integral of $1_{\oo^\times}(x) \chi(x) \lvert x \rvert^{1/n}$ over each coset of $F^{\times n}$ vanishes.
+\end{problem}
+
+By Problem~\ref{pr:jacquet-surj}, such a component makes the main term of Theorem~\ref{th:main} vanish.  When $\chi^n = 1$, the transforms are computed in \cite[Proposition~10.27]{N}, and $\lvert (1_{\oo^\times} \chi)^\vee \rvert \leq 1$ for every $\chi$ \cite[Corollary~10.29]{N}.
+
+With the local transforms of unit characters in hand, we insert $W_\pp = 1_{\oo_\pp^\times} \chi_\pp$ at a finite set of places into Theorem~\ref{th:main}, change the additive character to $\psi(b \, \cdot)$, and express both sides through the Gauss sums $\tilde{g}_\psi^S$.
+
+\begin{exercises}
+\item If $v(a) \equiv 1 \pmod n$ and $n \geq 2$, then $(1_{\oo^\times} \{a, \cdot\}_n)^\vee = 1_{v(c) = 1 - n}$.
+\end{exercises}
+
+%======================================================================
+\section{Voronoi formulas for twisted Gauss sums}\label{sec:voronoi}
+
+Keep the setting of Problem~\ref{pr:product-basic}.  Let $T$ be a finite set of finite places disjoint from $S$, and for $\pp \in T$ let $\chi_\pp$ be a character of $\oo_\pp^\times$ with $\chi_\pp^n$ ramified, of conductor exponent $e_\pp$.  Let $\chi(c) := \prod_{\pp \in T} \chi_\pp(c)$ if $c \in \mathcal{O}_S$ is a unit at each $\pp \in T$, and $\chi(c) := 0$ otherwise.  Let $f$ generate $\prod_{\pp \in T} \pp^{e_\pp}$, let $b \in \mathcal{O}_S - \{0\}$ be coprime to $f$, let $\varepsilon := \prod_{\pp \in T} (1_{\oo_\pp^\times} \chi_\pp)^\vee((b f^{n-1})^{-1})$, and $\{x, y\}_S := \prod_{\pp \in S} \{x, y\}_{\pp, n}$.  Applying Theorem~\ref{th:main} with $\psi_b$, the set $S \cup T$, and Problems~\ref{pr:change-character}--\ref{pr:twisted-vanishing}, one obtains \cite[Theorem~10.33]{N}:
+
+\begin{theorem}\label{th:gauss-sums}
+  For $W_S = \prod_{\pp \in S} W_\pp$ with $W_\pp \in C_c^\infty(F_\pp^\times)$, $\lvert \varepsilon \rvert = 1$ and
+  \begin{multline*}
+    \sum_{c \in \mathcal{O}_S - \{0\}} W_S(c) \chi(c) \tilde{g}_\psi^S(b, c)
+    \\
+    = \varepsilon \sum_{c \in \mathcal{O}_S - \{0\}} (W_S \{\cdot, b\}_S)^\vee \Bigl( \frac{c}{b f^{n-1}} \Bigr) \overline{\chi(c)} \qr{c}{f}_n \qr{f}{c}_n \tilde{g}_\psi^S(b, c) + M_b(W_S),
+  \end{multline*}
+  where $M_b(W_S) = 0$ if $T \neq \emptyset$, and for $T = \emptyset$ it is $\lvert b \rvert_S^{1/2}$ times the main term of Theorem~\ref{th:main} for $\psi_b$.
+\end{theorem}
+
+For $n = 1$, $\tilde{g}_\psi^S(b, c) = 1_{c \mid b}$, and the theorem is the divisor symmetry of Problem~\ref{ft-pr:lin-voronoi}.  Characters with $\chi_\pp^n$ unramified are treated by enlarging $S$ \cite[Remark~10.35]{N}, or through the frequency $b$:
+
+\begin{problem}\label{pr:frequency-twist}
+  For $t \in \mathcal{O}_S - \{0\}$ prime to $c$, $\tilde{g}_\psi^S(t b, c) = \qr{t}{c}_n^{-1} \tilde{g}_\psi^S(b, c)$.
+\end{problem}
+
+For cubic Gauss sums, a sextic twist can become quadratic in the dual sum.  Let $h \in \mathcal{O}_S - \{0\}$ be squarefree and not a unit, $\pp \notin S$ a prime dividing $h$, $\chi$ a character of $\oo_\pp^\times$ with $\chi^n$ of conductor exponent one, $W := 1_{\oo_\pp^\times} \chi$, and $a := h^{1-n}$.
+
+\begin{problem}\label{pr:first-symbol}
+  For $u \in \oo_\pp^\times$, $W^\vee(a u) = W^\vee(a) \chi(u)^{-1} \{a, u\}_n$.
+\end{problem}
+
+A second factor $\{a, u\}_n$ arises from the basic functions at the primes not dividing $h$: substituting $c = a c_1$ in the dual sum, their symbols $\{c_1, a\}_{\mathfrak{q}, n}$ are carried to $\pp$ by the reciprocity law \cite[(10.26)--(10.27)]{N}.  The dual sum is therefore twisted at $\pp$ by $\chi^{-1} \kappa^2$, where $\kappa := \{h, \cdot\}_n$.  On the plane the square is a commutator.  Let $D_a := \lvert a \rvert d_2(a) d_1(a)$, so that $(D_a \Phi)_X(x, y) = \lvert a \rvert \{a, x\}_n \Phi_X(a x, a y)$.
+
+\begin{problem}\label{pr:commutator}
+  $D_u D_a = \{a, u\}_n^2 D_a D_u$ for $a, u \in F_\pp^\times$.
+\end{problem}
+
+\begin{problem}\label{pr:sextic}
+  Let $n$ be odd and the residue characteristic of $\pp$ odd, and let $\eta := \{h, \cdot\}_2$ and $\chi := \eta \kappa^2$.  Then $\chi^n = \eta$, which has conductor exponent one, and $\chi^{-1} \kappa^2 = \eta$.
+\end{problem}
+
+Taking these characters at every prime dividing $h$ in Theorem~\ref{th:gauss-sums} gives \cite[Corollary~10.39]{N}:
+
+\begin{theorem}\label{th:quadratic-dual}
+  Let $n$ be odd and every residue characteristic outside $S$ odd.  There is $\varepsilon$ of modulus one such that for all $W_S$,
+  \begin{equation*}
+    \sum_{c} W_S(c) \qr{c}{h}_2 \qr{c}{h}_n^2 \tilde{g}_\psi^S(1, c)
+    = \varepsilon \sum_c W_S^\vee \Bigl( \frac{c}{h^{n-1}} \Bigr) \{h, c\}_S \qr{c}{h}_2 \tilde{g}_\psi^S(1, c),
+  \end{equation*}
+  the sums running over $c \in \mathcal{O}_S - \{0\}$.
+\end{theorem}
+
+For $n = 3$, the twist on the left is the sextic residue symbol.
+
+%======================================================================
+\section*{Questions}
+
+We do not know the answers to the following questions.
+\begin{enumerate}
+\item What are the constants $\rho_S(\beta)$ of Theorem~\ref{th:main}?  For $n = 3$ over $\mathbb{Q}(\omega)$, they should follow from Patterson's evaluation of the residues of the Dirichlet series of cubic Gauss sums \cite[Theorem~9.1]{Pat}; for general $n$, compare Kazhdan and Patterson \cite[\S II.3]{KP}.
+\item For $n = 3$ and $F = \mathbb{Q}(\omega)$, is Kubota's summation formula \cite{Kub74} for the Fourier coefficients of the cubic theta function a specialization of Theorem~\ref{th:main}?
+\item For $F = \mathbb{F}_q(T)$ and $S = \{\infty\}$, does the Mellin transform of Theorem~\ref{th:gauss-sums} give the functional equations asked for by Sawin and Whitehead \cite[\S\S1.3, 1.5]{SW}?
+\item How do Theorems~\ref{th:gauss-sums} and~\ref{th:quadratic-dual} specialize to the Voronoi formula of Dunn and Radziwi\l\l{} \cite[\S5]{DR}, and to the summation formulas of \cite{OAI}, where the same sextic-to-quadratic twist appears \cite[(2.14)]{OAI}?
+\end{enumerate}
+
+%======================================================================
+\section*{Hints}
+
+\subsection*{\S\ref{sec:jacquet}}
+\begin{hints}
+\item[\ref{pr:fourier-coeff}] The terms with $x = 0$ do not depend on $u$; for $x = c$, substitute $y = u c$ and use the product formula.
+\item[\ref{pr:formal-kernel}] Change variables from $y'$ to $y = (x y' - t^n) / c$; then $d x \, d y' / \lvert c \rvert = d y \, d^\times x$.
+\item[\ref{pr:third-difference}] Theorem~\ref{in-th:schwartz} and Problem~\ref{in-pr:unip-other-chart}.
+\end{hints}
+
+\subsection*{\S\ref{sec:main}}
+\begin{hints}
+\item[\ref{pr:gr-sums}] Split according to the $k$ with $(c, y) \in \varpi^{n k} \cdot (\text{primitive})$, and use Problem~\ref{ft-pr:basic-explicit}.
+\item[\ref{pr:gr-values}] For $v(c) \geq 2$, sum over $d$ in a fixed class modulo $\varpi$.
+\item[\ref{pr:basic-dual}] Theorem~\ref{in-th:basic}.
+\item[\ref{pr:product-basic}] For $x \in F$, $\psi_S(x) = \prod_{\pp \notin S} \psi_\pp(-x)$; then the Chinese remainder theorem.
+\end{hints}
+
+\subsection*{\S\ref{sec:local}}
+\begin{hints}
+\item[\ref{pr:change-character}] Both self-dual measures scale by $\lvert b \rvert^{1/2}$; substitute $t \mapsto t / b$.
+\item[\ref{pr:gauss-vanish}] Substitute $x \mapsto x (1 + y)$ with $y$ in a suitable ideal.
+\item[\ref{pr:twisted-reduction}] Substitute $x \mapsto 1/x$ in Theorem~\ref{th:transform}, and use property \ref{ft-h:units}.
+\item[\ref{pr:twisted-support}] First show that $\overline{\chi} \{c, \cdot\}_n$ has conductor exponent $e$, then apply Problem~\ref{pr:gauss-vanish} twice.
+\item[\ref{pr:twisted-vanishing}] On a coset $c (\oo^\times)^n$, the function is $\chi(c) \chi^n(s)$.
+\end{hints}
+
+\subsection*{\S\ref{sec:voronoi}}
+\begin{hints}
+\item[\ref{pr:frequency-twist}] Substitute $d \mapsto t^{-1} d$ in each Gauss sum, and note $\qr{t}{c / \tau^n}_n = \qr{t}{c}_n$.
+\item[\ref{pr:first-symbol}] Problem~\ref{pr:twisted-reduction}.
+\item[\ref{pr:commutator}] Compare $X$-components of $D_u D_a$ and $D_{a u}$.
+\end{hints}
+
+\begin{thebibliography}{McN}
+
+\bibitem[BH]{BH}
+C.~J. Bushnell and G.~Henniart, \emph{The local {L}anglands conjecture for {$\mathrm{GL}(2)$}}, Grundlehren der mathematischen Wissenschaften, vol.~335, Springer, 2006.
+
+\bibitem[Del]{Del}
+P.~Deligne, \emph{Sommes de {G}auss cubiques et rev\^etements de {$\mathrm{SL}(2)$}, d'apr\`es {S}.~{J}. {P}atterson}, S\'eminaire Bourbaki, Exp.~539, Lecture Notes in Math., vol.~770, Springer, 1980, pp.~244--277.
+
+\bibitem[DR]{DR}
+A.~Dunn and M.~Radziwi\l\l, \emph{Bias in cubic {G}auss sums: {P}atterson's conjecture}, Ann. of Math. (2) \textbf{200} (2024), no.~3, 967--1057.
+
+\bibitem[KP]{KP}
+D.~A. Kazhdan and S.~J. Patterson, \emph{Metaplectic forms}, Publ. Math. IH\'ES \textbf{59} (1984), 35--142.
+
+\bibitem[Kub74]{Kub74}
+T.~Kubota, \emph{On an analogy to the {P}oisson summation formula for generalized {F}ourier transformation}, J. Reine Angew. Math. \textbf{268/269} (1974), 180--189.
+
+\bibitem[N]{N}
+P.~D. Nelson, \emph{A {S}chwartz space for the $n$-fold cover of $\mathrm{SL}_2$}, preprint, 2026.
+
+\bibitem[Neu]{Neu}
+J.~Neukirch, \emph{Algebraic number theory}, Grundlehren der mathematischen Wissenschaften, vol.~322, Springer, 1999.
+
+\bibitem[OAI]{OAI}
+OpenAI, \emph{The {Q}uasi-{R}iemann {H}ypothesis}, preprint, October 5, 2026, \url{https://github.com/openai/math/blob/main/preprints/The-Quasi-Riemann-Hypothesis-October-5-2026/paper2.pdf}.
+
+\bibitem[Pat]{Pat}
+S.~J. Patterson, \emph{A cubic analogue of the theta series}, J. Reine Angew. Math. \textbf{296} (1977), 125--161.
+
+\bibitem[SW]{SW}
+W.~Sawin and I.~Whitehead, \emph{Functional equations of axiomatic multiple {D}irichlet series, {W}eyl groupoids, and quantum algebra}, arXiv:2507.08662, 2025.
+
+\end{thebibliography}
+
+\end{document}
