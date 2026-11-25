@@ -27,3 +27,9 @@ _region_.*
 /build/
 /output/
 __pycache__/
+
+# preview-site.sh
+/_site/
+/_site.new/
+/_site.old/
+/_site-logs/

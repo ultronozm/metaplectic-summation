@@ -37,6 +37,8 @@ on:
       - 'convert.sh'
       - 'index.org'
       - 'tex2html.el'
+      - 'tex2html-local.el'
+      - 'scripts/**'
 
 permissions:
   contents: write
@@ -119,6 +121,11 @@ jobs:
         with:
           version: 29.4
 
+      # The exercise sheets live in exercises/; the build handles only
+      # top-level files, so copy them up (see scripts/stage-exercises.sh).
+      - name: Stage the exercise sheets
+        run: scripts/stage-exercises.sh
+
       - name: Determine files to build
         id: plan
         run: |
@@ -137,7 +144,7 @@ jobs:
           ALL=$(git ls-files '*.tex' | awk '!/\//' | filter_excludes || true)
           ALL_ORG=$(git ls-files '*.org' | awk '!/\//' | grep -vx 'index.org' | filter_excludes || true)
           if [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref_name }}" = "main" ]; then
-            CHANGED=$(git diff --name-only --diff-filter=d "${{ github.event.before }}" "${{ github.event.after }}" -- '*.tex' '*.bib' || true)
+            CHANGED=$(git diff --name-only --diff-filter=d "${{ github.event.before }}" "${{ github.event.after }}" -- '*.tex' '*.bib' | sed 's|^exercises/||' || true)
             FILES=""
             for c in $CHANGED; do
               # the changed file itself, if it's a buildable document

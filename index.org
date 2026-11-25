@@ -1,81 +1,58 @@
-#+TITLE: TeX notes
-#+AUTHOR:
-#+EMAIL:
-
-#+HTML_HEAD:    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.4/css/jquery.dataTables.css">
-#+HTML_HEAD:    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-#+HTML_HEAD:    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.js"></script>
-#+HTML_HEAD:    <style> table.dataTable thead th { text-align: left; } </style>
+#+TITLE: A Schwartz space for the $n$-fold cover of $\mathrm{SL}_2$
+#+AUTHOR: Paul D. Nelson
+#+OPTIONS: toc:nil num:nil ^:{}
 #+HTML_HEAD:    <script>window.MathJax = {tex: {inlineMath: [['$','$'],['\\(','\\)']]}};</script>
 #+HTML_HEAD:    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"></script>
+#+HTML_HEAD:    <style> td, th { vertical-align: top; padding: 0.2em 0.6em; } td:first-child { white-space: nowrap; } td code { display: block; white-space: nowrap; } </style>
 
-* Notes
-#+BEGIN_EXPORT html
-<table id="myTable" class="display" style="width:100%">
-    <thead>
-        <tr>
-            <th>Title</th>
-            <th>Abstract</th>
-            <th>Created</th>
-            <th>Modified</th>
-            <th>Files</th>
-        </tr>
-    </thead>
-    <tbody>
-    </tbody>
-</table>
+# Site landing page, exported by make-index.sh (tex2html-make-index).
+# The table under "Lean formalization" is generated from Appendix C of
+# the paper by scripts/lean-table.py, which ./preview-site.sh runs.
+# Statement numbers appear only in that table, so the prose cannot go
+# stale when the paper is renumbered.
 
-<script>
-$(document).ready(function() {
-    var table = $('#myTable').DataTable({
-        columns: [
-            { width: "35%" },
-            { width: "35%" },
-            { width: "10%" },
-            { width: "10%" },
-            { width: "10%" },
-        ],
-        order: [[2, 'desc']],
-        columnDefs: [
-            {
-                targets: [2,3],
-                orderSequence: ['desc', 'asc']
-            }
-        ]
-    });
+Poisson summation on the plane gives the functional equation for Eisenstein series on $\mathrm{SL}_2$.  We develop an analogue of Poisson summation for Kubota's $n$-fold cover of $\mathrm{SL}_2$, in the spirit of Braverman--Kazhdan.  Locally, we define a Schwartz space consisting of genuine functions on Deligne's $\mu_n$-torsor over the punctured plane.  It comes with a Fourier transform $\mathcal{F}$ defined like the symplectic Fourier transform, but with the symplectic form replaced by its $n$th roots.  At almost all places, we define a basic vector fixed by $\mathcal{F}$.  Globally, we prove a Poisson summation formula for the resulting adelic Schwartz space.  Taking a Fourier coefficient gives a general Voronoi-type summation formula for Gauss sums of order $n$, with an explicit integral transform relating the weights.  For cubic Gauss sums, the formula takes sextic residue twists to quadratic twists, as in recent work on the quasi-Riemann hypothesis.
 
-    fetch('listing.json')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            data.forEach(item => {
-                const source = item.source || `${item.file}.tex`;
-                const fileLinks = item.pdf
-                    ? `<a href="${source}">${item.type || 'tex'}</a> <a href="${item.pdf}">pdf</a>`
-                    : `<a href="${source}">${item.type || 'source'}</a>`;
-                table.row.add([
-		    `<a href="${item.file}.html">${item.title}</a>`,
-                    item.abstract,
-                    item.dateCreated,
-                    item.dateModified,
-                    fileLinks
-		    ]);
-            });
-            table.draw();
-        })
-        .catch(e => {
-            console.log('There was a problem with the fetch operation: ' + e.message);
-        });
+*The paper:* [[file:schwartz-space-n-fold-cover-sl2.html][HTML]] · [[file:schwartz-space-n-fold-cover-sl2.pdf][PDF]] · [[file:schwartz-space-n-fold-cover-sl2.tex][TeX]]
 
-    $('#myTable').on('draw.dt', function () {
-        if (window.MathJax && MathJax.typesetPromise) {
-            MathJax.typesetPromise([document.getElementById('myTable')]);
-        }
-    });
-});
-</script>
-#+END_EXPORT
+* Exercises
+# TODO(orchestrator): the sheets build cleanly and render here, but have
+# not yet been worked by an independent solver.  After the solver runs,
+# keep this section, revise it, or remove it.
+
+The main thread of the paper as exercise sheets, drafted by AI agents.  The problems are short, the hints are at the end of each sheet, and there are no solutions.
+
+1. From Poisson summation on the plane to a Fourier transform for the $n$-fold cover of $\mathrm{SL}_2$ \\
+   [[file:20261124T213000--schwartz-space-cover-exercises__workbook.html][HTML]] · [[file:20261124T213000--schwartz-space-cover-exercises__workbook.pdf][PDF]]
+2. The Schwartz space of the $n$-fold cover of $\mathrm{SL}_2$: symmetries, the basic vector and inversion \\
+   [[file:20261124T213100--schwartz-space-cover-inversion__workbook.html][HTML]] · [[file:20261124T213100--schwartz-space-cover-inversion__workbook.pdf][PDF]]
+3. Leading terms and a Poisson formula for the $n$-fold cover of $\mathrm{SL}_2$ \\
+   [[file:20261124T213200--schwartz-space-cover-poisson__workbook.html][HTML]] · [[file:20261124T213200--schwartz-space-cover-poisson__workbook.pdf][PDF]]
+4. Voronoi formulas for Gauss sums from the $n$-fold cover of $\mathrm{SL}_2$ \\
+   [[file:20261124T213300--schwartz-space-cover-voronoi__workbook.html][HTML]] · [[file:20261124T213300--schwartz-space-cover-voronoi__workbook.pdf][PDF]]
+
+* Lean formalization
+For number fields, the main results of the paper are formalized in Lean 4 with Mathlib, in the directory [[https://github.com/ultronozm/metaplectic-summation/tree/main/lean][lean/]] of the repository.  The development has no ~sorry~, and its theorems depend only on the standard axioms ~propext~, ~Classical.choice~ and ~Quot.sound~.
+
+The file [[https://github.com/ultronozm/metaplectic-summation/blob/main/lean/Challenge.lean][lean/Challenge.lean]] is a challenge in the format of the [[https://github.com/PalomarRegistry/PalomarTemplate][Palomar]] registry.  It states the Voronoi-type formula for twisted Gauss sums of order $n$ and its quadratic dual (the first two rows of the table below) against Mathlib alone, quantifying over self-dual measures and Hilbert symbols with their defining properties, and giving the local transform by its explicit integral.  The file [[https://github.com/ultronozm/metaplectic-summation/blob/main/lean/Solution.lean][lean/Solution.lean]] proves them from the development.  The Poisson formula, Fourier inversion and the other statements in the table are proved in the development itself.
+
+Not formalized: the case of global function fields; the remark comparing the transform with Kubota's transform over $\mathbb{C}$; and, at archimedean places, the smoothness across $\mu = 0$ of the extensions of the normalized rays at the origin.
+
+The table follows [[file:schwartz-space-n-fold-cover-sl2.html#sec:lean][Appendix C]] of the paper.  Each declaration links to its source at the commit cited in the paper.
+
+# lean-table begin
+| Paper | Lean | Hypotheses and scope |
+|-
+| [[file:schwartz-space-n-fold-cover-sl2.html#theorem:gauss-sums][Theorem 10.33]] | [[https://github.com/ultronozm/metaplectic-summation/blob/49e2744135f67ea4494c28c868bd4ec14b7037de/lean/Challenge.lean#L344][~NFoldCover.twistedGaussSummation~]] | The setting of §10.6. The constants $\rho(\beta)$ in $M_b$ are asserted to exist, independently of $T$, $\chi$, $f$ and $W_S$, rather than identified with those of Theorem 10.16; the absolute convergence of both sums is included. |
+| [[file:schwartz-space-n-fold-cover-sl2.html#corollary:quadratic-dual][Corollary 10.39]] | [[https://github.com/ultronozm/metaplectic-summation/blob/49e2744135f67ea4494c28c868bd4ec14b7037de/lean/Challenge.lean#L377][~NFoldCover.quadraticDual~]] | The setting of §10.7.2. |
+| [[file:schwartz-space-n-fold-cover-sl2.html#item:lines-smooth][Lemma 4.2(iii)]] | [[https://github.com/ultronozm/metaplectic-summation/blob/49e2744135f67ea4494c28c868bd4ec14b7037de/lean/MetaplecticSummation/ArchimedeanSmoothness.lean#L450][~MetaplecticPoisson.Datum.radon_smooth_real~]] [[https://github.com/ultronozm/metaplectic-summation/blob/49e2744135f67ea4494c28c868bd4ec14b7037de/lean/MetaplecticSummation/ArchimedeanSmoothness.lean#L469][~MetaplecticPoisson.Datum.radon_smooth_complex~]] | Real and complex places: joint smoothness, and rapid decay in $\tau$ of every derivative, uniformly for $v'$ in compact sets. |
+| [[file:schwartz-space-n-fold-cover-sl2.html#proposition:fourier-transform-genuine][Proposition 4.5]] | [[https://github.com/ultronozm/metaplectic-summation/blob/49e2744135f67ea4494c28c868bd4ec14b7037de/lean/MetaplecticSummation/ArchimedeanSmoothness.lean#L338][~MetaplecticPoisson.Datum.arch_transform_smooth~]] | Real and complex places: the smoothness of $\mathcal{F} \Phi$ for $\Phi \in \mathcal{D}$. |
+| [[file:schwartz-space-n-fold-cover-sl2.html#definition:schwartz-space][Definition 4.11]] | [[https://github.com/ultronozm/metaplectic-summation/blob/49e2744135f67ea4494c28c868bd4ec14b7037de/lean/MetaplecticSummation/ArchimedeanSmoothness.lean#L423][~MetaplecticPoisson.Datum.schwartz_smooth_real~]] [[https://github.com/ultronozm/metaplectic-summation/blob/49e2744135f67ea4494c28c868bd4ec14b7037de/lean/MetaplecticSummation/ArchimedeanSmoothness.lean#L429][~MetaplecticPoisson.Datum.schwartz_smooth_complex~]] | Real and complex places: the elements of $\mathcal{S}$ are smooth. |
+| [[file:schwartz-space-n-fold-cover-sl2.html#proposition:basic-vector-fixed][Proposition 6.3]] | [[https://github.com/ultronozm/metaplectic-summation/blob/49e2744135f67ea4494c28c868bd4ec14b7037de/lean/MetaplecticSummation/BasicFixed.lean#L103][~MetaplecticPoisson.Datum.basicCharts_fourier_fixed~]] [[https://github.com/ultronozm/metaplectic-summation/blob/49e2744135f67ea4494c28c868bd4ec14b7037de/lean/MetaplecticSummation/BasicMembership.lean#L184][~MetaplecticPoisson.Datum.basic_mem~]] | Finite places prime to $n$. |
+| [[file:schwartz-space-n-fold-cover-sl2.html#theorem:schwartz-space][Theorem 7.1]] | [[https://github.com/ultronozm/metaplectic-summation/blob/49e2744135f67ea4494c28c868bd4ec14b7037de/lean/MetaplecticSummation/Inversion.lean#L500][~MetaplecticPoisson.Datum.schwartz_inversion~]] | Every place; $\widetilde{\mathrm{SL}}_2(F_{\mathfrak{p}})$ is the group generated by $\mu_n$, $n(u)$ and $n^-(u)$. |
+| [[file:schwartz-space-n-fold-cover-sl2.html#proposition:schwartz-origin][Proposition 8.1]] | [[https://github.com/ultronozm/metaplectic-summation/blob/49e2744135f67ea4494c28c868bd4ec14b7037de/lean/MetaplecticSummation/ArchimedeanRays.lean#L683][~MetaplecticPoisson.Datum.schwartz_rayBound_real~]] [[https://github.com/ultronozm/metaplectic-summation/blob/49e2744135f67ea4494c28c868bd4ec14b7037de/lean/MetaplecticSummation/ArchimedeanRays.lean#L690][~MetaplecticPoisson.Datum.schwartz_rayBound_complex~]] [[https://github.com/ultronozm/metaplectic-summation/blob/49e2744135f67ea4494c28c868bd4ec14b7037de/lean/MetaplecticSummation/ArchimedeanSmoothness.lean#L436][~MetaplecticPoisson.Datum.leading_smooth_real~]] [[https://github.com/ultronozm/metaplectic-summation/blob/49e2744135f67ea4494c28c868bd4ec14b7037de/lean/MetaplecticSummation/ArchimedeanSmoothness.lean#L442][~MetaplecticPoisson.Datum.leading_smooth_complex~]] | Real and complex places: the functions (8.1) are smooth in $v$, and each derivative in $v$ decays rapidly in $\mu$, uniformly for $v$ in compact sets; the leading term $b \Psi$ is smooth. The smoothness of the extensions in $\mu$ across $\mu = 0$ is not formalized. |
+| [[file:schwartz-space-n-fold-cover-sl2.html#theorem:poisson][Theorem 9.1]] | [[https://github.com/ultronozm/metaplectic-summation/blob/49e2744135f67ea4494c28c868bd4ec14b7037de/lean/MetaplecticSummation/Poisson.lean#L85][~MetaplecticPoisson.Datum.poisson~]] | The reference vector at the places dividing $n$ is $0$, which does not change $\mathcal{S}_{\mathbb{A}}$. |
+| [[file:schwartz-space-n-fold-cover-sl2.html#corollary:poisson-vanishing][Corollary 9.2]] | [[https://github.com/ultronozm/metaplectic-summation/blob/49e2744135f67ea4494c28c868bd4ec14b7037de/lean/MetaplecticSummation/Poisson.lean#L96][~MetaplecticPoisson.Datum.poisson_of_leading_eq_zero~]] [[https://github.com/ultronozm/metaplectic-summation/blob/49e2744135f67ea4494c28c868bd4ec14b7037de/lean/MetaplecticSummation/Poisson.lean#L104][~MetaplecticPoisson.Datum.poisson_pure_of_local_vanishing~]] | As for Theorem 9.1. |
+| [[file:schwartz-space-n-fold-cover-sl2.html#corollary:jacquet-decay][Corollary 10.4]] | [[https://github.com/ultronozm/metaplectic-summation/blob/49e2744135f67ea4494c28c868bd4ec14b7037de/lean/MetaplecticSummation/Jacquet/ArchDecay.lean#L37][~MetaplecticPoisson.Datum.jacquet_decay_arch~]] | Real and complex places. |
+| [[file:schwartz-space-n-fold-cover-sl2.html#theorem:main][Theorem 10.16]] | [[https://github.com/ultronozm/metaplectic-summation/blob/49e2744135f67ea4494c28c868bd4ec14b7037de/lean/MetaplecticSummation/Jacquet.lean#L133][~MetaplecticPoisson.Datum.lineSummation~]] | The setting of §9.1. |
+# lean-table end
