@@ -333,14 +333,15 @@ theorem exists_selfDual_hilbert {ζ : F} (hζ : IsPrimitiveRoot ζ n)
 /-- Theorem 10.33. Let `F ⊇ μ_n` be a number field, `ψ` a nontrivial continuous
 character of `𝔸/F`, `μ v` the self-dual measures, `H` the Hilbert symbols (with an
 embedding `ε : μ_n → ℂˣ`), and `S` as in §10.6. Fix `b ∈ 𝒪_S - {0}`. There are
-constants `ρ(β)`, indexed by the tuples of power classes at the places of `S`, such
-that for every twist `(T, χ, f)` with `b` coprime to `f` and all
+unique constants `ρ(β)`, indexed by the tuples of power classes at the places of `S`,
+such that for every twist `(T, χ, f)` with `b` coprime to `f` and all
 `W_𝔭 ∈ C_c^∞(F_𝔭^×)`: `|ε| = 1`, both series converge absolutely, and
 `∑ W_S(c) χ(c) g̃(b,c) = ε ∑ (W_S {·,b}_S)^∨(c/(b f^{n-1})) conj(χ(c)) (c/f)_n (f/c)_n g̃(b,c)
   + M_b(W_S)`,
 with `M_b(W_S) = ∑_β ρ(β) ∏_{𝔭 ∈ S} ∫_{β_𝔭} W_𝔭 |x|^{1/n} d^×x` if `T` is empty and
-`M_b = 0` otherwise. (In the paper `ρ` is given by Theorem 10.16 for `ψ(b ·)`; here
-it is asserted to exist, independently of `T`, `χ`, `f` and `W`.) -/
+`M_b = 0` otherwise. (In the paper `ρ` is `|b|_S` times the constants of Theorem 10.16
+for `ψ(b ·)`; here it is characterized as the unique family, independent of `T`, `χ`,
+`f` and `W`, for which the identity holds.) -/
 theorem twistedGaussSummation {ζ : F} (hζ : IsPrimitiveRoot ζ n)
     (ε : Mu F n →* ℂˣ) (hε : Function.Injective ε)
     (ψ : AddChar (Adeles F) Circle) (hψ : Continuous ψ) (hnt : ∃ a, ψ a ≠ 1)
@@ -349,7 +350,7 @@ theorem twistedGaussSummation {ζ : F} (hζ : IsPrimitiveRoot ζ n)
     (H : SymbolFamily F n) (hH : IsHilbertFamily F n H)
     {S : Finset (Place F)} (hS : ClassicalSetting n ψ S) (b : NonzeroInteger S) :
     let σ := hilbertSymbol F ε H
-    ∃ ρ : Classes n S → ℂ, ∀ (f : NonzeroInteger S) (T : Twist n S f),
+    ∃! ρ : Classes n S → ℂ, ∀ (f : NonzeroInteger S) (T : Twist n S f),
       IsCoprime b.val f.val → ∀ W : Weights S, Admissible W →
       ‖epsilon n ψ μ σ T (fieldUnit b)‖ = 1 ∧
       Summable (fun c : NonzeroInteger S => ‖sWeight W (fieldUnit c) * twistValue T (fieldUnit c) *
@@ -371,7 +372,8 @@ theorem twistedGaussSummation {ζ : F} (hζ : IsPrimitiveRoot ζ n)
 
 /-- Corollary 10.39. In the setting of Theorem 10.33, let `n` be odd, let every
 `𝔭 ∉ S` have odd residue characteristic, and let `h ∈ 𝒪_S` be squarefree and not a
-unit. There is `ε'` with `|ε'| = 1` such that for all `W_𝔭 ∈ C_c^∞(F_𝔭^×)`,
+unit. There is `ε'` with `|ε'| = 1` such that for all `W_𝔭 ∈ C_c^∞(F_𝔭^×)` both series
+converge absolutely and
 `∑ W_S(c) (c/h)_2 (c/h)_n² g̃(1,c) = ε' ∑ W_S^∨(c/h^{n-1}) {h,c}_S (c/h)_2 g̃(1,c)`.
 The quadratic symbol `(·/·)_2` is formed from quadratic Hilbert symbols `H₂`. -/
 theorem quadraticDual {ζ : F} (hζ : IsPrimitiveRoot ζ n)
@@ -388,6 +390,12 @@ theorem quadraticDual {ζ : F} (hζ : IsPrimitiveRoot ζ n)
     let σ := hilbertSymbol F ε H
     let σ₂ := hilbertSymbol F ε₂ H₂
     ∃ ε' : ℂ, ‖ε'‖ = 1 ∧ ∀ W : Weights S, Admissible W →
+      Summable (fun c : NonzeroInteger S => ‖sWeight W (fieldUnit c) *
+        residue σ₂ S (fieldUnit c) (fieldUnit h) * residue σ S (fieldUnit c) (fieldUnit h) ^ 2 *
+        normalizedGauss n ψ σ S 1 c.val‖) ∧
+      Summable (fun c : NonzeroInteger S => ‖sDual n ψ μ σ W (fieldUnit c / fieldUnit h ^ (n-1)) *
+        sSymbol σ S (fieldUnit h) (fieldUnit c) * residue σ₂ S (fieldUnit c) (fieldUnit h) *
+        normalizedGauss n ψ σ S 1 c.val‖) ∧
       (∑' c : NonzeroInteger S, sWeight W (fieldUnit c) * residue σ₂ S (fieldUnit c) (fieldUnit h) *
         residue σ S (fieldUnit c) (fieldUnit h) ^ 2 * normalizedGauss n ψ σ S 1 c.val) =
       ε' * ∑' c : NonzeroInteger S, sDual n ψ μ σ W (fieldUnit c / fieldUnit h ^ (n-1)) *

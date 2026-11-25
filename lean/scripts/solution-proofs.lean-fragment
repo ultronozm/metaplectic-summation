@@ -89,7 +89,48 @@ end Bridge
   let ρ₀ := ((d.scaled (fieldUnit b)).lineSummation S (d.scaled_good h' b)).exists.choose
   let C : ℂ := ∏ v : S,
     (NNReal.sqrt (modulus F v.val (diagonal F v.val (fieldUnit b : F))).toNNReal : ℂ)
-  refine ⟨fun β => (Real.sqrt (sNorm S (fieldUnit b)) : ℂ) * (ρ₀ β * C), ?_⟩
+  refine ⟨fun β => (Real.sqrt (sNorm S (fieldUnit b)) : ℂ) * (ρ₀ β * C), ?_, ?_⟩
+  swap
+  · -- uniqueness: the empty twist and a test with a single nonzero moment
+    classical
+    intro ρ' hρ'
+    funext α
+    obtain ⟨W, hW, hM0⟩ := d.exists_moment_single α
+    have hMα : d.moment W α = 1 := (hM0 α).trans (ite_eq_left rfl)
+    have hMβ (β : Classes n S) (hβ : β ≠ α) : d.moment W β = 0 := by
+      have h := hM0 β
+      exact h.trans (ite_eq_right (by exact hβ))
+    let one : NonzeroInteger S := ⟨1, one_ne_zero⟩
+    have h1 : fieldUnit one = 1 := Units.ext rfl
+    let T0 : Twist n S one :=
+      { primes := ∅, outside := fun p hp => absurd hp (Finset.notMem_empty p),
+        character := fun p => absurd p.2 (Finset.notMem_empty p.1),
+        continuous_char := fun p => absurd p.2 (Finset.notMem_empty p.1),
+        exponent := fun _ => 1, positive := fun _ => one_pos,
+        conductor := fun p => absurd p.2 (Finset.notMem_empty p.1),
+        generator := fun p => absurd p.2 (Finset.notMem_empty p.1),
+        unit_elsewhere := fun p _ _ => by rw [h1, Units.val_one, map_one, norm_one],
+        empty_modulus := fun _ => h1 }
+    have hcop : IsCoprime b.val one.val := isCoprime_one_right
+    have e1 := (hρ' one T0 hcop W hW).2.2.2
+    obtain ⟨_, H⟩ := d.twistedGaussSummation h' one b (Bridge.toTwist T0) hcop W hW
+    have e2 := H.symm.trans e1
+    have hcard : (Bridge.toTwist T0).primes.card = 0 := rfl
+    have hcard' : T0.primes.card = 0 := rfl
+    change _ + (if (Bridge.toTwist T0).primes.card = 0 then d.mainTerm h' b W else 0) =
+      _ + (if T0.primes.card = 0 then ∑ᶠ β, ρ' β * d.moment W β else 0) at e2
+    simp only [hcard, hcard', ↓reduceIte] at e2
+    have e3 := add_left_cancel e2
+    have eval (a : Classes n S → ℂ) : ∑ᶠ β, a β * d.moment W β = a α := by
+      rw [finsum_eq_single _ α (fun β hβ => by rw [hMβ β hβ, mul_zero]), hMα, mul_one]
+    rw [eval] at e3
+    rw [← e3]
+    simp only [MetaplecticPoisson.Datum.mainTerm]
+    have hs : (∑ᶠ β, ρ₀ β * (d.scaled (fieldUnit b)).moment W β) = ρ₀ α * C := by
+      have : (fun β => ρ₀ β * (d.scaled (fieldUnit b)).moment W β) = fun β => (ρ₀ β * C) * d.moment W β := by
+        funext β; rw [Bridge.moment_scaled d (fieldUnit b) W β]; ring
+      rw [this]; exact eval (fun β => ρ₀ β * C)
+    exact congrArg (_ * ·) hs
   intro f T hcop W hW
   obtain ⟨hε', H⟩ := d.twistedGaussSummation h' f b (Bridge.toTwist T) hcop W hW
   obtain ⟨hs₁, hs₂⟩ := d.summable_twistedGauss h' b (Bridge.toTwist T) hcop W hW

@@ -417,14 +417,15 @@ theorem exists_selfDual_hilbert {ζ : F} (hζ : IsPrimitiveRoot ζ n)
 /-- Theorem 10.33. Let `F ⊇ μ_n` be a number field, `ψ` a nontrivial continuous
 character of `𝔸/F`, `μ v` the self-dual measures, `H` the Hilbert symbols (with an
 embedding `ε : μ_n → ℂˣ`), and `S` as in §10.6. Fix `b ∈ 𝒪_S - {0}`. There are
-constants `ρ(β)`, indexed by the tuples of power classes at the places of `S`, such
-that for every twist `(T, χ, f)` with `b` coprime to `f` and all
+unique constants `ρ(β)`, indexed by the tuples of power classes at the places of `S`,
+such that for every twist `(T, χ, f)` with `b` coprime to `f` and all
 `W_𝔭 ∈ C_c^∞(F_𝔭^×)`: `|ε| = 1`, both series converge absolutely, and
 `∑ W_S(c) χ(c) g̃(b,c) = ε ∑ (W_S {·,b}_S)^∨(c/(b f^{n-1})) conj(χ(c)) (c/f)_n (f/c)_n g̃(b,c)
   + M_b(W_S)`,
 with `M_b(W_S) = ∑_β ρ(β) ∏_{𝔭 ∈ S} ∫_{β_𝔭} W_𝔭 |x|^{1/n} d^×x` if `T` is empty and
-`M_b = 0` otherwise. (In the paper `ρ` is given by Theorem 10.16 for `ψ(b ·)`; here
-it is asserted to exist, independently of `T`, `χ`, `f` and `W`.) -/
+`M_b = 0` otherwise. (In the paper `ρ` is `|b|_S` times the constants of Theorem 10.16
+for `ψ(b ·)`; here it is characterized as the unique family, independent of `T`, `χ`,
+`f` and `W`, for which the identity holds.) -/
 theorem twistedGaussSummation {ζ : F} (hζ : IsPrimitiveRoot ζ n)
     (ε : Mu F n →* ℂˣ) (hε : Function.Injective ε)
     (ψ : AddChar (Adeles F) Circle) (hψ : Continuous ψ) (hnt : ∃ a, ψ a ≠ 1)
@@ -433,7 +434,7 @@ theorem twistedGaussSummation {ζ : F} (hζ : IsPrimitiveRoot ζ n)
     (H : SymbolFamily F n) (hH : IsHilbertFamily F n H)
     {S : Finset (Place F)} (hS : ClassicalSetting n ψ S) (b : NonzeroInteger S) :
     let σ := hilbertSymbol F ε H
-    ∃ ρ : Classes n S → ℂ, ∀ (f : NonzeroInteger S) (T : Twist n S f),
+    ∃! ρ : Classes n S → ℂ, ∀ (f : NonzeroInteger S) (T : Twist n S f),
       IsCoprime b.val f.val → ∀ W : Weights S, Admissible W →
       ‖epsilon n ψ μ σ T (fieldUnit b)‖ = 1 ∧
       Summable (fun c : NonzeroInteger S => ‖sWeight W (fieldUnit c) * twistValue T (fieldUnit c) *
@@ -459,7 +460,48 @@ theorem twistedGaussSummation {ζ : F} (hζ : IsPrimitiveRoot ζ n)
   let ρ₀ := ((d.scaled (fieldUnit b)).lineSummation S (d.scaled_good h' b)).exists.choose
   let C : ℂ := ∏ v : S,
     (NNReal.sqrt (modulus F v.val (diagonal F v.val (fieldUnit b : F))).toNNReal : ℂ)
-  refine ⟨fun β => (Real.sqrt (sNorm S (fieldUnit b)) : ℂ) * (ρ₀ β * C), ?_⟩
+  refine ⟨fun β => (Real.sqrt (sNorm S (fieldUnit b)) : ℂ) * (ρ₀ β * C), ?_, ?_⟩
+  swap
+  · -- uniqueness: the empty twist and a test with a single nonzero moment
+    classical
+    intro ρ' hρ'
+    funext α
+    obtain ⟨W, hW, hM0⟩ := d.exists_moment_single α
+    have hMα : d.moment W α = 1 := (hM0 α).trans (ite_eq_left rfl)
+    have hMβ (β : Classes n S) (hβ : β ≠ α) : d.moment W β = 0 := by
+      have h := hM0 β
+      exact h.trans (ite_eq_right (by exact hβ))
+    let one : NonzeroInteger S := ⟨1, one_ne_zero⟩
+    have h1 : fieldUnit one = 1 := Units.ext rfl
+    let T0 : Twist n S one :=
+      { primes := ∅, outside := fun p hp => absurd hp (Finset.notMem_empty p),
+        character := fun p => absurd p.2 (Finset.notMem_empty p.1),
+        continuous_char := fun p => absurd p.2 (Finset.notMem_empty p.1),
+        exponent := fun _ => 1, positive := fun _ => one_pos,
+        conductor := fun p => absurd p.2 (Finset.notMem_empty p.1),
+        generator := fun p => absurd p.2 (Finset.notMem_empty p.1),
+        unit_elsewhere := fun p _ _ => by rw [h1, Units.val_one, map_one, norm_one],
+        empty_modulus := fun _ => h1 }
+    have hcop : IsCoprime b.val one.val := isCoprime_one_right
+    have e1 := (hρ' one T0 hcop W hW).2.2.2
+    obtain ⟨_, H⟩ := d.twistedGaussSummation h' one b (Bridge.toTwist T0) hcop W hW
+    have e2 := H.symm.trans e1
+    have hcard : (Bridge.toTwist T0).primes.card = 0 := rfl
+    have hcard' : T0.primes.card = 0 := rfl
+    change _ + (if (Bridge.toTwist T0).primes.card = 0 then d.mainTerm h' b W else 0) =
+      _ + (if T0.primes.card = 0 then ∑ᶠ β, ρ' β * d.moment W β else 0) at e2
+    simp only [hcard, hcard', ↓reduceIte] at e2
+    have e3 := add_left_cancel e2
+    have eval (a : Classes n S → ℂ) : ∑ᶠ β, a β * d.moment W β = a α := by
+      rw [finsum_eq_single _ α (fun β hβ => by rw [hMβ β hβ, mul_zero]), hMα, mul_one]
+    rw [eval] at e3
+    rw [← e3]
+    simp only [MetaplecticPoisson.Datum.mainTerm]
+    have hs : (∑ᶠ β, ρ₀ β * (d.scaled (fieldUnit b)).moment W β) = ρ₀ α * C := by
+      have : (fun β => ρ₀ β * (d.scaled (fieldUnit b)).moment W β) = fun β => (ρ₀ β * C) * d.moment W β := by
+        funext β; rw [Bridge.moment_scaled d (fieldUnit b) W β]; ring
+      rw [this]; exact eval (fun β => ρ₀ β * C)
+    exact congrArg (_ * ·) hs
   intro f T hcop W hW
   obtain ⟨hε', H⟩ := d.twistedGaussSummation h' f b (Bridge.toTwist T) hcop W hW
   obtain ⟨hs₁, hs₂⟩ := d.summable_twistedGauss h' b (Bridge.toTwist T) hcop W hW
@@ -481,7 +523,8 @@ theorem twistedGaussSummation {ζ : F} (hζ : IsPrimitiveRoot ζ n)
 
 /-- Corollary 10.39. In the setting of Theorem 10.33, let `n` be odd, let every
 `𝔭 ∉ S` have odd residue characteristic, and let `h ∈ 𝒪_S` be squarefree and not a
-unit. There is `ε'` with `|ε'| = 1` such that for all `W_𝔭 ∈ C_c^∞(F_𝔭^×)`,
+unit. There is `ε'` with `|ε'| = 1` such that for all `W_𝔭 ∈ C_c^∞(F_𝔭^×)` both series
+converge absolutely and
 `∑ W_S(c) (c/h)_2 (c/h)_n² g̃(1,c) = ε' ∑ W_S^∨(c/h^{n-1}) {h,c}_S (c/h)_2 g̃(1,c)`.
 The quadratic symbol `(·/·)_2` is formed from quadratic Hilbert symbols `H₂`. -/
 theorem quadraticDual {ζ : F} (hζ : IsPrimitiveRoot ζ n)
@@ -498,6 +541,12 @@ theorem quadraticDual {ζ : F} (hζ : IsPrimitiveRoot ζ n)
     let σ := hilbertSymbol F ε H
     let σ₂ := hilbertSymbol F ε₂ H₂
     ∃ ε' : ℂ, ‖ε'‖ = 1 ∧ ∀ W : Weights S, Admissible W →
+      Summable (fun c : NonzeroInteger S => ‖sWeight W (fieldUnit c) *
+        residue σ₂ S (fieldUnit c) (fieldUnit h) * residue σ S (fieldUnit c) (fieldUnit h) ^ 2 *
+        normalizedGauss n ψ σ S 1 c.val‖) ∧
+      Summable (fun c : NonzeroInteger S => ‖sDual n ψ μ σ W (fieldUnit c / fieldUnit h ^ (n-1)) *
+        sSymbol σ S (fieldUnit h) (fieldUnit c) * residue σ₂ S (fieldUnit c) (fieldUnit h) *
+        normalizedGauss n ψ σ S 1 c.val‖) ∧
       (∑' c : NonzeroInteger S, sWeight W (fieldUnit c) * residue σ₂ S (fieldUnit c) (fieldUnit h) *
         residue σ S (fieldUnit c) (fieldUnit h) ^ 2 * normalizedGauss n ψ σ S 1 c.val) =
       ε' * ∑' c : NonzeroInteger S, sDual n ψ μ σ W (fieldUnit c / fieldUnit h ^ (n-1)) *
