@@ -1,30 +1,76 @@
 # A Schwartz space for the n-fold cover of SL₂
 
-The paper *A Schwartz space for the n-fold cover of SL₂* (Paul D. Nelson) and
-its Lean 4 formalization.
+The paper *A Schwartz space for the n-fold cover of SL₂* (Paul D. Nelson), its
+Lean 4 formalization for number fields, and four exercise sheets that follow
+its main thread.  The site built from this repository has a landing page
+(`index.org`) linking the paper (HTML, PDF, TeX), the sheets, and a table of
+the statements checked in Lean.
 
 | Path | Contents |
 | --- | --- |
 | `schwartz-space-n-fold-cover-sl2.tex` | The paper, with a self-contained preamble.  `refs.bib` holds the cited references. |
+| `exercises/` | The main thread of the paper as four exercise sheets, drafted by AI agents.  See [`exercises/README.md`](exercises/README.md). |
 | `lean/` | The Lean project: the development (`MetaplecticSummation/`), the statement file `Challenge.lean`, its proof `Solution.lean`, and the Palomar files `comparator.json` and `formalization.yaml`.  See [`lean/README.md`](lean/README.md) for a map of the development. |
-| `scripts/lean-links.py` | Keeps the paper's links to Lean declarations current. |
+| `index.org` | The site's landing page.  Its Lean table is generated; see [Links between paper and Lean](#links-between-paper-and-lean). |
+| `preview-site.sh` | Builds the site locally into `_site/`. |
+| `scripts/` | `lean-links.py` keeps the paper's links to Lean current; `lean-table.py` writes the landing page's Lean table; `stage-exercises.sh` stages the sheets for the site build; `check-site/` checks a served build in headless Chrome. |
+| `tex2html-local.el` | Site-specific HTML postprocessing: theorem numbers, citations, tables of contents and tables as in the PDFs. |
+| `.github/`, `compile.sh`, `convert.sh`, `make-index.sh`, `tex2html.el`, `tex.css`, `config.json` | Site machinery from [tex-site](https://github.com/ultronozm/tex-site): PDF and HTML builds deployed to GitHub Pages. |
 | `Makefile` | `make paper` builds the PDF into `output/pdf/`. |
-| `.github/`, `*.sh`, `tex2html.el`, `index.org`, `tex.css`, `config.json` | Site machinery from [tex-site](https://github.com/ultronozm/tex-site): PDF and HTML builds deployed to GitHub Pages. |
 
 The paper is kept under a short name rather than its notes-directory name
 (`20261118T190000--schwartz-space-n-fold-cover-sl2.tex`), because tex-site
 derives the PDF and HTML URLs from the file name.
 
+Informal sketches of the paper and a portable HTML reader for them are kept on
+the branch `sketches`, not on `main`.
+
 ## Building
 
-Paper:
+### The paper
 
 ```sh
-latexmk -pdf schwartz-space-n-fold-cover-sl2.tex
-./convert.sh schwartz-space-n-fold-cover-sl2.tex   # HTML, as on the site
+latexmk -pdf schwartz-space-n-fold-cover-sl2.tex     # or: make paper
+./convert.sh schwartz-space-n-fold-cover-sl2.tex     # HTML, as on the site (pandoc, Emacs)
 ```
 
-Lean (Lean v4.35.0-rc2, Mathlib at the `v4.35.0-rc2` tag):
+### The exercise sheets
+
+```sh
+cd exercises
+latexmk -pdf FILE.tex    # in file-name order: later sheets refer to earlier ones through xr
+```
+
+### The site
+
+```sh
+./preview-site.sh                                    # build into _site/
+python3 -m http.server -d _site 8000                 # serve
+node scripts/check-site/check.mjs http://127.0.0.1:8000/   # check in headless Chrome
+```
+
+`preview-site.sh` mirrors the CI build (`.github/workflows/build.yml`, then
+`make-index.yml`) from `HEAD` plus uncommitted changes to tracked files.  It
+checks the paper's Lean links, copies the sheets to the top level of its build
+checkout (the machinery builds only top-level files), compiles and converts
+every document in CI order, regenerates the Lean table in `index.org` (also in
+the working tree: commit it if it changed), and exports the landing page.  It
+fails on a failed build, on unresolved references in the LaTeX logs, and on
+`??` in the HTML.  It builds into `_site.new/` and swaps it in only at the
+end, so a running server keeps serving the previous build meanwhile; logs go
+to `_site-logs/`.
+
+The check opens every page linked from the landing page and fails on script
+errors, MathJax errors, `??`, and links within the site that do not resolve,
+anchors included.  Links leaving the site are counted, not fetched.
+Screenshots go to `_site/screenshots/`.
+
+Requirements: TeX Live with `latexmk`, `pandoc`, `jq`, Emacs (29 or later),
+Python 3; for the check, Node 22 or later and Chrome.
+
+### The Lean project
+
+Lean v4.35.0-rc2, Mathlib at the `v4.35.0-rc2` tag:
 
 ```sh
 cd lean
@@ -46,41 +92,68 @@ same checks without the sandbox.
 
 ## Status
 
-- The development has no `sorry`.  `Challenge.lean` states Theorem 10.33
+- The development has no `sorry`.  Every declaration linked from the paper,
+  and every theorem compared by Comparator, depends only on `propext`,
+  `Classical.choice` and `Quot.sound`.  `Challenge.lean` states Theorem 10.33
   (twisted sums of Gauss sums of order n) and Corollary 10.39 (the quadratic
   dual) against Mathlib alone, for number fields, quantifying over self-dual
   measures and Hilbert symbols with their defining properties and giving the
   local transform by the explicit integral (10.15).  `Solution.lean` proves
-  them, and every compared theorem depends only on `propext`,
-  `Classical.choice` and `Quot.sound`.  The Poisson formula, Theorem 7.1 and
-  the rest are proved in the development (Appendix C of the paper).
+  them.  The Poisson formula, Fourier inversion, the archimedean smoothness
+  and decay results of §§4, 8 and 10 and the rest are proved in the
+  development.  Appendix C of the paper lists what is checked and with which
+  hypotheses; `lean/formalization.yaml` records scope, provenance and AI
+  involvement.
+- Not formalized: global function fields; the remark comparing the transform
+  with Kubota's over ℂ; and, at archimedean places, the smoothness across
+  μ = 0 of the extensions in Proposition 8.1.
 - `lake comparator` accepts the solution with Lean's kernel, NanoDa and
   con-ron (run locally without the sandbox, 2026-11-25).
-- Appendix C of the paper lists what is checked and with which hypotheses;
-  `lean/formalization.yaml` records scope, provenance and AI involvement.
+- The exercise sheets build cleanly and are on the site, but have not yet been
+  worked by an independent solver.
 
 ## Links between paper and Lean
 
 `\lean{Decl}` (the syntax of leanblueprint) after a statement marks its Lean
-declaration.  In the PDF the mark links to the declaration's source line at
-the commit `\leancommit`; in the HTML version it links to the declaration's
-entry in Appendix C, which carries that link.  The repository URL
-`\leanrepo` and the commit are defined once in the preamble.  After changing
-the Lean sources, commit them and run
+declaration; use one `\lean` per declaration.  In the PDF the mark links to
+the declaration's source line at the commit `\leancommit`; in the HTML version
+it links to the declaration's entry in Appendix C, which carries that link.
+The repository URL `\leanrepo` and the commit are defined once in the
+preamble.  Every declaration cited with `\lean` must also have a
+`\leanentry` in Appendix C.  After changing the Lean sources, commit them and
+run
 
 ```sh
 scripts/lean-links.py --commit   # update file and line of each entry; pin \leancommit
 scripts/lean-links.py --check    # fail if a link is stale or a name is unknown
+./preview-site.sh                # regenerate the Lean table of index.org
 ```
+
+The table on the landing page is generated from the table of Appendix C by
+`scripts/lean-table.py`, between the lines `# lean-table begin` and
+`# lean-table end` of `index.org`; do not edit it by hand.
 
 The pinned commit must reach GitHub unchanged (do not squash or rebase the
 history before pushing), or be re-pinned afterwards.
 
+## Licence
+
+Not chosen yet, and there is no `LICENSE` file.  A suggestion: Apache-2.0 for
+`lean/` (the licence declared in `lean/formalization.yaml`, and that of the
+vendored code, see `lean/licenses/`), and CC BY 4.0 for the text of the paper
+and of the exercise sheets.
+
 ## Before publishing
 
-- Create the GitHub repository and check `\leanrepo` in the paper and
-  `site.githubRepository` in `config.json` (both assume
-  `ultronozm/metaplectic-summation`).
+- Choose the licence (above) and add the `LICENSE` file(s).
+- Create the GitHub repository and check `\leanrepo` in the paper,
+  `site.githubRepository` in `config.json`, and the GitHub links in
+  `index.org` (all assume `ultronozm/metaplectic-summation`).
+- Re-pin `\leancommit` to the final commit touching `lean/`
+  (`scripts/lean-links.py --commit`), rebuild with `./preview-site.sh`, and
+  commit the paper and `index.org`.
+- Decide on the exercise sheets once they have been solver-tested (see the
+  TODO in `index.org`).
 - Palomar (submit with project path `lean`):
   - Every `.lean` file in the repository must use Lean's module system.  None
     of the 295 files does yet, and the port is not mechanical: a module cannot
@@ -93,11 +166,10 @@ history before pushing), or be re-pinned afterwards.
     `private` declarations checked), and Comparator rerun.  `Challenge.lean`
     imports only Mathlib, so its own port is mechanical.
   - Add a root `LICENSE` matching `project.license` in
-    `lean/formalization.yaml` (Apache-2.0 there; the vendored code is
-    Apache-2.0, see `lean/licenses/`).
+    `lean/formalization.yaml` (Apache-2.0 there).
   - Audit `Challenge.lean` (398 lines, of which 319 are definitions; Palomar
-    prefers at most 300) and update `review.status` and the automation details in
-    `formalization.yaml`.
+    prefers at most 300) and update `review.status` and the automation
+    details in `formalization.yaml`.
 - [Lean Pool](https://github.com/LeanPool/lean-pool) prefers projects already
   registered in Palomar.
 
@@ -108,6 +180,11 @@ The site machinery tracks tex-site:
 ```sh
 git fetch upstream && git merge upstream/main
 ```
+
+`tex2html.el` here differs from tex-site's: it carries grh-workbook's changes
+(cross-document links to the target's own anchor, and the
+`tex2html-local.el` hook) and a guard in the toggle-all-proofs script; these
+belong upstream.  `build.yml` has one local step, staging the exercise sheets.
 
 `lean/` was added with `git subtree add` from the standalone
 `MetaplecticSummation` repository and keeps its history.  To take later work

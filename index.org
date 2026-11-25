@@ -32,7 +32,7 @@ The main thread of the paper as exercise sheets, drafted by AI agents.  The prob
    [[file:20261124T213300--schwartz-space-cover-voronoi__workbook.html][HTML]] · [[file:20261124T213300--schwartz-space-cover-voronoi__workbook.pdf][PDF]]
 
 * Lean formalization
-For number fields, the main results of the paper are formalized in Lean 4 with Mathlib, in the directory [[https://github.com/ultronozm/metaplectic-summation/tree/main/lean][lean/]] of the repository.  The development has no ~sorry~, and its theorems depend only on the standard axioms ~propext~, ~Classical.choice~ and ~Quot.sound~.
+For number fields, the main results of the paper are formalized in Lean 4 with Mathlib, in the directory [[https://github.com/ultronozm/metaplectic-summation/tree/main/lean][lean/]] of the repository.  The development has no ~sorry~, and the statements below depend only on the standard axioms ~propext~, ~Classical.choice~ and ~Quot.sound~.
 
 The file [[https://github.com/ultronozm/metaplectic-summation/blob/main/lean/Challenge.lean][lean/Challenge.lean]] is a challenge in the format of the [[https://github.com/PalomarRegistry/PalomarTemplate][Palomar]] registry.  It states the Voronoi-type formula for twisted Gauss sums of order $n$ and its quadratic dual (the first two rows of the table below) against Mathlib alone, quantifying over self-dual measures and Hilbert symbols with their defining properties, and giving the local transform by its explicit integral.  The file [[https://github.com/ultronozm/metaplectic-summation/blob/main/lean/Solution.lean][lean/Solution.lean]] proves them from the development.  The Poisson formula, Fourier inversion and the other statements in the table are proved in the development itself.
 
