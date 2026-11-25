@@ -39,6 +39,7 @@ products and rational evaluations all depend on these inputs.
 | [LocalCharacters](MetaplecticSummation/LocalCharacters.lean) | Continuity, additivity and unitarity of the restrictions of the adelic character |
 | [CharacterNontrivial](MetaplecticSummation/CharacterNontrivial.lean) | Nontriviality of a character satisfying the local Plancherel identity |
 | [ArchimedeanSlice](MetaplecticSummation/ArchimedeanSlice.lean), [SchwartzSliceIntegral](MetaplecticSummation/SchwartzSliceIntegral.lean), [SchwartzSliceFamily](MetaplecticSummation/SchwartzSliceFamily.lean) | Differentiation of affine line integrals and compact-uniform Schwartz bounds under the determinant substitution τ ↦ τⁿ |
+| [LineSmoothness](MetaplecticSummation/LineSmoothness.lean), [ArchimedeanSmoothness](MetaplecticSummation/ArchimedeanSmoothness.lean) | Joint smoothness of the archimedean Radon charts (Lemma 4.2(iii)), smoothness of the transform (Proposition 4.5), and smoothness of the local Schwartz space at real and complex places |
 | [FourierDifferences](MetaplecticSummation/FourierDifferences.lean), [ArchimedeanFourierDecay](MetaplecticSummation/ArchimedeanFourierDecay.lean) | Fourier multipliers for translations and differences, integral decay estimates from real derivatives, and uniform Fourier decay for bounded Schwartz families |
 | [FiniteTransform](MetaplecticSummation/FiniteTransform.lean) | Absolute convergence of the outer transform integral on finite-place test sections and local constancy of both charts of every finite-place Schwartz section |
 | [FiniteSchwartzLines](MetaplecticSummation/FiniteSchwartzLines.lean) | Absolute convergence of both line integrals on the full Schwartz space at every finite place for nonzero line parameters |
@@ -324,8 +325,18 @@ Schwartz families at both real and complex places. The theorem
 form such a family. For a linear determinant parameter, differentiating a chart
 along the affine line gives an integrable majorant at every derivative order.
 Pullback by τ ↦ τⁿ preserves bounded sets of Schwartz functions. Together these
-prove the slice assertion of Lemma 4.2(iii). Its additional assertions about
-joint smoothness and derivatives in the output vector remain open at infinite places.
+prove the slice assertion of Lemma 4.2(iii). For joint smoothness, the substitution
+x = x′z makes the line integrand depend linearly on the parameters. Dominated
+differentiation on sets where x′ stays away from zero then shows that the
+linearized line integral is smooth, and that each of its derivatives decays
+rapidly in the determinant variable (`lineRadon_smooth`). Composing with
+(x′, y′, τ) ↦ (x′, y′, τⁿ/x′) gives joint smoothness of both Radon charts on
+U_X × F and U_Y × F (`arch_radon_smooth`). The decay is stated in the linearized
+determinant variable, not for derivatives in τ itself. The Fourier integral is
+treated the same way, with 1/x′ as a separate linear parameter, which gives
+Proposition 4.5 at real and complex places (`arch_transform_smooth`). So every
+element of the local Schwartz space has smooth charts (`schwartz_smooth_real`,
+`schwartz_smooth_complex`).
 
 For every nontrivial adelic character trivial on the diagonal, the annihilator
 of the local integers equals the local integers at almost every finite place.
