@@ -1,0 +1,19 @@
+# Which statements of the paper each picture was last compared with: a fingerprint of each statement it cites or sits
+# beside, and the version of the paper it was compared with.  The build marks a picture on the page when a fingerprint
+# no longer matches, and python3 portable/audit.py explains why and records the new version once the picture's text has
+# been checked.  Written by audit.py; read by build.py.
+
+[figure.double-cover]
+at = "9ea1179"
+[figure.double-cover.statements]
+"eq:transition-relation" = "14f4220df884"
+"sec:genuine" = "bc7cf347c943"
+"sec:hilbert-symbol" = "3e5ea276c3f3"
+
+[figure.lines]
+at = "9ea1179"
+[figure.lines.statements]
+"definition:lines" = "adf0957cbaaa"
+"lemma:lines" = "588f688e39dd"
+"proposition:fourier-transform-genuine" = "19cf926ae2ce"
+"sec:genuine" = "bc7cf347c943"
