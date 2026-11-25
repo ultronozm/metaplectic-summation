@@ -128,13 +128,12 @@ history before pushing), or be re-pinned afterwards.
 
 ## Licence
 
-Not chosen yet, and there is no `LICENSE` file.  A suggestion: Apache-2.0 for
-`lean/` (the licence declared in `lean/formalization.yaml`, and that of the
-vendored code, see `lean/licenses/`), and CC BY 4.0 for the text of the paper.
+- The Lean code in `lean/` is licensed under the Apache License 2.0 (`LICENSE`).
+- The text of the paper (`schwartz-space-n-fold-cover-sl2.tex` and the files built from it) is licensed under the Creative Commons Attribution 4.0 International licence (`LICENSE-paper.txt`).
+- `lean/vendor/ground-theory/` contains 35 modules copied from the Lean archive released with Alpöge's proof of the generalized Riemann hypothesis (https://alpo.ge/remark.pdf), which states no licence; they are included here with credit to that archive and its authors, and remain theirs.  Other vendored code carries the licences in `lean/licenses/`.
 
 ## Before publishing
 
-- Choose the licence (above) and add the `LICENSE` file(s).
 - Create the GitHub repository and check `\leanrepo` in the paper,
   `site.githubRepository` in `config.json`, and the GitHub links in
   `index.org` (all assume `ultronozm/metaplectic-summation`).
